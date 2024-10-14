@@ -1,7 +1,11 @@
 import "../globals.css";
 import { Language } from "../model/language";
 
-export async function generateMetadata({ params: { locale } }) {
+export async function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: Language };
+}) {
   const title =
     locale === Language.en ? "Look in their eyes" : "הסתכלו להם בעיניים";
   const description =

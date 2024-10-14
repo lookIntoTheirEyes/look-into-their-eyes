@@ -1,10 +1,12 @@
+import { useTranslations } from "next-intl";
 import styles from "./page.module.css";
 
 export default function Home() {
+  const t = useTranslations("HomePage");
   return (
     <div className={styles.container + " .container"}>
       <main>
-        <h1 className={styles.title}>Welcome to My Book</h1>
+        <h1 className={styles.title}>{t("title")}</h1>
         <h2 className={styles.chapter}>Chapter 1: The Beginning</h2>
         <p>
           This is where the story begins. Lorem ipsum dolor sit amet,
