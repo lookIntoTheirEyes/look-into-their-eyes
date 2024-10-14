@@ -2,5 +2,10 @@
   "HomePage": {
     "title": "Welcome to our book",
     "about": "Go to the about page"
+  },
+  "Header": {
+    "home": "Home",
+    "story": "Our story",
+    "about": "About"
   }
 }

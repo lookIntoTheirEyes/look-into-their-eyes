@@ -1,0 +1,18 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  background-color: black;
+  color: white;
+  min-height: var(--header-height);
+  padding: 16px;
+  font-size: 20px;
+  flex-direction: row-reverse;
+
+  .nav {
+    display: flex;
+    gap: 8px;
+    .link:hover {
+      color: red;
+    }
+  }
+}
