@@ -31,7 +31,8 @@ export default function RootLayout({
       <body>
         <Header />
         {children}
-        <BringThemHomeTicker lang={locale} />
+        {/* Use locale as a key to force re-render on language change */}
+        <BringThemHomeTicker lang={locale} key={locale} />
       </body>
     </html>
   );

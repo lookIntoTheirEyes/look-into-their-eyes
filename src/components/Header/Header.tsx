@@ -21,9 +21,7 @@ export default function Header() {
           </li>
         </ul>
       </nav>
-      <LanguageInput
-        languages={{ hebrew: t("hebrew"), english: t("english") }}
-      />
+      <LanguageInput />
     </header>
   );
 }

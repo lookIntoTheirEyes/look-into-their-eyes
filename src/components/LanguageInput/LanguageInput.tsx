@@ -2,34 +2,37 @@
 
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useTransition } from "react";
+import { useTransition } from "react";
+import styles from "./LanguageInput.module.css";
 
-export default function LanguageInput({
-  languages: { hebrew, english },
-}: {
-  languages: { hebrew: string; english: string };
-}) {
-  const [isPending, startTransition] = useTransition();
+export default function LanguageInput() {
+  const [_, startTransition] = useTransition();
   const router = useRouter();
   const localActive = useLocale();
 
-  const onSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const nextLocale = e.target.value;
+  const onSelectChange = (language: "en" | "he") => {
     startTransition(() => {
-      router.replace(`/${nextLocale}`);
+      router.replace(`/${language}`);
     });
   };
   return (
-    <label>
-      <p>change language</p>
-      <select
-        defaultValue={localActive}
-        onChange={onSelectChange}
-        disabled={isPending}
+    <div className={styles.container}>
+      <span
+        className={`${styles.language} ${
+          localActive === "he" ? styles.active : ""
+        }`}
+        onClick={() => onSelectChange("he")}
       >
-        <option value='en'>{english}</option>
-        <option value='he'>{hebrew}</option>
-      </select>
-    </label>
+        עב
+      </span>
+      <span
+        className={`${styles.language} ${
+          localActive === "en" ? styles.active : ""
+        }`}
+        onClick={() => onSelectChange("en")}
+      >
+        EN
+      </span>
+    </div>
   );
 }

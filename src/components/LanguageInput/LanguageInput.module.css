@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language {
+  cursor: pointer;
+  &.active {
+    color: red;
+  }
+}

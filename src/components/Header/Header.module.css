@@ -1,6 +1,7 @@
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   background-color: black;
   color: white;
   min-height: var(--header-height);
