@@ -4,36 +4,33 @@ import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import styles from "./LanguageInput.module.css";
+import { Language } from "@/app/model/language";
 
 export default function LanguageInput() {
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const localActive = useLocale();
   const pathname = usePathname();
 
-  const onSelectChange = (language: "en" | "he") => {
+  const onSelectChange = () => {
+    if (isPending) {
+      return;
+    }
+    const nextRouteLang =
+      localActive === Language.en ? Language.he : Language.en;
+
     startTransition(() => {
-      router.replace(getUpdatedPath(pathname, language));
+      router.replace(getUpdatedPath(pathname, nextRouteLang));
     });
   };
+
   return (
     <div className={styles.container}>
-      <span
-        className={`${styles.language} ${
-          localActive === "he" ? styles.active : ""
-        }`}
-        onClick={() => onSelectChange("he")}
-      >
-        עב
-      </span>
-      <span
-        className={`${styles.language} ${
-          localActive === "en" ? styles.active : ""
-        }`}
-        onClick={() => onSelectChange("en")}
-      >
-        EN
-      </span>
+      {
+        <span className={styles.language} onClick={onSelectChange}>
+          {localActive === Language.he ? "עברית" : "English"}
+        </span>
+      }
     </div>
   );
 }
