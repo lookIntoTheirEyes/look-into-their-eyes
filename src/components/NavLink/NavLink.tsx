@@ -16,7 +16,6 @@ export default function NavLink<Pathname extends Pathnames>({
 
   return (
     <Link
-      aria-current={isActive ? "page" : undefined}
       className={`${styles.link} ${isActive ? styles.active : ""}`}
       href={href}
       {...rest}

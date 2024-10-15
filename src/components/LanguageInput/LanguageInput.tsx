@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import styles from "./LanguageInput.module.css";
 
@@ -9,10 +9,11 @@ export default function LanguageInput() {
   const [, startTransition] = useTransition();
   const router = useRouter();
   const localActive = useLocale();
+  const pathname = usePathname();
 
   const onSelectChange = (language: "en" | "he") => {
     startTransition(() => {
-      router.replace(`/${language}`);
+      router.replace(getUpdatedPath(pathname, language));
     });
   };
   return (
@@ -35,4 +36,9 @@ export default function LanguageInput() {
       </span>
     </div>
   );
+}
+
+function getUpdatedPath(path: string, language: string) {
+  const [, , ...route] = path.split("/");
+  return `/${language}/${route.join("")}`;
 }

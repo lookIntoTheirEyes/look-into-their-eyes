@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang={locale} dir={locale === Language.en ? "ltr" : "rtl"}>
       <body>
         <Header />
-        {children}
+        <main> {children}</main>
         <BringThemHomeTicker lang={locale} key={locale} />
       </body>
     </html>
