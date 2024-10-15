@@ -10,9 +10,8 @@ export default function NavLink<Pathname extends Pathnames>({
   ...rest
 }: ComponentProps<typeof Link<Pathname>>) {
   const selectedLayoutSegment = useSelectedLayoutSegment();
-
-  const isActive =
-    (!selectedLayoutSegment && href === "/") || href === selectedLayoutSegment;
+  const pathname = selectedLayoutSegment ? `/${selectedLayoutSegment}` : "/";
+  const isActive = pathname === href;
 
   return (
     <Link

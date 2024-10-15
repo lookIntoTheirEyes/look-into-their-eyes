@@ -6,29 +6,31 @@ import { useTransition } from "react";
 import styles from "./LanguageInput.module.css";
 import { Language } from "@/app/model/language";
 
-export default function LanguageInput() {
+export default function LanguageInput({ locale }: { locale: Language }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-  const localActive = useLocale();
   const pathname = usePathname();
 
-  const onSelectChange = () => {
+  const onSelectChange = (language: Language) => {
     if (isPending) {
       return;
     }
-    const nextRouteLang =
-      localActive === Language.en ? Language.he : Language.en;
 
     startTransition(() => {
-      router.replace(getUpdatedPath(pathname, nextRouteLang));
+      router.replace(getUpdatedPath(pathname, language));
     });
   };
 
   return (
     <div className={styles.container}>
       {
-        <span className={styles.language} onClick={onSelectChange}>
-          {localActive === Language.he ? "עברית" : "English"}
+        <span
+          className={styles.language}
+          onClick={() =>
+            onSelectChange(locale === Language.en ? Language.he : Language.en)
+          }
+        >
+          {locale === Language.he ? "English" : "עברית"}
         </span>
       }
     </div>
