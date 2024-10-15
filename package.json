@@ -8,7 +8,7 @@
     "not op_mini all"
   ],
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

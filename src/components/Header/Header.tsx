@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-// import BringThemHomeTicker from "../BringThemHomeTicker";
+import BringThemHomeTicker from "../BringThemHomeTicker/BringThemHomeTicker";
 import { Language } from "@/app/model/language";
 import styles from "./header.module.css";
 
@@ -9,8 +9,7 @@ export default function Header({ lang }: { lang: Language }) {
 
   return (
     <header className={styles.header}>
-      {/* <BringThemHomeTicker lang={lang} /> */}
-      <p>{`ticker ${lang}`}</p>
+      <BringThemHomeTicker lang={lang} />
       <nav>
         <ul className={styles.nav}>
           <li className={styles.link}>
