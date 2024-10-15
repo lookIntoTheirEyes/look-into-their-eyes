@@ -1,6 +1,7 @@
 import Header from "@/components/Header/Header";
 import "../globals.css";
 import { Language } from "../model/language";
+import BringThemHomeTicker from "@/components/BringThemHomeTicker/BringThemHomeTicker";
 
 export async function generateMetadata({
   params: { locale },
@@ -28,8 +29,9 @@ export default function RootLayout({
   return (
     <html lang={locale} dir={locale === Language.en ? "ltr" : "rtl"}>
       <body>
-        <Header lang={locale} />
+        <Header />
         {children}
+        <BringThemHomeTicker lang={locale} />
       </body>
     </html>
   );

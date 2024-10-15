@@ -6,6 +6,8 @@
   "Header": {
     "home": "בית",
     "story": "הסיפור",
-    "about": "עלינו"
+    "about": "עלינו",
+    "hebrew": "עברית",
+    "english": "אנגלית"
   }
 }

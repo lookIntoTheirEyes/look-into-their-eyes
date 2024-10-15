@@ -6,6 +6,8 @@
   "Header": {
     "home": "Home",
     "story": "Story",
-    "about": "About"
+    "about": "About",
+    "hebrew": "Hebrew",
+    "english": "English"
   }
 }

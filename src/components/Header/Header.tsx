@@ -1,10 +1,9 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import BringThemHomeTicker from "../BringThemHomeTicker/BringThemHomeTicker";
-import { Language } from "@/app/model/language";
 import styles from "./header.module.css";
+import LanguageInput from "../LanguageInput/LanguageInput";
 
-export default function Header({ lang }: { lang: Language }) {
+export default function Header() {
   const t = useTranslations("Header");
 
   return (
@@ -22,7 +21,9 @@ export default function Header({ lang }: { lang: Language }) {
           </li>
         </ul>
       </nav>
-      <BringThemHomeTicker lang={lang} />
+      <LanguageInput
+        languages={{ hebrew: t("hebrew"), english: t("english") }}
+      />
     </header>
   );
 }
