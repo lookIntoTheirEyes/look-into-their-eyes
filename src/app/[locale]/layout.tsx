@@ -2,6 +2,7 @@ import Header from "@/components/Header/Header";
 import "../globals.css";
 import { Language } from "../model/language";
 import BringThemHomeTicker from "@/components/BringThemHomeTicker/BringThemHomeTicker";
+import Footer from "@/components/Footer/Footer";
 
 export async function generateMetadata({
   params: { locale },
@@ -32,6 +33,7 @@ export default function RootLayout({
         <Header />
         <main> {children}</main>
         <BringThemHomeTicker lang={locale} key={locale} />
+        <Footer />
       </body>
     </html>
   );

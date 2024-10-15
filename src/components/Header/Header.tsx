@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
-
 import styles from "./header.module.css";
+
 import LanguageInput from "../LanguageInput/LanguageInput";
 import NavLink from "../NavLink/NavLink";
 import { Language } from "@/app/model/language";
@@ -15,10 +15,8 @@ export default function Header() {
     getRoute("/story", t("story")),
     getRoute("/about", t("about")),
   ].map(({ href, name }) => (
-    <li className={styles.link}>
-      <NavLink key={name} href={href}>
-        {name}
-      </NavLink>
+    <li key={name} className={styles.link}>
+      <NavLink href={href}>{name}</NavLink>
     </li>
   ));
 
