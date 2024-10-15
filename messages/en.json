@@ -9,5 +9,9 @@
     "about": "About",
     "hebrew": "Hebrew",
     "english": "English"
+  },
+  "About": {
+    "intro": "Artist",
+    "artist": "Benzi Brofman"
   }
 }
