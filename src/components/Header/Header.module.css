@@ -11,8 +11,5 @@
   .nav {
     display: flex;
     gap: 8px;
-    .link:hover {
-      color: red;
-    }
   }
 }

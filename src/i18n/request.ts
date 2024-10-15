@@ -7,6 +7,6 @@ export default getRequestConfig(async ({ locale }) => {
   if (!routing.locales.includes(locale as Language)) notFound();
 
   return {
-    messages: (await import(`../../translations/${locale}.json`)).default,
+    messages: (await import(`../../messages/${locale}.json`)).default,
   };
 });

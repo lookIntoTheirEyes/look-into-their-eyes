@@ -6,7 +6,7 @@ import { useTransition } from "react";
 import styles from "./LanguageInput.module.css";
 
 export default function LanguageInput() {
-  const [_, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const router = useRouter();
   const localActive = useLocale();
 
