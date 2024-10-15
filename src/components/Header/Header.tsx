@@ -9,7 +9,6 @@ export default function Header({ lang }: { lang: Language }) {
 
   return (
     <header className={styles.header}>
-      <BringThemHomeTicker lang={lang} />
       <nav>
         <ul className={styles.nav}>
           <li className={styles.link}>
@@ -23,6 +22,7 @@ export default function Header({ lang }: { lang: Language }) {
           </li>
         </ul>
       </nav>
+      <BringThemHomeTicker lang={lang} />
     </header>
   );
 }

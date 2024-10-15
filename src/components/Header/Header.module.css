@@ -6,7 +6,6 @@
   min-height: var(--header-height);
   padding: 16px;
   font-size: 20px;
-  flex-direction: row-reverse;
 
   .nav {
     display: flex;
