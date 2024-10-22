@@ -32,7 +32,7 @@ export default function RootLayout({
       <body>
         <Header />
         <main> {children}</main>
-        <BringThemHomeTicker lang={locale} key={locale} />
+        <BringThemHomeTicker lang={locale} />
         <Footer />
       </body>
     </html>
