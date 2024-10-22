@@ -1,8 +1,22 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { forwardRef, useRef, useState } from "react";
 import PageFlip from "react-pageflip";
 import styles from "./page.module.css";
+
+interface PageProps {
+  number: number;
+  children: React.ReactNode;
+}
+
+interface PageFlipMethods {
+  flipNext: () => void;
+  flipPrev: () => void;
+}
+
+interface CustomPageFlip {
+  pageFlip: () => PageFlipMethods;
+}
 
 const pagesContent = [
   "My Story",
@@ -16,19 +30,42 @@ const pagesContent = [
   "Together, they went on many adventures.",
   "Thank you, Nati.",
 ];
-interface PageFlipMethods {
-  flipNext: () => void;
-  flipPrev: () => void;
-}
 
-interface CustomPageFlip {
-  pageFlip: () => PageFlipMethods;
-}
+const PageCover = forwardRef<HTMLDivElement, React.PropsWithChildren<{}>>(
+  (props, ref) => {
+    return (
+      <div
+        className={`${styles.page} ${styles.pageCover}`}
+        ref={ref}
+        data-density='hard'
+      >
+        <div className={styles.pageContent}>
+          <h2>{props.children}</h2>
+        </div>
+      </div>
+    );
+  }
+);
+
+const Page = forwardRef<HTMLDivElement, PageProps>(
+  ({ number, children }, ref) => {
+    return (
+      <div className={styles.page} ref={ref}>
+        <div className={styles.pageContent}>
+          <h2 className={styles.pageHeader}>Page header - {number}</h2>
+          <div className={styles.pageImage}></div>
+          <div className={styles.pageText}>{children}</div>
+          <div className={styles.pageFooter}>{number + 1}</div>
+        </div>
+      </div>
+    );
+  }
+);
 
 const BookComponent: React.FC = () => {
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
   const [pageCount, setPageCount] = useState<number>(0);
-  const [currPage, setCurrPage] = useState<number>(0);
+  const [currPage, setCurrPage] = useState<number>(1);
 
   const goToNext = () => {
     pageFlipRef.current?.pageFlip().flipNext();
@@ -42,22 +79,22 @@ const BookComponent: React.FC = () => {
     <div className={styles.bookContainer}>
       <PageFlip
         ref={pageFlipRef}
-        width={300}
-        height={400}
         className={""}
-        style={{}}
+        style={{ maxHeight: "100%" }}
         startPage={0}
-        size={"stretch"}
-        minWidth={0}
-        maxWidth={300}
-        minHeight={0}
-        maxHeight={400}
+        width={550}
+        height={733}
+        size='stretch'
+        minWidth={315}
+        maxWidth={1000}
+        minHeight={400}
+        maxHeight={1533}
+        maxShadowOpacity={0.5}
         drawShadow={true}
-        flippingTime={200}
-        usePortrait={false}
-        startZIndex={0}
+        flippingTime={700}
+        usePortrait={true}
+        startZIndex={30}
         autoSize={true}
-        maxShadowOpacity={0}
         showCover={true}
         mobileScrollSupport={true}
         clickEventForward={true}
@@ -71,17 +108,20 @@ const BookComponent: React.FC = () => {
         onFlip={({ data }) => {
           setCurrPage(data + 1);
         }}
+        onChangeOrientation={(oren) => {
+          console.log("changeOrientation", oren);
+        }}
       >
+        <PageCover>BOOK TITLE</PageCover>
+
         {pagesContent.map((content, i) => {
           return (
-            <div key={content}>
-              <div key={content} className={styles.page}>
-                <h1 className={styles["page-header"]}>{`Page ${i + 1}`}</h1>
-                <p className={styles["page-body"]}>{content}</p>
-              </div>
-            </div>
+            <Page key={content} number={i + 1}>
+              {content}
+            </Page>
           );
         })}
+        <PageCover>THE END</PageCover>
       </PageFlip>
       <div className={styles.controls}>
         <button className={styles.button} onClick={goToPrevious}>
