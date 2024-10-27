@@ -13,5 +13,9 @@
   "About": {
     "intro": "Artist",
     "artist": "Benzi Brofman"
+  },
+  "Story": {
+    "previous": "Previous",
+    "next": "Next"
   }
 }

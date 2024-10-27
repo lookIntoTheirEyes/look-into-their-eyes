@@ -15,53 +15,68 @@ interface CustomPageFlip {
   pageFlip: () => PageFlipMethods;
 }
 
-const pagesContent = [
-  "My Story",
-  "Once upon a time, there was a little girl.",
-  "She loved exploring the woods.",
-  "One day, she found a hidden path.",
-  "Curiosity led her down the trail.",
-  "She discovered a secret garden.",
-  "In the garden, she met a talking rabbit.",
-  "They became the best of friends.",
-  "Together, they went on many adventures.",
-  "Thank you, Nati.",
-];
+interface BookProps {
+  rtl?: boolean;
+  pages: string[];
+  actions: { next: string; previous: string };
+}
 
-const Book: React.FC = () => {
+const Book: React.FC<BookProps> = ({
+  rtl = false,
+  pages,
+  actions: { next, previous },
+}) => {
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
   const [pageCount, setPageCount] = useState<number>(0);
   const [currPage, setCurrPage] = useState<number>(1);
 
   const goToNext = () => {
-    pageFlipRef.current?.pageFlip().flipNext();
+    const pageFlip = pageFlipRef.current?.pageFlip();
+    if (rtl) {
+      pageFlip?.flipPrev(); // Flip to the left (previous) for RTL
+    } else {
+      pageFlip?.flipNext();
+    }
   };
 
   const goToPrevious = () => {
-    pageFlipRef.current?.pageFlip().flipPrev();
+    const pageFlip = pageFlipRef.current?.pageFlip();
+
+    if (rtl) {
+      pageFlip?.flipNext();
+    } else {
+      pageFlip?.flipPrev();
+    }
+  };
+
+  const calculatePageForRtl = (pageNum: number) => {
+    return !pageNum
+      ? pages.length + 2
+      : pageNum === pages.length + 1
+      ? 1
+      : pages.length + 1 - pageNum;
   };
 
   return (
     <>
       <div className={styles.controls}>
         <button className={styles.button} onClick={goToPrevious}>
-          Previous
+          {previous}
         </button>
         <div className={styles.pageCount}>
-          <span> {currPage}</span>
-          <span>of</span>
+          <span>{currPage}</span>
+          <span>/</span>
           <span>{pageCount}</span>
         </div>
-
         <button className={styles.button} onClick={goToNext}>
-          Next
+          {next}
         </button>
       </div>
       <PageFlip
         ref={pageFlipRef}
         className={""}
         style={{}}
-        startPage={0}
+        startPage={rtl ? pages.length + 1 : 0}
         width={550}
         height={733}
         size='stretch'
@@ -86,19 +101,16 @@ const Book: React.FC = () => {
           setPageCount(object.getPageCount());
         }}
         onFlip={({ data }) => {
-          setCurrPage(data + 1);
+          setCurrPage(rtl ? calculatePageForRtl(data) : data + 1);
         }}
       >
-        <PageCover>BOOK TITLE</PageCover>
-
-        {pagesContent.map((content, i) => {
-          return (
-            <Page key={content} number={i + 1}>
-              {content}
-            </Page>
-          );
-        })}
-        <PageCover>THE END</PageCover>
+        <PageCover>{rtl ? "הסוף" : "BOOK TITLE"}</PageCover>
+        {pages.map((content, i) => (
+          <Page key={content} number={rtl ? pages.length - i : i + 1}>
+            {content}
+          </Page>
+        ))}
+        <PageCover>{rtl ? "ההתחלה" : "THE END"}</PageCover>
       </PageFlip>
     </>
   );
