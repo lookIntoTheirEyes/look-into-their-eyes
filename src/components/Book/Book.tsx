@@ -33,7 +33,7 @@ const Book: React.FC<BookProps> = ({
   const goToNext = () => {
     const pageFlip = pageFlipRef.current?.pageFlip();
     if (rtl) {
-      pageFlip?.flipPrev(); // Flip to the left (previous) for RTL
+      pageFlip?.flipPrev();
     } else {
       pageFlip?.flipNext();
     }
@@ -85,17 +85,17 @@ const Book: React.FC<BookProps> = ({
         minHeight={400}
         maxHeight={1533}
         maxShadowOpacity={0.5}
-        drawShadow={true}
+        drawShadow
         flippingTime={700}
-        usePortrait={true}
         startZIndex={30}
-        autoSize={true}
-        showCover={true}
-        mobileScrollSupport={true}
-        clickEventForward={true}
-        useMouseEvents={true}
-        swipeDistance={0}
-        showPageCorners={true}
+        swipeDistance={30}
+        usePortrait
+        autoSize
+        showCover
+        mobileScrollSupport
+        clickEventForward
+        useMouseEvents
+        showPageCorners
         disableFlipByClick={false}
         onInit={({ object }) => {
           setPageCount(object.getPageCount());
