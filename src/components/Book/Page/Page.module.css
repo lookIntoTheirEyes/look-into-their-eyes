@@ -1,21 +1,3 @@
-.flipBook {
-  position: relative;
-  overflow: hidden;
-}
-
-.bookContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  width: 80%;
-  height: 750px;
-  @media only screen and (max-width: 600px) {
-    height: 400px;
-    width: 85%;
-  }
-}
-
 .page {
   position: absolute;
   width: 100%;
@@ -70,31 +52,4 @@
     color: #785e3a;
     border: 1px solid #998466;
   }
-}
-
-.container {
-  margin-top: 20px; /* Space above the control container */
-  display: flex; /* Flexbox for alignment */
-  justify-content: space-between; /* Space between controls */
-  align-items: center; /* Center vertically */
-}
-
-.button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  cursor: pointer;
-}
-
-.button:hover {
-  background-color: #0056b3;
-}
-
-.controls {
-  align-self: baseline;
-  z-index: 3;
 }
