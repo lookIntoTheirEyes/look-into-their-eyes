@@ -13,14 +13,14 @@ const HeroDetails = async ({
     : "";
 
   return (
-    <>
+    <div aria-modal='true'>
       <ModalBackdrop />
       <dialog className={styles.modal} open>
         <div className='fullscreen-image'>
           <div>Details - {page}</div>
         </div>
       </dialog>
-    </>
+    </div>
   );
 };
 
