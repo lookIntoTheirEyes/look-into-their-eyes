@@ -17,13 +17,14 @@ interface CustomPageFlip {
 
 interface BookProps {
   rtl?: boolean;
-  pages: string[];
+
   actions: { next: string; previous: string };
+  book: { pages: string[]; front: string; back: string };
 }
 
 const Book: React.FC<BookProps> = ({
   rtl = false,
-  pages,
+  book: { pages, front, back },
   actions: { next, previous },
 }) => {
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
@@ -104,13 +105,17 @@ const Book: React.FC<BookProps> = ({
           setCurrPage(rtl ? calculatePageForRtl(data) : data + 1);
         }}
       >
-        <PageCover>{rtl ? "הסוף" : "BOOK TITLE"}</PageCover>
+        <PageCover styles={styles}>{front}</PageCover>
         {pages.map((content, i) => (
-          <Page key={content} number={rtl ? pages.length - i : i + 1}>
+          <Page
+            styles={styles}
+            key={content}
+            number={rtl ? pages.length - i : i + 1}
+          >
             {content}
           </Page>
         ))}
-        <PageCover>{rtl ? "ההתחלה" : "THE END"}</PageCover>
+        <PageCover styles={styles}>{back}</PageCover>
       </PageFlip>
     </>
   );

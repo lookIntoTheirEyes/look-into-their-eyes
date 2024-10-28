@@ -36,11 +36,16 @@ const BookComponent: React.FC<{ params: { locale: Language } }> = ({
   params: { locale },
 }) => {
   const t = useTranslations("Story");
+  const rtl = locale === Language.he;
   return (
-    <div className={styles.bookContainer}>
+    <div className={styles.storyContainer}>
       <Book
-        pages={pagesContent(locale === Language.he)}
-        rtl={locale === Language.he}
+        book={{
+          front: rtl ? "הסוף" : "THE END",
+          back: rtl ? "ההתחלה" : "BOOK TITLE",
+          pages: pagesContent(locale === Language.he),
+        }}
+        rtl
         actions={{
           next: t("next"),
           previous: t("previous"),

@@ -1,16 +1,17 @@
 import { forwardRef } from "react";
-import styles from "./PageCover.module.css";
+import localStyles from "./PageCover.module.css";
 
-const PageCover = forwardRef<HTMLDivElement, React.PropsWithChildren<object>>(
-  (props, ref) => {
+interface PageCoverProps {
+  styles: Record<string, string>;
+  children: React.ReactNode;
+}
+
+const PageCover = forwardRef<HTMLDivElement, PageCoverProps>(
+  ({ styles, children }, ref) => {
     return (
-      <div
-        className={`${styles.page} ${styles.pageCover}`}
-        ref={ref}
-        data-density='hard'
-      >
+      <div className={`${styles.page} ${localStyles.pageCover}`} ref={ref}>
         <div className={styles.pageContent}>
-          <h2>{props.children}</h2>
+          <h2>{children}</h2>
         </div>
       </div>
     );
