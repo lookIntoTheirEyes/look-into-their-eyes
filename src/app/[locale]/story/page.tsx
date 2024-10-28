@@ -41,11 +41,11 @@ const BookComponent: React.FC<{ params: { locale: Language } }> = ({
     <div className={styles.storyContainer}>
       <Book
         book={{
-          front: rtl ? "הסוף" : "THE END",
-          back: rtl ? "ההתחלה" : "BOOK TITLE",
+          front: rtl ? "הסוף" : "BOOK TITLE",
+          back: rtl ? "ההתחלה" : "THE END",
           pages: pagesContent(locale === Language.he),
         }}
-        rtl
+        rtl={rtl}
         actions={{
           next: t("next"),
           previous: t("previous"),
