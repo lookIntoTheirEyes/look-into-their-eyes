@@ -38,5 +38,6 @@ export default function LanguageInput({ locale }: { locale: Language }) {
 
 function getUpdatedPath(path: string, language: string) {
   const [, , ...route] = path.split("/");
-  return `/${language}/${route.join("")}`;
+
+  return `/${language}/${route.join("/")}`;
 }
