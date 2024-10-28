@@ -1,6 +1,5 @@
 "use client";
 
-import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import styles from "./LanguageInput.module.css";

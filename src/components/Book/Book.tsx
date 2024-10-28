@@ -108,9 +108,10 @@ const Book: React.FC<BookProps> = ({
         <PageCover styles={styles}>{front}</PageCover>
         {pages.map((content, i) => (
           <Page
+            rtl={rtl}
             styles={styles}
             key={content}
-            number={rtl ? pages.length - i : i + 1}
+            number={(rtl ? pages.length - i : i + 1) + 1}
           >
             {content}
           </Page>
