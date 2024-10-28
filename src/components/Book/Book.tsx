@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import PageFlip from "react-pageflip";
 import styles from "./Book.module.css";
 import PageCover from "@/components/Book/PageCover/PageCover";
@@ -29,7 +30,16 @@ const Book: React.FC<BookProps> = ({
 }) => {
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
   const [pageCount, setPageCount] = useState<number>(0);
-  const [currPage, setCurrPage] = useState<number>(1);
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page");
+
+  const [currPage, setCurrPage] = useState<number>(+page! || 0);
+
+  const updateUrlWithSearchParams = (pageNum: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", pageNum.toString());
+    window.history.pushState(null, "", `?${params.toString()}`);
+  };
 
   const goToNext = () => {
     const pageFlip = pageFlipRef.current?.pageFlip();
@@ -77,7 +87,7 @@ const Book: React.FC<BookProps> = ({
         ref={pageFlipRef}
         className={""}
         style={{}}
-        startPage={rtl ? pages.length + 1 : 0}
+        startPage={(rtl ? calculatePageForRtl(currPage - 2) : currPage) - 1}
         width={550}
         height={733}
         size='stretch'
@@ -97,12 +107,15 @@ const Book: React.FC<BookProps> = ({
         clickEventForward
         useMouseEvents
         showPageCorners
+        renderOnlyPageLengthChange
         disableFlipByClick={false}
         onInit={({ object }) => {
           setPageCount(object.getPageCount());
         }}
         onFlip={({ data }) => {
-          setCurrPage(rtl ? calculatePageForRtl(data) : data + 1);
+          const pageNum = rtl ? calculatePageForRtl(data) : data + 1;
+          setCurrPage(pageNum);
+          updateUrlWithSearchParams(pageNum);
         }}
       >
         <PageCover styles={styles}>{front}</PageCover>

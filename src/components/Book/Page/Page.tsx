@@ -15,7 +15,7 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
     const router = useRouter();
 
     const handleShowDialog = () => {
-      router.push(`/story/${number}/details`);
+      router.push(`/story/details?page=${number}`);
     };
     return (
       <div className={styles.page} ref={ref}>

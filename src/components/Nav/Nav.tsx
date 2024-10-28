@@ -22,17 +22,11 @@ export default function Nav({
           {routes.home}
         </Link>
         <Link
-          href={{ pathname: "/story" }}
+          href={{ pathname: "/story", query: { page: 1 } }}
           className={`${styles.link} ${
             pathname === "/story" ? styles.active : ""
           }`}
         >
-          {/* <Link
-          href={{ pathname: "/story/[page]", params: { page: "1" } }}
-          className={`${styles.link} ${
-            pathname === "/story" ? styles.active : ""
-          }`}
-        > */}
           {routes.story}
         </Link>
         <Link
