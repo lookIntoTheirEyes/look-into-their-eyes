@@ -12,6 +12,7 @@ body {
   overflow-x: hidden;
   font-family: "Merriweather", serif;
   line-height: 1.6;
+  scroll-behavior: smooth;
 }
 body {
   background-color: #f5f5f5;

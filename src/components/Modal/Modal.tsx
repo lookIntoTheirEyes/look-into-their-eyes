@@ -39,7 +39,10 @@ const ModalClient = ({ page }: { page: number }) => {
 
   const handleClose = () => {
     if (backdropRef.current && modalRef.current) {
+      backdropRef.current.style.transition = "opacity 0.5s";
       backdropRef.current.style.opacity = "0";
+
+      modalRef.current.style.transition = "opacity 0.5s, transform 0.5s";
       modalRef.current.style.opacity = "0";
       modalRef.current.style.transform = "scale(0.5) rotate(360deg)";
 
