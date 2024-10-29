@@ -33,7 +33,7 @@ const Book: React.FC<BookProps> = ({
   const searchParams = useSearchParams();
   const page = searchParams.get("page");
 
-  const [currPage, setCurrPage] = useState<number>(+page! || 0);
+  const [currPage, setCurrPage] = useState<number>(+page! || 1);
 
   const updateUrlWithSearchParams = (pageNum: number) => {
     const params = new URLSearchParams(searchParams.toString());
