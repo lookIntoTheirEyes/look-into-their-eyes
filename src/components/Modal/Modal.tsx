@@ -70,11 +70,12 @@ const ModalClient = ({ page }: { page: number }) => {
   }, [isOpen]);
 
   return (
-    <div aria-modal='true'>
+    <>
       <motion.div
+        aria-modal='true'
         ref={backdropRef}
         onClick={handleClose}
-        className={styles.backdrop}
+        className={`${styles.backdrop}`}
         initial='hidden'
         animate='visible'
         exit='hidden'
@@ -91,8 +92,7 @@ const ModalClient = ({ page }: { page: number }) => {
       >
         <div>Details - {page}</div>
       </motion.dialog>
-    </div>
+    </>
   );
 };
-
 export default ModalClient;

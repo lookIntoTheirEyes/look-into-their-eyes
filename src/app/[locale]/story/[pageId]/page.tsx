@@ -31,17 +31,19 @@ const pagesContent = (isRtl = false) =>
         "Thank you, Nati.",
       ];
 
-const StoryLayout: React.FC<{
+const BookComponent: React.FC<{
   children: ReactNode;
-  params: { locale: Language };
-}> = ({ params: { locale }, children }) => {
+  params: { locale: Language; pageId: string };
+}> = ({ params: { locale, pageId }, children }) => {
   const t = useTranslations("Story");
   const rtl = locale === Language.he;
+
   return (
     <>
       {children}
       <div className={styles.storyContainer}>
         <Book
+          pageId={pageId}
           book={{
             front: rtl ? "הסוף" : "BOOK TITLE",
             back: rtl ? "ההתחלה" : "THE END",
@@ -58,4 +60,4 @@ const StoryLayout: React.FC<{
   );
 };
 
-export default StoryLayout;
+export default BookComponent;

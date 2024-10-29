@@ -1,35 +1,29 @@
 "use client";
 import { forwardRef } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import localStyles from "./Page.module.css";
 
 interface PageProps {
-  number: number;
+  pageNum: number;
   styles: Record<string, string>;
   rtl: boolean;
   children: React.ReactNode;
 }
 
 const Page = forwardRef<HTMLDivElement, PageProps>(
-  ({ number, styles, rtl, children }, ref) => {
-    const router = useRouter();
-
-    const handleShowDialog = () => {
-      router.push(`/story/details?page=${number}`);
-    };
+  ({ pageNum, styles, rtl, children }, ref) => {
     return (
       <div className={styles.page} ref={ref}>
         <div className={styles.pageContent}>
           <h2 className={localStyles.pageHeader}>
-            {" "}
-            {`${rtl ? "עמוד" : "Page"} - ${number}`}
+            {`${rtl ? "עמוד" : "Page"} - ${pageNum}`}
           </h2>
           <div className={localStyles.pageImage}></div>
           <div className={localStyles.pageText}>{children}</div>
-          <div className={localStyles.pageFooter}>{number}</div>
-          <button className={styles.button} onClick={handleShowDialog}>
+          <div className={localStyles.pageFooter}>{pageNum}</div>
+          <Link href={`/story/${pageNum}/details`} className={styles.button}>
             {rtl ? "המשך לקרוא" : "read more"}
-          </button>
+          </Link>
         </div>
       </div>
     );

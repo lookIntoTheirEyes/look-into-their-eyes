@@ -1,0 +1,11 @@
+.link:hover {
+  color: red;
+}
+.link.active {
+  color: red;
+}
+
+.nav {
+  display: flex;
+  gap: 8px;
+}
