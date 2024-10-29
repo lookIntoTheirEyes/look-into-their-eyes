@@ -1,5 +1,4 @@
-import styles from "./page.module.css";
-import ModalBackdrop from "@/components/ModalBackdrop/ModalBackdrop";
+import ModalClient from "@/components/Modal/Modal";
 
 const HeroDetails = async ({
   searchParams,
@@ -12,16 +11,7 @@ const HeroDetails = async ({
       : searchParams.page
     : "";
 
-  return (
-    <div aria-modal='true'>
-      <ModalBackdrop />
-      <dialog className={styles.modal} open>
-        <div className='fullscreen-image'>
-          <div>Details - {page}</div>
-        </div>
-      </dialog>
-    </div>
-  );
+  return <ModalClient page={+page} />;
 };
 
 export default HeroDetails;
