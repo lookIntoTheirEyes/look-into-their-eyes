@@ -9,7 +9,7 @@ const modalVariants = {
   hidden: {
     opacity: 0,
     scale: 0.2,
-    rotate: 360,
+    rotate: 180,
     transition: { duration: 0.5 },
   },
   visible: {
@@ -21,7 +21,7 @@ const modalVariants = {
   exit: {
     opacity: 0,
     scale: 0.2,
-    rotate: 360,
+    rotate: 180,
     transition: { duration: 0.5 },
   },
 };
@@ -50,7 +50,7 @@ const ModalClient = ({ page }: { page: number }) => {
 
       modalRef.current.style.transition = "opacity 0.5s, transform 0.5s";
       modalRef.current.style.opacity = "0";
-      modalRef.current.style.transform = "scale(0.2) rotate(360deg)";
+      modalRef.current.style.transform = "scale(0.2) rotate(180deg)";
 
       setTimeout(() => {
         setIsOpen(false);
@@ -89,9 +89,7 @@ const ModalClient = ({ page }: { page: number }) => {
         animate='visible'
         exit='hidden'
       >
-        <div className='fullscreen-image'>
-          <div>Details - {page}</div>
-        </div>
+        <div>Details - {page}</div>
       </motion.dialog>
     </div>
   );

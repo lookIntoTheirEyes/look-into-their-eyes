@@ -18,21 +18,6 @@
   align-items: center;
 }
 
-.button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  cursor: pointer;
-}
-
-.button:hover {
-  background-color: #0056b3;
-}
-
 .controls {
   align-self: baseline;
   z-index: 3;

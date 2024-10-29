@@ -20,12 +20,15 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
     return (
       <div className={styles.page} ref={ref}>
         <div className={styles.pageContent}>
-          <h2 className={localStyles.pageHeader}>Page header - {number}</h2>
+          <h2 className={localStyles.pageHeader}>
+            {" "}
+            {`${rtl ? "עמוד" : "Page"} - ${number}`}
+          </h2>
           <div className={localStyles.pageImage}></div>
           <div className={localStyles.pageText}>{children}</div>
           <div className={localStyles.pageFooter}>{number}</div>
-          <button onClick={handleShowDialog}>
-            {rtl ? "הצג עוד" : "show more"}
+          <button className={styles.button} onClick={handleShowDialog}>
+            {rtl ? "המשך לקרוא" : "read more"}
           </button>
         </div>
       </div>
