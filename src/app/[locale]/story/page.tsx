@@ -1,6 +1,5 @@
-import React, { ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { Language } from "@/app/model/language";
+import { Language } from "@/lib/model/language";
 import Book from "@/components/Book/Book";
 import styles from "./page.module.css";
 
@@ -32,15 +31,13 @@ const pagesContent = (isRtl = false) =>
       ];
 
 const BookComponent: React.FC<{
-  children: ReactNode;
   params: { locale: Language };
-}> = ({ params: { locale }, children }) => {
+}> = ({ params: { locale } }) => {
   const t = useTranslations("Story");
   const rtl = locale === Language.he;
 
   return (
     <>
-      {children}
       <div className={styles.storyContainer}>
         <Book
           book={{

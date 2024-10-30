@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 
-import { Language } from "@/app/model/language";
+import { Language } from "@/lib/model/language";
 import styles from "./BringThemHomeTicker.module.css";
 
 const BringThemHomeTicker: React.FC<{ lang: Language }> = ({ lang }) => {

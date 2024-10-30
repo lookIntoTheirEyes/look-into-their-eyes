@@ -18,11 +18,6 @@
   align-items: center;
 }
 
-.controls {
-  align-self: baseline;
-  z-index: 3;
-}
-
 .page {
   position: absolute;
   width: 100%;
@@ -53,18 +48,4 @@
 
 .button:hover {
   background-color: #0056b3;
-}
-
-.controls {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  z-index: 3;
-  margin-bottom: 16px;
-}
-
-.pageCount {
-  display: flex;
-  gap: 4px;
-  align-items: center;
 }

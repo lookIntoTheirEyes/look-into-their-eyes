@@ -4,7 +4,7 @@
   --header-height: 64px;
 }
 
-@import url("https://fonts.googleapis.com/css2?family=Merriweather&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Merriweather&display=swap"); */
 
 html,
 body {
@@ -13,6 +13,19 @@ body {
   font-family: "Merriweather", serif;
   line-height: 1.6;
   scroll-behavior: smooth;
+}
+
+html {
+  .userway_buttons_wrapper {
+    top: auto !important;
+    bottom: 13px !important;
+  }
+}
+html[dir="rtl"] {
+  .userway_buttons_wrapper {
+    right: auto !important;
+    left: 50px !important;
+  }
 }
 body {
   background-color: #f5f5f5;

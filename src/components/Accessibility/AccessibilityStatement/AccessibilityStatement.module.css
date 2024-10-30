@@ -1,0 +1,49 @@
+.container {
+  text-align: center;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.title {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.subTitle {
+  font-size: 2em;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  color: #444;
+}
+
+.paragraph {
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.list li {
+  margin-bottom: 10px;
+}
+
+.link {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.contactHeader {
+  margin-top: 20px;
+  font-weight: bold;
+}

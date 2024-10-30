@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import styles from "./LanguageInput.module.css";
-import { Language } from "@/app/model/language";
+import { Language } from "@/lib/model/language";
 
 export default function LanguageInput({ locale }: { locale: Language }) {
   const [isPending, startTransition] = useTransition();

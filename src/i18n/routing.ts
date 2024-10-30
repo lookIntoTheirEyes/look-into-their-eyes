@@ -1,6 +1,6 @@
 import { createLocalizedPathnamesNavigation } from "next-intl/navigation";
 import { defineRouting } from "next-intl/routing";
-import { Language } from "../app/model/language";
+import { Language } from "../lib/model/language";
 
 export const routing = defineRouting({
   locales: [Language.en, Language.he],
@@ -9,6 +9,7 @@ export const routing = defineRouting({
     "/": "/",
     "/about": "/about",
     "/story": "/story",
+    "/accessibility": "/accessibility",
   },
 });
 

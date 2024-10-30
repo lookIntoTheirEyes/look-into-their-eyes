@@ -3,7 +3,7 @@ import styles from "./header.module.css";
 
 import LanguageInput from "../LanguageInput/LanguageInput";
 import NavLink from "../NavLink/NavLink";
-import { Language } from "@/app/model/language";
+import { Language } from "@/lib/model/language";
 import { Pathnames } from "@/i18n/routing";
 
 export default function Header() {
@@ -14,6 +14,7 @@ export default function Header() {
     getRoute({ pathname: "/" }, t("home")),
     getRoute({ pathname: "/story", query: { page: 1 } }, t("story")),
     getRoute({ pathname: "/about" }, t("about")),
+    getRoute({ pathname: "/accessibility" }, t("accessibility")),
   ].map(({ href, name }) => (
     <li key={name} className={styles.link}>
       <NavLink href={href}>{name}</NavLink>

@@ -1,4 +1,4 @@
-import { Language } from "@/app/model/language";
+import { Language } from "@/lib/model/language";
 import ModalClient from "@/components/Modal/Modal";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
 
