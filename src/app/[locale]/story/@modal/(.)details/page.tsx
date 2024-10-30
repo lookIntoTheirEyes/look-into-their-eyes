@@ -17,9 +17,6 @@ export async function generateMetadata({
       : `${page} הסתכלו להם בעיניים`;
   const description =
     locale === Language.en ? "Look in their eyes" : "הסתכלו להם בעיניים";
-  console.log("int generateMetadata", page);
-  console.log("int generateMetadata title", title);
-  console.log("int generateMetadata description", description);
 
   return {
     title,
