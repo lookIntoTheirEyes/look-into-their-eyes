@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useCallback, useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import PageFlip from "react-pageflip";
 import styles from "./Book.module.css";
 import PageCover from "@/components/Book/PageCover/PageCover";
 import Page from "@/components/Book/Page/Page";
+import { BookActions } from "@/lib/utils/utils";
+import Controls from "./Controls/Controls";
 
 interface PageFlipMethods {
   flipNext: () => void;
@@ -16,28 +18,37 @@ interface CustomPageFlip {
   pageFlip: () => PageFlipMethods;
 }
 
-interface BookProps {
+interface BookProps extends BookActions {
   rtl?: boolean;
-  actions: { next: string; previous: string };
   book: { pages: string[]; front: string; back: string };
 }
 
 const Book: React.FC<BookProps> = ({
   rtl = false,
   book: { pages, front, back },
-  actions: { next, previous },
+  actions,
 }) => {
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
   const [pageCount, setPageCount] = useState<number>(0);
   const searchParams = useSearchParams();
   const page = searchParams.get("page");
+  const pathname = usePathname();
+  const router = useRouter();
 
   const [currPage, setCurrPage] = useState<number>(+page! || 1);
 
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams]
+  );
+
   const updateUrlWithSearchParams = (pageNum: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", pageNum.toString());
-    history.pushState(null, "", `?${params.toString()}`);
+    router.push(pathname + "?" + createQueryString("page", pageNum.toString()));
   };
 
   const goToNext = () => {
@@ -71,19 +82,14 @@ const Book: React.FC<BookProps> = ({
 
   return (
     <>
-      <div className={styles.controls}>
-        <button className={styles.button} onClick={goToPrevious}>
-          {previous}
-        </button>
-        <div className={styles.pageCount}>
-          <span>{currPage}</span>
-          <span>/</span>
-          <span>{pageCount}</span>
-        </div>
-        <button className={styles.button} onClick={goToNext}>
-          {next}
-        </button>
-      </div>
+      <Controls
+        currPage={currPage}
+        pageCount={pageCount}
+        goToPrevious={goToPrevious}
+        goToNext={goToNext}
+        actions={actions}
+        styles={styles}
+      />
       <PageFlip
         ref={pageFlipRef}
         className={""}

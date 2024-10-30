@@ -7,3 +7,7 @@ export function getPageNum(params: SearchParams) {
       : params.page
     : "";
 }
+
+export interface BookActions {
+  actions: { next: string; previous: string };
+}
