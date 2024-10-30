@@ -59,12 +59,14 @@ const Book: React.FC<BookProps> = ({
     }
   };
 
-  const calculatePageForRtl = (pageNum: number) => {
-    return !pageNum
+  const calculatePageForRtl = (pageNum: number, isInit = false) => {
+    const num = (isInit ? pageNum < 0 : !pageNum)
       ? pages.length + 2
       : pageNum === pages.length + 1
       ? 1
       : pages.length + 1 - pageNum;
+
+    return num;
   };
 
   return (
@@ -86,7 +88,9 @@ const Book: React.FC<BookProps> = ({
         ref={pageFlipRef}
         className={""}
         style={{}}
-        startPage={(rtl ? calculatePageForRtl(currPage - 2) : currPage) - 1}
+        startPage={
+          (rtl ? calculatePageForRtl(currPage - 2, true) : currPage) - 1
+        }
         width={550}
         height={733}
         size='stretch'
