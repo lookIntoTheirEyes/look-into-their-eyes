@@ -10,12 +10,16 @@ export async function generateMetadata({
   searchParams: SearchParams;
 }) {
   const page = getPageNum(searchParams);
+
   const title =
     locale === Language.en
       ? `${page} Look in their eyes"`
       : `${page} הסתכלו להם בעיניים`;
   const description =
     locale === Language.en ? "Look in their eyes" : "הסתכלו להם בעיניים";
+  console.log("int generateMetadata", page);
+  console.log("int generateMetadata title", title);
+  console.log("int generateMetadata description", description);
 
   return {
     title,

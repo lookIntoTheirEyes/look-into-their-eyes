@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import styles from "./modal.module.css";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useRouter } from "next/navigation";
 
 const modalVariants = {
@@ -41,7 +41,6 @@ const ModalClient = ({ page }: { page: number }) => {
   const router = useRouter();
   const modalRef = useRef<HTMLDialogElement | null>(null);
   const backdropRef = useRef<HTMLDivElement | null>(null);
-  const [isOpen, setIsOpen] = useState(true);
 
   const handleClose = () => {
     if (backdropRef.current && modalRef.current) {
@@ -53,21 +52,10 @@ const ModalClient = ({ page }: { page: number }) => {
       modalRef.current.style.transform = "scale(0.2) rotate(180deg)";
 
       setTimeout(() => {
-        setIsOpen(false);
         router.back();
       }, 500);
     }
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      document.documentElement.style.overflow = "hidden";
-    }
-
-    return () => {
-      document.documentElement.style.overflow = "auto";
-    };
-  }, [isOpen]);
 
   return (
     <>

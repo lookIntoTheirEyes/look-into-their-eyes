@@ -48,7 +48,10 @@ const Book: React.FC<BookProps> = ({
   );
 
   const updateUrlWithSearchParams = (pageNum: number) => {
-    router.push(pathname + "?" + createQueryString("page", pageNum.toString()));
+    router.push(
+      pathname + "?" + createQueryString("page", pageNum.toString()),
+      { scroll: false }
+    );
   };
 
   const goToNext = () => {
