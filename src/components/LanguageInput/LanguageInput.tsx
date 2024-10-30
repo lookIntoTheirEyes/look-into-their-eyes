@@ -18,7 +18,9 @@ export default function LanguageInput({ locale }: { locale: Language }) {
     }
 
     startTransition(() => {
-      router.replace(getUpdatedPath(pathname, language, page!));
+      router.replace(getUpdatedPath(pathname, language, page!), {
+        scroll: false,
+      });
     });
   };
 

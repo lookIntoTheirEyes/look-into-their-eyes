@@ -1,86 +1,101 @@
 "use client";
 
-import { motion } from "framer-motion";
-import styles from "./modal.module.css";
-import { useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import styles from "./modal.module.css";
 
 const modalVariants = {
   hidden: {
     opacity: 0,
     scale: 0.2,
     rotate: 180,
-    transition: { duration: 0.5 },
   },
   visible: {
     opacity: 1,
-    scale: 1.2,
+    scale: 1,
     rotate: 0,
-    transition: { duration: 0.5 },
   },
   exit: {
     opacity: 0,
     scale: 0.2,
     rotate: 180,
-    transition: { duration: 0.5 },
   },
 };
 
 const backdropVariants = {
-  hidden: {
-    opacity: 0,
-    transition: { duration: 0.5 },
-  },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.5 },
-  },
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
 const ModalClient = ({ page }: { page: number }) => {
   const router = useRouter();
-  const modalRef = useRef<HTMLDialogElement | null>(null);
-  const backdropRef = useRef<HTMLDivElement | null>(null);
+  const [isVisible, setIsVisible] = useState(true);
 
   const handleClose = () => {
-    if (backdropRef.current && modalRef.current) {
-      backdropRef.current.style.transition = "opacity 0.5s";
-      backdropRef.current.style.opacity = "0";
-
-      modalRef.current.style.transition = "opacity 0.5s, transform 0.5s";
-      modalRef.current.style.opacity = "0";
-      modalRef.current.style.transform = "scale(0.2) rotate(180deg)";
-
-      setTimeout(() => {
-        router.back();
-      }, 500);
-    }
+    setIsVisible(false);
   };
 
   return (
-    <>
-      <motion.div
-        aria-modal='true'
-        ref={backdropRef}
-        onClick={handleClose}
-        className={`${styles.backdrop}`}
-        initial='hidden'
-        animate='visible'
-        exit='hidden'
-        variants={backdropVariants}
-      />
-      <motion.dialog
-        ref={modalRef}
-        className={styles.modal}
-        open
-        variants={modalVariants}
-        initial='hidden'
-        animate='visible'
-        exit='hidden'
-      >
-        <div>Details - {page}</div>
-      </motion.dialog>
-    </>
+    <AnimatePresence mode='wait' onExitComplete={() => router.back()}>
+      {isVisible && (
+        <motion.div
+          key='backdrop'
+          variants={backdropVariants}
+          initial='hidden'
+          animate='visible'
+          exit='exit'
+          transition={{ duration: 0.5 }}
+          onClick={handleClose}
+          className={styles.backdrop}
+        >
+          <motion.div
+            key='modal'
+            variants={modalVariants}
+            initial='hidden'
+            animate='visible'
+            exit='exit'
+            transition={{ duration: 0.5 }}
+            onClick={(e) => e.stopPropagation()}
+            className={styles.modal}
+          >
+            <div className={styles.modalContent}>
+              <h2>Details - {page}</h2>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
+                auctor, nisl eget ultricies tincidunt, nisi nisl aliquam nisl,
+                eget aliquam nisl nisl sit amet nisl. Donec auctor, nisl eget
+                ultricies tincidunt, nisi nisl aliquam nisl, eget aliquam nisl
+                nisl sit amet nisl. Donec auctor, nisl eget ultricies tincidunt,
+                nisi nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl.
+                Donec auctor, nisl eget ultricies tincidunt, nisi nisl aliquam
+                nisl, eget aliquam nisl nisl sit amet nisl.
+              </p>
+              <p>
+                Donec auctor, nisl eget ultricies tincidunt, nisi nisl aliquam
+                nisl, eget aliquam nisl nisl sit amet nisl. Donec auctor, nisl
+                eget ultricies tincidunt, nisi nisl aliquam nisl, eget aliquam
+                nisl nisl sit amet nisl. Donec auctor, nisl eget ultricies
+                tincidunt, nisi nisl aliquam nisl, eget aliquam nisl nisl sit
+                amet nisl. Donec auctor, nisl eget ultricies tincidunt, nisi
+                nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl.
+              </p>
+              <p>
+                Donec auctor, nisl eget ultricies tincidunt, nisi nisl aliquam
+                nisl, eget aliquam nisl nisl sit amet nisl. Donec auctor, nisl
+                eget ultricies tincidunt, nisi nisl aliquam nisl, eget aliquam
+                nisl nisl sit amet nisl. Donec auctor, nisl eget ultricies
+                tincidunt, nisi nisl aliquam nisl, eget aliquam nisl nisl sit
+                amet nisl. Donec auctor, nisl eget ultricies tincidunt, nisi
+                nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl.
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
+
 export default ModalClient;
