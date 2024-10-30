@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-
+import { useSearchParams } from "next/navigation";
 import PageFlip from "react-pageflip";
 import styles from "./Book.module.css";
 import PageCover from "@/components/Book/PageCover/PageCover";
@@ -18,30 +18,26 @@ interface CustomPageFlip {
 
 interface BookProps {
   rtl?: boolean;
-  pageId: string;
   actions: { next: string; previous: string };
   book: { pages: string[]; front: string; back: string };
 }
 
 const Book: React.FC<BookProps> = ({
   rtl = false,
-  pageId,
   book: { pages, front, back },
   actions: { next, previous },
 }) => {
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
   const [pageCount, setPageCount] = useState<number>(0);
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page");
 
-  const [currPage, setCurrPage] = useState<number>(+pageId || 1);
+  const [currPage, setCurrPage] = useState<number>(+page! || 1);
 
-  const updateUrlWithPath = (pageNum: number) => {
-    const pathSegments = window.location.pathname.split("/");
-
-    pathSegments[pathSegments.length - 1] = pageNum.toString();
-
-    const newPath = pathSegments.join("/");
-
-    window.history.pushState({}, "", newPath);
+  const updateUrlWithSearchParams = (pageNum: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", pageNum.toString());
+    history.pushState(null, "", `?${params.toString()}`);
   };
 
   const goToNext = () => {
@@ -55,6 +51,7 @@ const Book: React.FC<BookProps> = ({
 
   const goToPrevious = () => {
     const pageFlip = pageFlipRef.current?.pageFlip();
+
     if (rtl) {
       pageFlip?.flipNext();
     } else {
@@ -63,8 +60,6 @@ const Book: React.FC<BookProps> = ({
   };
 
   const calculatePageForRtl = (pageNum: number) => {
-    //  Need to fix rtl page 2 goes to page 1
-
     return !pageNum
       ? pages.length + 2
       : pageNum === pages.length + 1
@@ -119,7 +114,7 @@ const Book: React.FC<BookProps> = ({
         onFlip={({ data }) => {
           const pageNum = rtl ? calculatePageForRtl(data) : data + 1;
           setCurrPage(pageNum);
-          updateUrlWithPath(pageNum);
+          updateUrlWithSearchParams(pageNum);
         }}
       >
         <PageCover styles={styles}>{front}</PageCover>

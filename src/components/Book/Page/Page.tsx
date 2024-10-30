@@ -1,7 +1,7 @@
 "use client";
 import { forwardRef } from "react";
-import Link from "next/link";
 import localStyles from "./Page.module.css";
+import Link from "next/link";
 
 interface PageProps {
   pageNum: number;
@@ -21,7 +21,11 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
           <div className={localStyles.pageImage}></div>
           <div className={localStyles.pageText}>{children}</div>
           <div className={localStyles.pageFooter}>{pageNum}</div>
-          <Link href={`/story/${pageNum}/details`} className={styles.button}>
+          <Link
+            href={`/story/details?page=${pageNum}`}
+            className={styles.button}
+            scroll={false}
+          >
             {rtl ? "המשך לקרוא" : "read more"}
           </Link>
         </div>
