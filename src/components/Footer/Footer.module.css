@@ -3,4 +3,20 @@
   background-color: black;
   color: white;
   font-size: 20px;
+  position: relative;
+  & > p {
+    color: white;
+  }
+}
+
+.accessibility {
+  cursor: pointer;
+  position: absolute;
+  left: 12px;
+  top: 0;
+}
+
+.rtl {
+  left: auto;
+  right: 12px;
 }

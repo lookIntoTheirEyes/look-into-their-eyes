@@ -31,11 +31,11 @@ export default function RootLayout({
   return (
     <html lang={locale} dir={locale === Language.en ? "ltr" : "rtl"}>
       <body>
-        <AccessibilityWidget />
+        <AccessibilityWidget locale={locale} />
         <Header />
         <main>{children}</main>
         <BringThemHomeTicker lang={locale} />
-        <Footer />
+        <Footer locale={locale} />
       </body>
     </html>
   );

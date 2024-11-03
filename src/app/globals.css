@@ -15,23 +15,20 @@ body {
   scroll-behavior: smooth;
 }
 
-html {
-  .userway_buttons_wrapper {
-    top: auto !important;
-    bottom: 13px !important;
-  }
-}
 html[dir="rtl"] {
-  .userway_buttons_wrapper {
-    right: auto !important;
-    left: 50px !important;
+  body {
+    --_access-icon-left: 10px;
+    --_access-icon-right: auto;
   }
 }
+
 body {
   background-color: #f5f5f5;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  --_access-icon-border-radius: 50%;
+  --_access-icon-border: 0.5px solid white;
 }
 
 * {

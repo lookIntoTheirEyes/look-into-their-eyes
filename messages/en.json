@@ -3,11 +3,11 @@
     "title": "Welcome to our book",
     "about": "Go to the about page"
   },
-  "Header": {
+  "Links": {
     "home": "Home",
     "story": "Story",
     "about": "About",
-    "accessibility": "accessibility",
+    "accessibility": "Accessibility",
     "hebrew": "Hebrew",
     "english": "English"
   },

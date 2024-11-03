@@ -4,17 +4,16 @@ import styles from "./header.module.css";
 import LanguageInput from "../LanguageInput/LanguageInput";
 import NavLink from "../NavLink/NavLink";
 import { Language } from "@/lib/model/language";
-import { Pathnames } from "@/i18n/routing";
+import { getRoute } from "@/lib/utils/utils";
 
 export default function Header() {
-  const t = useTranslations("Header");
+  const t = useTranslations("Links");
   const locale = useLocale();
 
   const links = [
     getRoute({ pathname: "/" }, t("home")),
     getRoute({ pathname: "/story", query: { page: 1 } }, t("story")),
     getRoute({ pathname: "/about" }, t("about")),
-    getRoute({ pathname: "/accessibility" }, t("accessibility")),
   ].map(({ href, name }) => (
     <li key={name} className={styles.link}>
       <NavLink href={href}>{name}</NavLink>
@@ -29,11 +28,4 @@ export default function Header() {
       <LanguageInput locale={locale as Language} />
     </header>
   );
-}
-
-function getRoute(
-  href: { pathname: Pathnames; query?: Record<string, string | number> },
-  name: string
-) {
-  return { href, name };
 }
