@@ -2,13 +2,19 @@ import { Language } from "@/lib/model/language";
 import ModalClient from "@/components/Modal/Modal";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
 
-export async function generateMetadata({
-  params: { locale },
-  searchParams,
-}: {
-  params: { locale: Language };
-  searchParams: SearchParams;
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ locale: Language }>;
+    searchParams: Promise<SearchParams>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
   const page = getPageNum(searchParams);
 
   const title =
@@ -24,11 +30,12 @@ export async function generateMetadata({
   };
 }
 
-const HeroDetails = async ({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) => {
+const HeroDetails = async (
+  props: {
+    searchParams: Promise<SearchParams>;
+  }
+) => {
+  const searchParams = await props.searchParams;
   const page = getPageNum(searchParams);
 
   return <ModalClient page={+page} />;

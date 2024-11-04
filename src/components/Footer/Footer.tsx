@@ -4,7 +4,6 @@ import { Language } from "@/lib/model/language";
 
 export default function Footer({ locale }: { locale: Language }) {
   const isRTL = locale === Language.he;
-  console.log("isRTL", locale, isRTL);
 
   const t = useTranslations("Links");
   return (

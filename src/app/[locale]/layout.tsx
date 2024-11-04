@@ -4,11 +4,17 @@ import { Language } from "../../lib/model/language";
 import Footer from "@/components/Footer/Footer";
 import Widgets from "@/components/Widgets/Widgets";
 
-export async function generateMetadata({
-  params: { locale },
-}: {
-  params: { locale: Language };
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ locale: Language }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
   const title =
     locale === Language.en ? "Look in their eyes" : "הסתכלו להם בעיניים";
   const description =
@@ -20,13 +26,22 @@ export async function generateMetadata({
   };
 }
 
-export default function RootLayout({
-  children,
-  params: { locale },
-}: {
-  children: React.ReactNode;
-  params: { locale: Language };
-}) {
+export default async function RootLayout(
+  props: {
+    children: React.ReactNode;
+    params: Promise<{ locale: Language }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
+  const {
+    children
+  } = props;
+
   return (
     <html lang={locale} dir={locale === Language.en ? "ltr" : "rtl"}>
       <body>

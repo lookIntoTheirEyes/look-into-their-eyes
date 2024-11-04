@@ -1,7 +1,17 @@
+import { use } from "react";
 import { useTranslations } from "next-intl";
 import { Language } from "@/lib/model/language";
 import Book from "@/components/Book/Book";
 import styles from "./page.module.css";
+import { ensurePromise } from "@/lib/utils/utils";
+
+interface Props {
+  params: Params;
+}
+
+type Params = {
+  locale: string;
+};
 
 const pagesContent = (isRtl = false) =>
   isRtl
@@ -30,29 +40,27 @@ const pagesContent = (isRtl = false) =>
         "Thank you, Nati.",
       ];
 
-const BookComponent: React.FC<{
-  params: { locale: Language };
-}> = ({ params: { locale } }) => {
+const BookComponent: React.FC<Props> = (props) => {
+  const { locale } = use<Params>(ensurePromise(props.params));
+
   const t = useTranslations("Story");
   const rtl = locale === Language.he;
 
   return (
-    <>
-      <div className={styles.storyContainer}>
-        <Book
-          book={{
-            front: rtl ? "הסוף" : "BOOK TITLE",
-            back: rtl ? "ההתחלה" : "THE END",
-            pages: pagesContent(locale === Language.he),
-          }}
-          rtl={rtl}
-          actions={{
-            next: t("next"),
-            previous: t("previous"),
-          }}
-        />
-      </div>
-    </>
+    <div className={styles.storyContainer}>
+      <Book
+        book={{
+          front: rtl ? "הסוף" : "BOOK TITLE",
+          back: rtl ? "ההתחלה" : "THE END",
+          pages: pagesContent(rtl),
+        }}
+        rtl={rtl}
+        actions={{
+          next: t("next"),
+          previous: t("previous"),
+        }}
+      />
+    </div>
   );
 };
 
