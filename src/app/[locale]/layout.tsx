@@ -1,9 +1,8 @@
 import Header from "@/components/Header/Header";
 import "../globals.css";
 import { Language } from "../../lib/model/language";
-import BringThemHomeTicker from "@/components/BringThemHomeTicker/BringThemHomeTicker";
 import Footer from "@/components/Footer/Footer";
-import AccessibilityWidget from "@/components/Accessibility/AccessibilityWidget/AccessibilityWidget";
+import Widgets from "@/components/Widgets/Widgets";
 
 export async function generateMetadata({
   params: { locale },
@@ -31,11 +30,11 @@ export default function RootLayout({
   return (
     <html lang={locale} dir={locale === Language.en ? "ltr" : "rtl"}>
       <body>
-        <AccessibilityWidget locale={locale} />
         <Header />
         <main>{children}</main>
-        <BringThemHomeTicker lang={locale} />
         <Footer locale={locale} />
+
+        <Widgets lang={locale} />
       </body>
     </html>
   );

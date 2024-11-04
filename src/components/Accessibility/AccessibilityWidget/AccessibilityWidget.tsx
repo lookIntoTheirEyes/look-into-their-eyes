@@ -4,8 +4,8 @@ import { Accessibility } from "accessibility";
 import { useEffect } from "react";
 
 const AccessibilityWidget: React.FC<{
-  locale: Language;
-}> = ({ locale }) => {
+  lang: Language;
+}> = ({ lang }) => {
   useEffect(() => {
     const defaultOptions = {
       session: {
@@ -13,12 +13,12 @@ const AccessibilityWidget: React.FC<{
       },
     };
     const accessibilityOptions =
-      locale === Language.he
+      lang === Language.he
         ? { ...getHebrewOptions(), ...defaultOptions }
         : defaultOptions;
 
     new Accessibility(accessibilityOptions);
-  }, [locale]);
+  }, [lang]);
 
   return null;
 };
