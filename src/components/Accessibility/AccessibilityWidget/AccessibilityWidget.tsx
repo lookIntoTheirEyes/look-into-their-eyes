@@ -17,7 +17,10 @@ const AccessibilityWidget: React.FC<{
         ? { ...getHebrewOptions(), ...defaultOptions }
         : defaultOptions;
 
-    new Accessibility(accessibilityOptions);
+    const accessibility = new Accessibility(accessibilityOptions);
+    return () => {
+      accessibility.destroy();
+    };
   }, [lang]);
 
   return null;
