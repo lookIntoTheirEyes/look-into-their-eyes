@@ -9,7 +9,7 @@ const AccessibilityWidget: React.FC<{
   useEffect(() => {
     const defaultOptions = {
       session: {
-        persistent: false,
+        persistent: true,
       },
     };
     const accessibilityOptions =

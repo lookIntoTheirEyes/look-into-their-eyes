@@ -1,0 +1,13 @@
+.container {
+  width: 70%;
+  margin: 0 auto;
+  text-align: left;
+  &.rtl {
+    text-align: right;
+  }
+}
+
+.email {
+  color: blue;
+  text-decoration: underline;
+}

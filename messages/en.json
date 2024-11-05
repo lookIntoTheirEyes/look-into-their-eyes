@@ -8,6 +8,7 @@
     "story": "Story",
     "about": "About",
     "accessibility": "Accessibility",
+    "terms": "Terms of use",
     "hebrew": "Hebrew",
     "english": "English"
   },
@@ -18,5 +19,81 @@
   "Story": {
     "previous": "Previous",
     "next": "Next"
+  },
+  "terms": {
+    "title": "Terms and Conditions",
+    "last_updated": "Last updated: November 5, 2024",
+    "intro": "Please read these Terms and Conditions carefully before using our Service.",
+    "sections": {
+      "interpretation_and_definitions": {
+        "title": "1. Interpretation and Definitions",
+        "definition_intro": "Words with an initial capital letter have specific meanings as defined under the following conditions. The definitions provided herein shall apply regardless of whether they appear in the singular or plural form.",
+        "affiliate": "An entity that controls, is controlled by, or is under common control with a party.",
+        "country": "Refers to: Israel.",
+        "company": "Refers to 'Look into their eyes' (also referred to as 'the Company', 'we', 'us', or 'our').",
+        "device": "Any device that can access the Service, such as a computer, smartphone, or tablet.",
+        "service": "Refers to the Website.",
+        "terms_and_conditions": "These Terms and Conditions, which form the entire agreement between you and the Company regarding the use of the Service.",
+        "third_party_social_media_service": "Any services or content provided by third parties.",
+        "website": "Refers to 'Look into their eyes', accessible at https://look-into-their-eyes.com.",
+        "you": "Refers to the individual accessing or using the Service."
+      },
+      "acknowledgment": {
+        "title": "2. Acknowledgment",
+        "content": "These Terms and Conditions govern the use of the Service and represent the agreement between you and the Company. By accessing or using the Service, you agree to be bound by these Terms. If you do not agree with any part of these Terms, you may not use the Service. You must also be at least 18 years old to use the Service."
+      },
+      "links_to_other_websites": {
+        "title": "3. Links to Other Websites",
+        "content": "Our Service may contain links to third-party websites or services that are not owned or controlled by the Company. The Company assumes no responsibility for the content, privacy policies, or practices of third-party websites or services."
+      },
+      "third_party_policies": {
+        "title": "4. Third-Party Policies",
+        "content": "Please review third-party privacy policies and terms of service before engaging with their services."
+      },
+      "intellectual_property": {
+        "title": "5. Intellectual Property",
+        "content": "The content on the Website, including all artwork, images, text, and graphics, is protected by copyright and intellectual property laws. All rights to the content are owned by the Company or the respective creators. You may not use, copy, distribute, or create derivative works from the content without explicit permission from the respective owners."
+      },
+      "disclaimer": {
+        "title": "6. 'AS IS' and 'AS AVAILABLE' Disclaimer",
+        "content": "The Service is provided 'AS IS' and 'AS AVAILABLE' without warranties of any kind, either express or implied."
+      },
+      "limitation_of_liability": {
+        "title": "7. Limitation of Liability",
+        "content": "The Company will not be liable for any indirect, incidental, special, or consequential damages arising from your use or inability to use the Service."
+      },
+      "governing_law": {
+        "title": "8. Governing Law",
+        "content": "The laws of the Country (Israel) shall govern these Terms, excluding its conflicts of law principles."
+      },
+      "dispute_resolution": {
+        "title": "9. Disputes Resolution",
+        "content": "In case of any disputes, you agree to first try to resolve the issue informally by contacting the Company."
+      },
+      "eu_users": {
+        "title": "10. For EU Users",
+        "content": "If you are a consumer residing in the European Union, you will benefit from mandatory provisions of the law of the country where you reside."
+      },
+      "us_legal_compliance": {
+        "title": "11. United States Legal Compliance",
+        "content": "You represent that (i) you are not located in a country subject to a U.S. government embargo, and (ii) you are not listed on any U.S. government list of prohibited or restricted parties."
+      },
+      "severability_and_waiver": {
+        "title": "12. Severability and Waiver",
+        "content": "If any provision is unenforceable, it will be modified to reflect the intent of the provision, and the remaining provisions will remain in effect."
+      },
+      "translation_interpretation": {
+        "title": "13. Translation Interpretation",
+        "content": "These Terms may have been translated. In the event of a dispute, the original English text shall prevail."
+      },
+      "changes_to_terms": {
+        "title": "14. Changes to These Terms",
+        "content": "We may modify or replace these Terms at any time, and will provide at least 30 days' notice for material revisions."
+      },
+      "contact_us": {
+        "title": "15. Contact Us",
+        "content": "If you have any questions about these Terms, please contact us at: Email: "
+      }
+    }
   }
 }
