@@ -93,6 +93,32 @@
       "contact_us": {
         "title": "15. Contact Us",
         "content": "If you have any questions about these Terms, please contact us at: Email: "
+      },
+      "content_guidelines_and_sensitivity_notice": {
+        "title": "16. Content Guidelines and Sensitivity Notice",
+        "content": "The Website contains artistic content related to the events of October 7th, 2023. Users should be aware that:\n\n- Content may be emotionally intense and potentially disturbing.\n- The Website is intended for mature audiences.\n- Viewer discretion is strongly advised.\n- Content is presented for memorial, educational, and artistic purposes."
+      },
+      "user_conduct": {
+        "title": "17. User Conduct",
+        "content": "Users of the Website agree to:\n\n- Not reproduce, distribute, or modify any content without explicit permission.\n- Not use the content for commercial purposes.\n- Treat the subject matter with appropriate respect and sensitivity.\n- Not engage in any behavior that could be considered harmful or disrespectful to victims, survivors, or their families."
+      },
+      "privacy_and_data_collection": {
+        "title": "18. Privacy and Data Collection",
+        "content": "While the Website does not require user accounts, we may collect:\n\n- Standard server logs\n- Analytics data\n- Cookie information\n\nFor more information about data collection and usage, please refer to our Privacy Policy."
+      },
+      "prohibited_uses": {
+        "title": "19. Prohibited Uses",
+        "content": "Users are strictly prohibited from:\n\n- Using the content for propaganda or political manipulation.\n- Misrepresenting or modifying the artwork or its context.\n- Attempting to circumvent any technical measures implemented on the Website.\n- Using automated systems or bots to access the Website.\n- Engaging in any activity that could bring harm to the Website or its mission."
+      },
+      "content_rights_and_attribution": {
+        "title": "20. Content Rights and Attribution",
+        "content": "All artwork displayed on the Website:\n\n- Must be properly attributed to its creators.\n- May not be used without explicit permission.\n- Must maintain its original context and intent.\n- May not be modified or altered without authorization."
+      },
+      "accessibility_notice": {
+        "title": "21. Accessibility Notice",
+        "content": "We strive to make our content accessible while maintaining its integrity. If you require any accommodations to access the content, please contact us.",
+        "link": "You can view our full accessibility notice here: ",
+        "notice": "Accessibility Notice"
       }
     }
   }

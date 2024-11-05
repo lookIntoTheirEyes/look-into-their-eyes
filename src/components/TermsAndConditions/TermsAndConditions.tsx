@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
-import classes from "./TermsAndConditions.module.css";
+import styles from "./TermsAndConditions.module.css";
 import { Language } from "@/lib/model/language";
+import Link from "next/link";
 
 const TermsAndConditions: React.FC<{
   lang: Language;
@@ -10,8 +11,8 @@ const TermsAndConditions: React.FC<{
 
   return (
     <div
-      className={`${classes.container} ${
-        lang === Language.he ? `${classes.rtl}` : undefined
+      className={`${styles.container} ${
+        lang === Language.he ? styles.rtl : ""
       }`}
     >
       <h1>{t("title")}</h1>
@@ -99,9 +100,33 @@ const TermsAndConditions: React.FC<{
       <h2>{t("sections.contact_us.title")}</h2>
       <p>
         {t("sections.contact_us.content")}
-        <a href={`mailto:${email}`} className={classes.email}>
+        <a href={`mailto:${email}`} className={styles.email}>
           {email}
         </a>
+      </p>
+
+      <h2>{t("sections.content_guidelines_and_sensitivity_notice.title")}</h2>
+      <p>{t("sections.content_guidelines_and_sensitivity_notice.content")}</p>
+
+      <h2>{t("sections.user_conduct.title")}</h2>
+      <p>{t("sections.user_conduct.content")}</p>
+
+      <h2>{t("sections.privacy_and_data_collection.title")}</h2>
+      <p>{t("sections.privacy_and_data_collection.content")}</p>
+
+      <h2>{t("sections.prohibited_uses.title")}</h2>
+      <p>{t("sections.prohibited_uses.content")}</p>
+
+      <h2>{t("sections.content_rights_and_attribution.title")}</h2>
+      <p>{t("sections.content_rights_and_attribution.content")}</p>
+
+      <h2>{t("sections.accessibility_notice.title")}</h2>
+      <p>{t("sections.accessibility_notice.content")}</p>
+      <p>
+        {t("sections.accessibility_notice.link")}
+        <Link href='/accessibility' className={styles.email}>
+          {t("sections.accessibility_notice.notice")}
+        </Link>
       </p>
     </div>
   );

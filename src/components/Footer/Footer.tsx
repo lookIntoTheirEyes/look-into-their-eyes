@@ -11,7 +11,7 @@ export default function Footer({ locale }: { locale: Language }) {
     <footer className={styles.footer}>
       <p>Created by Nati Gurevich</p>
       <Link
-        className={`${styles.accessibility} ${isRTL ? styles.rtl : undefined}`}
+        className={`${styles.accessibility} ${isRTL ? styles.rtl : ""}`}
         href='/terms'
       >
         {t("terms")}

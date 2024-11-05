@@ -1,9 +1,14 @@
 import React from "react";
 import styles from "./AccessibilityStatement.module.css";
+import { Language } from "@/lib/model/language";
 
-const AccessibilityStatement: React.FC = () => {
+const AccessibilityStatement: React.FC<{ lang: Language }> = ({ lang }) => {
   return (
-    <div className={styles.container}>
+    <div
+      className={`${styles.container} ${
+        lang === Language.he ? styles.rtl : ""
+      }`}
+    >
       <h1 className={styles.title}>Accessibility Statement</h1>
       <p className={styles.paragraph}>
         <b>look-into-their-eyes</b> strives to ensure that its digital services
