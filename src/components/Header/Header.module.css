@@ -1,17 +1,17 @@
 .header {
   position: fixed;
+  top: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  background-color: black;
   color: white;
   z-index: 1000;
   padding: 16px;
   font-size: 20px;
+}
 
-  .nav {
-    display: flex;
-    gap: 8px;
-  }
+.header .nav {
+  display: flex;
+  gap: 8px;
 }

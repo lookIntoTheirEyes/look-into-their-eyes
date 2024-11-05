@@ -6,7 +6,9 @@
 
 .language {
   cursor: pointer;
+  text-transform: uppercase;
+
   &.active {
-    color: red;
+    color: var(--red);
   }
 }

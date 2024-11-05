@@ -1,16 +1,15 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --header-height: 64px;
+  --yellow: #f7c500;
+  --red: #cb2424;
+  --black: #1a1a1a;
+  --link: #0070f3;
+  --light-grey: #f5f5f5;
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Merriweather&display=swap");
 
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: "Merriweather", serif;
   line-height: 1.6;
   scroll-behavior: smooth;
 }
@@ -23,7 +22,9 @@ html[dir="rtl"] {
 }
 
 body {
-  background-color: #f5f5f5;
+  font-family: "Helvetica", sans-serif;
+  background-color: #1a1a1a;
+  color: white;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -50,26 +51,25 @@ ul {
 
 h1,
 h2,
-h3,
-strong {
-  color: #333;
+h3 {
+  color: var(--yellow);
 }
 
 p {
-  color: #555;
   font-size: 1.1em;
 }
 
 main {
   margin: 0 auto;
-  margin-top: var(--header-height);
+  margin-top: 64px;
   overflow: hidden;
   width: 100%;
-  padding: 20px;
-  background: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: url("/images/brick-wall.jpg") no-repeat center center fixed;
+  background-size: cover;
+  filter: grayscale(50%) contrast(1.2);
 }

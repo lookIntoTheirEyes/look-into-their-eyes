@@ -47,19 +47,21 @@ const BookComponent: React.FC<Props> = (props) => {
   const rtl = locale === Language.he;
 
   return (
-    <div className={styles.storyContainer}>
-      <Book
-        book={{
-          front: rtl ? "הסוף" : "BOOK TITLE",
-          back: rtl ? "ההתחלה" : "THE END",
-          pages: pagesContent(rtl),
-        }}
-        rtl={rtl}
-        actions={{
-          next: t("next"),
-          previous: t("previous"),
-        }}
-      />
+    <div className={styles.pageContainer}>
+      <div className={styles.storyContainer}>
+        <Book
+          book={{
+            front: rtl ? "הסוף" : "BOOK TITLE",
+            back: rtl ? "ההתחלה" : "THE END",
+            pages: pagesContent(rtl),
+          }}
+          rtl={rtl}
+          actions={{
+            next: t("next"),
+            previous: t("previous"),
+          }}
+        />
+      </div>
     </div>
   );
 };

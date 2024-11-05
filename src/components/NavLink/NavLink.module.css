@@ -1,6 +1,10 @@
+.link {
+  text-transform: uppercase;
+}
+
 .link:hover {
-  color: red;
+  color: var(--red);
 }
 .link.active {
-  color: red;
+  color: var(--red);
 }

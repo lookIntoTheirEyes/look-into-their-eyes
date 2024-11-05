@@ -1,6 +1,7 @@
 .pageHeader {
   font-size: 20px;
   margin-bottom: 10px;
+  color: var(--red);
 }
 
 .pageImage {

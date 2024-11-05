@@ -85,14 +85,6 @@ const Book: React.FC<BookProps> = ({
 
   return (
     <>
-      <Controls
-        currPage={currPage}
-        pageCount={pageCount}
-        goToPrevious={goToPrevious}
-        goToNext={goToNext}
-        actions={actions}
-        styles={styles}
-      />
       <PageFlip
         ref={pageFlipRef}
         className={""}
@@ -107,7 +99,7 @@ const Book: React.FC<BookProps> = ({
         maxWidth={1000}
         minHeight={400}
         maxHeight={1533}
-        maxShadowOpacity={0.5}
+        maxShadowOpacity={1}
         drawShadow
         flippingTime={700}
         startZIndex={30}
@@ -143,6 +135,14 @@ const Book: React.FC<BookProps> = ({
         ))}
         <PageCover styles={styles}>{back}</PageCover>
       </PageFlip>
+      <Controls
+        currPage={currPage}
+        pageCount={pageCount}
+        goToPrevious={goToPrevious}
+        goToNext={goToNext}
+        actions={actions}
+        styles={styles}
+      />
     </>
   );
 };

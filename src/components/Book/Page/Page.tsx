@@ -12,8 +12,13 @@ interface PageProps {
 
 const Page = forwardRef<HTMLDivElement, PageProps>(
   ({ pageNum, styles, rtl, children }, ref) => {
+    const isRightPage = pageNum % 2 === 0 ? rtl : !rtl;
+
     return (
-      <div className={styles.page} ref={ref}>
+      <div
+        className={`${styles.page} ${isRightPage ? styles.right : styles.left}`}
+        ref={ref}
+      >
         <div className={styles.pageContent}>
           <h2 className={localStyles.pageHeader}>
             {`${rtl ? "עמוד" : "Page"} - ${pageNum}`}

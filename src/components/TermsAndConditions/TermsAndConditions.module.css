@@ -8,6 +8,8 @@
 }
 
 .email {
-  color: blue;
-  text-decoration: underline;
+  color: var(--link);
+  &:hover {
+    text-decoration: underline;
+  }
 }

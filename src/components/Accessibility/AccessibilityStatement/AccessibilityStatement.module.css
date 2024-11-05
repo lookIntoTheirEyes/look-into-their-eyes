@@ -10,20 +10,17 @@
 .title {
   font-size: 2.5em;
   margin-bottom: 20px;
-  color: #333;
 }
 
 .subTitle {
   font-size: 2em;
   margin-top: 30px;
   margin-bottom: 20px;
-  color: #444;
 }
 
 .paragraph {
   line-height: 1.6;
   margin-bottom: 20px;
-  color: #555;
 }
 
 .list {
@@ -36,8 +33,7 @@
 }
 
 .link {
-  color: #0070f3;
-  text-decoration: none;
+  color: var(--link);
 }
 
 .link:hover {
