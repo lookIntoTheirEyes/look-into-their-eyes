@@ -50,7 +50,7 @@ const PrivacyPolicy: React.FC<{ lang: Language }> = ({ lang }) => {
       <h2 className={styles.subTitle}>{t("section_11.title")}</h2>
       <p className={styles.paragraph}>
         {t("section_11.content")}{" "}
-        <a href={`mailto:${email}`} className={styles.email}>
+        <a href={`mailto:${email}`} className={styles.link}>
           {email + "."}
         </a>
       </p>
@@ -79,7 +79,7 @@ const PrivacyPolicy: React.FC<{ lang: Language }> = ({ lang }) => {
       <h3 className={styles.subTitle}>{t("cookie_policy.contact.title")}</h3>
       <p>
         {t("cookie_policy.contact.content")}{" "}
-        <a href={`mailto:${email}`} className={styles.email}>
+        <a href={`mailto:${email}`} className={styles.link}>
           {email + "."}
         </a>
       </p>

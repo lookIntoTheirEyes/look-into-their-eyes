@@ -10,8 +10,9 @@
 
 .modal {
   background-color: white;
-  width: min(70vw, 800px);
-  height: min(70vh, 600px);
+  width: 70vw;
+  height: 70vh;
+  color: var(--black);
   border-radius: 0.5rem;
   z-index: 50;
   display: flex;

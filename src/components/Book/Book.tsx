@@ -103,7 +103,7 @@ const Book: React.FC<BookProps> = ({
         drawShadow
         flippingTime={700}
         startZIndex={30}
-        swipeDistance={30}
+        swipeDistance={1}
         usePortrait
         autoSize
         showCover
