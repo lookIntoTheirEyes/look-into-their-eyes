@@ -9,9 +9,11 @@
   }
 }
 
-.accessibility {
+.links {
   cursor: pointer;
   position: absolute;
+  display: flex;
+  gap: 8px;
   left: 12px;
   top: 0;
 }

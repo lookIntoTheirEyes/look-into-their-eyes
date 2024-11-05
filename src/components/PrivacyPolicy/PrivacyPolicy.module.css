@@ -1,0 +1,84 @@
+.container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.subTitle {
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+}
+
+.paragraph {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.list {
+  padding-left: 20px;
+}
+
+.list li {
+  margin-bottom: 5px;
+}
+
+.link {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl .title,
+.rtl .subTitle,
+.rtl .paragraph {
+  text-align: right;
+}
+
+.email {
+  color: blue;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .subTitle {
+    font-size: 1.3rem;
+  }
+
+  .paragraph {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subTitle {
+    font-size: 1.2rem;
+  }
+
+  .paragraph {
+    font-size: 0.85rem;
+  }
+}

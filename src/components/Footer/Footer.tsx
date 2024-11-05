@@ -10,13 +10,10 @@ export default function Footer({ locale }: { locale: Language }) {
   return (
     <footer className={styles.footer}>
       <p>Created by Nati Gurevich</p>
-      <Link
-        className={`${styles.accessibility} ${isRTL ? styles.rtl : ""}`}
-        href='/terms'
-      >
-        {t("terms")}
-      </Link>
-      <p></p>
+      <div className={`${styles.links} ${isRTL ? styles.rtl : ""}`}>
+        <Link href='/terms'>{t("terms")}</Link>
+        <Link href='/privacy'>{t("privacy")}</Link>
+      </div>
     </footer>
   );
 }

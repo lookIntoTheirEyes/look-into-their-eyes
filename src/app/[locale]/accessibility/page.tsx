@@ -1,6 +1,9 @@
 import AccessibilityStatement from "@/components/Accessibility/AccessibilityStatement/AccessibilityStatement";
+import { Language } from "@/lib/model/language";
 
-export default function Accessibility() {
-  return <AccessibilityStatement />;
-  //   return <p>נגישות</p>;
+export default async function Accessibility(props: {
+  params: Promise<{ locale: Language }>;
+}) {
+  const { locale } = await props.params;
+  return <AccessibilityStatement lang={locale} />;
 }

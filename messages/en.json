@@ -9,6 +9,7 @@
     "about": "About",
     "accessibility": "Accessibility",
     "terms": "Terms of use",
+    "privacy": "Privacy policy",
     "hebrew": "Hebrew",
     "english": "English"
   },
@@ -92,7 +93,7 @@
       },
       "contact_us": {
         "title": "15. Contact Us",
-        "content": "If you have any questions about these Terms, please contact us at: Email: "
+        "content": "If you have any questions about these Terms, please contact us at "
       },
       "content_guidelines_and_sensitivity_notice": {
         "title": "16. Content Guidelines and Sensitivity Notice",
@@ -136,5 +137,78 @@
     "contact_info_title": "Contact Information:",
     "email_label": "Email",
     "accessibility_commitment": "We take accessibility seriously and will get back to you shortly."
+  },
+  "privacy_policy": {
+    "title": "Privacy Policy",
+    "intro": "Look into their eyes ('we', 'us', or 'our') is committed to protecting and respecting your privacy. This Privacy Policy explains how we collect, store, use, and share your personal data, as well as how we use cookies. By using our website, you consent to the practices described in this Privacy Policy.",
+    "section_1": {
+      "title": "1. Data Controller",
+      "content": "For the purposes of the General Data Protection Regulation (GDPR) and Israeli Privacy Protection Law, the data controller is: Look into their eyes."
+    },
+    "section_2": {
+      "title": "2. Information We Collect",
+      "content": "We collect non-personal and some personal data (e.g., email) only when you contact us directly."
+    },
+    "section_3": {
+      "title": "3. Legal Basis for Data Processing",
+      "content": "We process personal data based on your consent and our legitimate interests, such as improving the website."
+    },
+    "section_4": {
+      "title": "4. How We Use Your Information",
+      "content": "We use data to analyze website traffic and improve user experience using tools like Google Analytics."
+    },
+    "section_5": {
+      "title": "5. Cookies and Tracking Technologies",
+      "content": "Our website uses cookies to enhance user experience and analyze traffic. We use GA4 cookies for analytics."
+    },
+    "section_6": {
+      "title": "6. User Rights",
+      "content": "Under the GDPR, you have rights to access, rectify, erase, restrict, object, and request data portability."
+    },
+    "section_7": {
+      "title": "7. Third-Party Websites",
+      "content": "Our website may contain links to third-party websites. We are not responsible for their privacy practices."
+    },
+    "section_8": {
+      "title": "8. Data Security",
+      "content": "We implement reasonable security measures to protect your personal data."
+    },
+    "section_9": {
+      "title": "9. Data Retention",
+      "content": "We retain your personal data only as long as necessary for the purposes outlined in this Privacy Policy."
+    },
+    "section_10": {
+      "title": "10. Changes to This Privacy Policy",
+      "content": "We may update this Privacy Policy from time to time. Changes will be posted on this page."
+    },
+    "section_11": {
+      "title": "11. Contact Us",
+      "content": "If you have any questions about this Privacy Policy, please contact us at "
+    },
+    "cookie_policy": {
+      "title": "Cookie Policy",
+      "intro": "Our website uses cookies to improve user experience. Cookies are small text files placed on your device.",
+      "essential_cookies": {
+        "title": "Essential Cookies",
+        "content": "These cookies are necessary for the website to function. They include language preference cookies and authentication cookies."
+      },
+      "analytics_cookies": {
+        "title": "Analytics Cookies",
+        "content": "We use Google Analytics cookies to monitor website usage and improve performance."
+      },
+      "managing_cookies": {
+        "title": "Managing Cookies",
+        "content": "You can manage your cookie preferences through your browser settings."
+      },
+      "opt_out_ga": {
+        "title": "Opt-out of Google Analytics",
+        "content": "You can opt-out of Google Analytics tracking using the browser add-on."
+      },
+      "contact": {
+        "title": "Contact Us Regarding Cookies",
+        "content": "For questions about our cookie usage, contact us at "
+      },
+      "consent": "By using this website, you consent to the use of cookies in accordance with this Privacy and Cookie Policy."
+    }
   }
 }
