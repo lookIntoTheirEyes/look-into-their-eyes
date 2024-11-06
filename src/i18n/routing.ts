@@ -1,6 +1,6 @@
 import { createNavigation } from "next-intl/navigation";
 import { defineRouting } from "next-intl/routing";
-import { Language } from "../lib/model/language";
+import { Language } from "@/lib/model/language";
 
 export const routing = defineRouting({
   locales: [Language.en, Language.he],
