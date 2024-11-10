@@ -1,6 +1,60 @@
-.email {
+.title {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.subTitle {
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.paragraph {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.link {
   color: var(--yellow);
   &:hover {
     text-decoration: underline;
+  }
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .subTitle {
+    font-size: 1.3rem;
+  }
+
+  .paragraph {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subTitle {
+    font-size: 1.2rem;
+  }
+
+  .paragraph {
+    font-size: 0.85rem;
   }
 }
