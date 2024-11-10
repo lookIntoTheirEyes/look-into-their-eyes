@@ -4,6 +4,7 @@ import { Language } from "../../lib/model/language";
 import Footer from "@/components/Footer/Footer";
 import Widgets from "@/components/Widgets/Widgets";
 import { getTranslations } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/react";
 
 export async function generateMetadata() {
   const t = await getTranslations("Metadata");
@@ -40,6 +41,7 @@ export default async function RootLayout(props: {
         <Footer locale={locale} />
 
         <Widgets lang={locale} />
+        <Analytics />
       </body>
     </html>
   );
