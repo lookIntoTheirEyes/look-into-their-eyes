@@ -125,8 +125,8 @@ const Book: React.FC<BookProps> = ({
         showPageCorners
         renderOnlyPageLengthChange
         disableFlipByClick={false}
-        onInit={({ object: { getPageCount } }) => {
-          setPageCount(getPageCount());
+        onInit={({ object }) => {
+          setPageCount(object.getPageCount());
         }}
         onFlip={({ data }) => {
           const pageNum = rtl ? calculatePageForRtl(data) : data + 1;
