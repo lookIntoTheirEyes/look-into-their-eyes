@@ -34,7 +34,7 @@ const HeroDetails = async (props: IProps) => {
     const {
       name: title,
       longDescription,
-      imageUrl,
+      imageUrls,
     } = await getHero(pageNum, locale);
 
     return (
@@ -42,7 +42,7 @@ const HeroDetails = async (props: IProps) => {
         page={+pageNum}
         title={title}
         description={longDescription}
-        imageUrl={imageUrl}
+        imageUrls={imageUrls}
       />
     );
   } catch (error) {

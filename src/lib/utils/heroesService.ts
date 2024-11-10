@@ -3,8 +3,9 @@ import { Language } from "../model/language";
 const heroes: Hero[] = [
   {
     id: 1,
-    imageUrl:
+    imageUrls: [
       "v1731240476/Screen-Shot-2023-10-25-at-1.59.37-PM-e1698231614287-640x400_smp4xr.png",
+    ],
     en: {
       name: "Inbar Haiman",
       description: "We miss her",
@@ -19,8 +20,9 @@ const heroes: Hero[] = [
   },
   {
     id: 2,
-    imageUrl:
+    imageUrls: [
       "v1731240549/449519894_122166290984079173_8342929443094545662_n.jpg_rpeskl.jpg",
+    ],
     en: {
       name: "itzhak Elgarat",
       description: "We miss him",
@@ -43,7 +45,7 @@ interface Hero {
   id: number;
   en: HeroDetails;
   he: HeroDetails;
-  imageUrl: string;
+  imageUrls: string[];
 }
 
 interface HeroDetails {
@@ -67,11 +69,13 @@ export async function getHero(page: string, lang: Language) {
 
   const { name, description, longDescription } = hero;
 
+  const images = heroDetails.imageUrls.map((url) => getImageUrl(url));
   return {
     name,
     description,
     longDescription,
-    imageUrl: getImageUrl(heroDetails.imageUrl),
+
+    imageUrls: [...images.slice(), ...images.slice(), ...images.slice()],
   };
 }
 
@@ -82,7 +86,7 @@ export function getAllPages(lang: Language) {
       title,
       description,
       longDescription,
-      imageUrl: getImageUrl(hero.imageUrl),
+      imageUrl: getImageUrl(hero.imageUrls[0]),
     };
   });
 

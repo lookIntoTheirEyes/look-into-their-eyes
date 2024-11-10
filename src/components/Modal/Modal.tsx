@@ -4,12 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import styles from "./modal.module.css";
-import Image from "next/image";
+
+import Image from "../Book/Image/Image";
 
 interface IProps {
   page?: number;
   title: string;
-  imageUrl: string;
+  imageUrls: string[];
   hero?: string;
   description?: string;
 }
@@ -38,7 +39,7 @@ const backdropVariants = {
   exit: { opacity: 0 },
 };
 
-const ModalClient = ({ title, description, imageUrl }: IProps) => {
+const ModalClient = ({ title, description, imageUrls }: IProps) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
 
@@ -71,13 +72,12 @@ const ModalClient = ({ title, description, imageUrl }: IProps) => {
           >
             <div className={styles.modalContent}>
               <h2 className={styles.title}>{title}</h2>
-              <div className={styles.pageImage}>
-                <Image
-                  src={imageUrl}
-                  alt='Sample Image'
-                  fill
-                  sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                />
+              <div className={styles.pageImages}>
+                {imageUrls.map((imageUrl, i) => (
+                  <div key={imageUrl + i} className={styles.pageImage}>
+                    <Image imageUrl={imageUrl} alt='Sample Image' />
+                  </div>
+                ))}
               </div>
               <p>{description}</p>
             </div>

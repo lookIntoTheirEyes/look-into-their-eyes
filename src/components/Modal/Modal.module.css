@@ -25,15 +25,20 @@
   padding: 2rem;
   flex-grow: 1;
 }
+.pageImages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 
 .pageImage {
   justify-self: center;
   position: relative;
-  width: 50%;
+  width: 48%;
   min-height: 250px;
-  background-color: #a3c4ea;
   margin-bottom: 10px;
-  border: 1px solid black;
   border-radius: 4px;
 }
 

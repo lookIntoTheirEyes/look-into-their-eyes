@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import localStyles from "./Page.module.css";
 import Link from "next/link";
 import { Page as HeroPage } from "@/lib/utils/heroesService";
-import Image from "next/image";
+import Image from "../Image/Image";
 
 interface PageProps {
   pageNum: number;
@@ -24,12 +24,7 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
         <div className={styles.pageContent}>
           <h2 className={localStyles.pageHeader}>{details.title}</h2>
           <div className={localStyles.pageImage}>
-            <Image
-              src={details.imageUrl!}
-              alt='Sample Image'
-              fill
-              sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-            />
+            <Image imageUrl={details.imageUrl!} alt='Sample Image' />
           </div>
           <p className={localStyles.pageText}>{details.description}</p>
 
