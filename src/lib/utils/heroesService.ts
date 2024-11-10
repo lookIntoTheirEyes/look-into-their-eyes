@@ -24,7 +24,7 @@ const heroes: Hero[] = [
       "v1731240549/449519894_122166290984079173_8342929443094545662_n.jpg_rpeskl.jpg",
     ],
     en: {
-      name: "itzhak Elgarat",
+      name: "Itzhak Elgarat",
       description: "We miss him",
       longDescription:
         "There isn't a lot we can say that will explain how much we miss him",
