@@ -114,7 +114,7 @@ const Book: React.FC<BookProps> = ({
           (rtl ? calculatePageForRtl(currPage - 2, true) : currPage) - 1
         }
         width={550}
-        height={733}
+        height={725}
         size='stretch'
         minWidth={315}
         maxWidth={1000}
