@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import PageFlip from "react-pageflip";
 import styles from "./Book.module.css";
@@ -32,11 +32,13 @@ const Book: React.FC<BookProps> = ({
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
   const [pageCount, setPageCount] = useState<number>(0);
   const searchParams = useSearchParams();
-  const page = searchParams.get("page");
+  const queryParamPage = +searchParams.get("page")!;
+  const page =
+    !queryParamPage || queryParamPage > pages.length + 2 ? 1 : queryParamPage;
   const pathname = usePathname();
   const router = useRouter();
 
-  const [currPage, setCurrPage] = useState<number>(+page! || 1);
+  const [currPage, setCurrPage] = useState<number>(page);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -48,12 +50,15 @@ const Book: React.FC<BookProps> = ({
     [searchParams]
   );
 
-  const updateUrlWithSearchParams = (pageNum: number) => {
-    router.push(
-      pathname + "?" + createQueryString("page", pageNum.toString()),
-      { scroll: false }
-    );
-  };
+  const updateUrlWithSearchParams = useCallback(
+    (pageNum: number) => {
+      router.push(
+        pathname + "?" + createQueryString("page", pageNum.toString()),
+        { scroll: false }
+      );
+    },
+    [createQueryString, pathname, router]
+  );
 
   const goToNext = () => {
     const pageFlip = pageFlipRef.current?.pageFlip();
@@ -83,6 +88,12 @@ const Book: React.FC<BookProps> = ({
 
     return num;
   };
+
+  useEffect(() => {
+    if (page !== queryParamPage) {
+      updateUrlWithSearchParams(page);
+    }
+  }, [page, queryParamPage, updateUrlWithSearchParams]);
 
   return (
     <>

@@ -2,6 +2,7 @@ import ModalClient from "@/components/Modal/Modal";
 import { Language } from "@/lib/model/language";
 import { getHero } from "@/lib/utils/heroesService";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
+import { redirect } from "next/navigation";
 
 interface IProps {
   params: Promise<{ locale: Language }>;
@@ -29,12 +30,19 @@ const HeroDetails = async (props: IProps) => {
   const params = await props.params;
 
   const { locale } = params;
+  try {
+    const { name: title, longDescription } = await getHero(pageNum, locale);
 
-  const { name: title, longDescription } = await getHero(pageNum, locale);
-
-  return (
-    <ModalClient page={+pageNum} title={title} description={longDescription} />
-  );
+    return (
+      <ModalClient
+        page={+pageNum}
+        title={title}
+        description={longDescription}
+      />
+    );
+  } catch (error) {
+    redirect("/story");
+  }
 };
 
 export default HeroDetails;
