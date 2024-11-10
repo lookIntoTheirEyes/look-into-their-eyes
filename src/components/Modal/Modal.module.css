@@ -18,7 +18,11 @@
   display: flex;
   flex-direction: column;
   overflow: auto;
+
   max-height: 100%;
+  &.cool-font {
+    font-family: "OHSavyonChenKipper", sans-serif;
+  }
 
   @media (max-width: 768px) {
     width: 90vw;
@@ -57,7 +61,7 @@
 
 .title {
   color: var(--red);
-  font-size: 2.5rem;
+  font-size: 3rem;
   justify-self: center;
   margin-bottom: 0.5rem;
 }

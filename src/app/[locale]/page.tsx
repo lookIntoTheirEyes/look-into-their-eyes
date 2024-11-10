@@ -3,7 +3,7 @@ import { Language } from "@/lib/model/language";
 
 import { getTranslations } from "next-intl/server";
 
-// import styles from "./page.module.css";
+import styles from "./page.module.css";
 
 export default async function Home(props: {
   params: Promise<{ locale: Language }>;
@@ -14,7 +14,7 @@ export default async function Home(props: {
 
   return (
     <PageContainer center lang={lang} isCoolFont={lang === Language.he}>
-      <p>{t("title")}</p>
+      <h1 className={styles.header}>{t("title")}</h1>
     </PageContainer>
   );
 }
