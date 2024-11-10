@@ -3,6 +3,8 @@ import { Language } from "../model/language";
 const heroes: Hero[] = [
   {
     id: 1,
+    imageUrl:
+      "v1731240476/Screen-Shot-2023-10-25-at-1.59.37-PM-e1698231614287-640x400_smp4xr.png",
     en: {
       name: "Inbar Haiman",
       description: "We miss her",
@@ -17,6 +19,8 @@ const heroes: Hero[] = [
   },
   {
     id: 2,
+    imageUrl:
+      "v1731240549/449519894_122166290984079173_8342929443094545662_n.jpg_rpeskl.jpg",
     en: {
       name: "itzhak Elgarat",
       description: "We miss him",
@@ -39,6 +43,7 @@ interface Hero {
   id: number;
   en: HeroDetails;
   he: HeroDetails;
+  imageUrl: string;
 }
 
 interface HeroDetails {
@@ -53,7 +58,8 @@ export function getHeroId(page: number) {
 
 export async function getHero(page: string, lang: Language) {
   const heroId = getHeroId(+page);
-  const hero = heroes.find(({ id }) => id === +heroId)?.[lang];
+  const heroDetails = heroes.find(({ id }) => id === +heroId);
+  const hero = heroDetails?.[lang];
 
   if (!hero) {
     throw Error("hero not found");
@@ -61,13 +67,23 @@ export async function getHero(page: string, lang: Language) {
 
   const { name, description, longDescription } = hero;
 
-  return { name, description, longDescription };
+  return {
+    name,
+    description,
+    longDescription,
+    imageUrl: getImageUrl(heroDetails.imageUrl),
+  };
 }
 
 export function getAllPages(lang: Language) {
   const heroes = getAllHeroes().map((hero) => {
     const { name: title, description, longDescription } = hero[lang];
-    return { title, description, longDescription };
+    return {
+      title,
+      description,
+      longDescription,
+      imageUrl: getImageUrl(hero.imageUrl),
+    };
   });
 
   return lang === Language.he ? heroes.reverse() : heroes;
@@ -89,4 +105,9 @@ export interface Page {
   title: string;
   description: string;
   longDescription: string;
+  imageUrl?: string;
+}
+
+function getImageUrl(url: string) {
+  return `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${url}`;
 }

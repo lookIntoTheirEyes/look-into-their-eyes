@@ -32,7 +32,11 @@ const ModalPage = async (props: IProps) => {
 
   const { locale } = params;
   try {
-    const { name: title, longDescription } = await getHero(pageNum, locale);
+    const {
+      name: title,
+      longDescription,
+      imageUrl,
+    } = await getHero(pageNum, locale);
 
     return (
       <PageContainer isStory lang={locale}>
@@ -40,6 +44,7 @@ const ModalPage = async (props: IProps) => {
           page={+pageNum}
           title={title}
           description={longDescription}
+          imageUrl={imageUrl}
         />
       </PageContainer>
     );

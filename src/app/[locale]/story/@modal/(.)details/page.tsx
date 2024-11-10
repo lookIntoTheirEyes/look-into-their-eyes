@@ -31,13 +31,18 @@ const HeroDetails = async (props: IProps) => {
 
   const { locale } = params;
   try {
-    const { name: title, longDescription } = await getHero(pageNum, locale);
+    const {
+      name: title,
+      longDescription,
+      imageUrl,
+    } = await getHero(pageNum, locale);
 
     return (
       <ModalClient
         page={+pageNum}
         title={title}
         description={longDescription}
+        imageUrl={imageUrl}
       />
     );
   } catch (error) {
