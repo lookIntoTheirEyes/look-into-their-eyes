@@ -1,4 +1,4 @@
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
 import styles from "./page.module.css";
 import { IconType } from "react-icons";
 import PageContainer from "@/components/PageContainer/PageContainer";
