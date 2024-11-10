@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import styles from "./TermsAndConditions.module.css";
 import { Language } from "@/lib/model/language";
 import Link from "next/link";
+import PageContainer from "../PageContainer/PageContainer";
 
 const TermsAndConditions: React.FC<{
   lang: Language;
@@ -10,11 +11,7 @@ const TermsAndConditions: React.FC<{
   const email = "look.into.their.eyes.0710@gmail.com";
 
   return (
-    <div
-      className={`${styles.container} ${
-        lang === Language.he ? styles.rtl : ""
-      }`}
-    >
+    <>
       <h1>{t("title")}</h1>
       <p>{t("last_updated")}</p>
       <p>{t("intro")}</p>
@@ -128,7 +125,7 @@ const TermsAndConditions: React.FC<{
           {t("sections.accessibility_notice.notice")}
         </Link>
       </p>
-    </div>
+    </>
   );
 };
 

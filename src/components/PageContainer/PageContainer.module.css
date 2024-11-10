@@ -1,0 +1,37 @@
+.main {
+  margin: 0 auto;
+  margin-top: 64px;
+  overflow: hidden;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: url("/images/brick-wall.jpg") no-repeat center center fixed;
+  background-size: cover;
+  filter: grayscale(50%) contrast(1.2);
+
+  &.story {
+    background: url("/images/book-background.jpg") no-repeat center center fixed;
+  }
+}
+
+.container {
+  width: 70%;
+  margin: 0 auto;
+  text-align: left;
+  background-color: #1a1a1aa9;
+  padding: 0 24px 24px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  &.center {
+    align-items: center;
+  }
+
+  &.rtl {
+    text-align: right;
+  }
+}

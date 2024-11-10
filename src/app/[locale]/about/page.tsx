@@ -1,10 +1,17 @@
-import { useTranslations } from "next-intl";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import styles from "./page.module.css";
 import { IconType } from "react-icons";
+import PageContainer from "@/components/PageContainer/PageContainer";
+import { Language } from "@/lib/model/language";
+import { getTranslations } from "next-intl/server";
 
-export default function About() {
-  const t = useTranslations("About");
+export default async function About(props: {
+  params: Promise<{ locale: Language }>;
+}) {
+  const params = await props.params;
+  const { locale: lang } = params;
+
+  const t = await getTranslations("About");
 
   const icons = [
     { href: "https://facebook.com", icon: FaFacebook },
@@ -15,11 +22,13 @@ export default function About() {
     return getSocialLink(href, Icon);
   });
   return (
-    <div className={styles.container}>
-      <h1>{t("intro")}</h1>
-      <p> {t("artist")}</p>
-      <div className={styles.socialIcons}>{icons}</div>
-    </div>
+    <PageContainer center lang={lang}>
+      <>
+        <h1>{t("intro")}</h1>
+        <p> {t("artist")}</p>
+        <div className={styles.socialIcons}>{icons}</div>
+      </>
+    </PageContainer>
   );
 }
 

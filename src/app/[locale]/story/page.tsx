@@ -4,13 +4,14 @@ import { Language } from "@/lib/model/language";
 import Book from "@/components/Book/Book";
 import styles from "./page.module.css";
 import { ensurePromise } from "@/lib/utils/utils";
+import PageContainer from "@/components/PageContainer/PageContainer";
 
 interface Props {
   params: Params;
 }
 
 type Params = {
-  locale: string;
+  locale: Language;
 };
 
 const pagesContent = (isRtl = false) =>
@@ -47,7 +48,7 @@ const BookComponent: React.FC<Props> = (props) => {
   const rtl = locale === Language.he;
 
   return (
-    <div className={styles.pageContainer}>
+    <PageContainer lang={locale} isStory>
       <div className={styles.storyContainer}>
         <Book
           book={{
@@ -62,7 +63,7 @@ const BookComponent: React.FC<Props> = (props) => {
           }}
         />
       </div>
-    </div>
+    </PageContainer>
   );
 };
 

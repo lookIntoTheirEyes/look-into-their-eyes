@@ -2,17 +2,14 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import styles from "./PrivacyPolicy.module.css";
 import { Language } from "@/lib/model/language";
+import PageContainer from "../PageContainer/PageContainer";
 
 const PrivacyPolicy: React.FC<{ lang: Language }> = ({ lang }) => {
   const t = useTranslations("privacy_policy");
   const email = "look.into.their.eyes.0710@gmail.com";
 
   return (
-    <div
-      className={`${styles.container} ${
-        lang === Language.he ? styles.rtl : ""
-      }`}
-    >
+    <>
       <h1 className={styles.title}>{t("title")}</h1>
 
       <p className={styles.paragraph}>{t("intro")}</p>
@@ -85,7 +82,7 @@ const PrivacyPolicy: React.FC<{ lang: Language }> = ({ lang }) => {
       </p>
 
       <p>{t("cookie_policy.consent")}</p>
-    </div>
+    </>
   );
 };
 

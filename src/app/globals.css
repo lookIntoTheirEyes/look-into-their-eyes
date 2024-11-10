@@ -4,6 +4,8 @@
   --black: #1a1a1a;
   --link: #0070f3;
   --light-grey: #f5f5f5;
+  --footer-height: 60px;
+  --footer-height-mobile: 85px;
 }
 
 html,
@@ -30,6 +32,13 @@ body {
   min-height: 100vh;
   --_access-icon-border-radius: 50%;
   --_access-icon-border: 0.5px solid white;
+  --_access-icon-bottom: var(--footer-height);
+}
+
+@media (max-width: 768px) {
+  body {
+    --_access-icon-bottom: var(--footer-height-mobile);
+  }
 }
 
 * {
@@ -57,19 +66,4 @@ h3 {
 
 p {
   font-size: 1.1em;
-}
-
-main {
-  margin: 0 auto;
-  margin-top: 64px;
-  overflow: hidden;
-  width: 100%;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: url("/images/brick-wall.jpg") no-repeat center center fixed;
-  background-size: cover;
-  filter: grayscale(50%) contrast(1.2);
 }

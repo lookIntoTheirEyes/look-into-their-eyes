@@ -1,19 +1,17 @@
 import { Language } from "@/lib/model/language";
 import ModalClient from "@/components/Modal/Modal";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
+import PageContainer from "@/components/PageContainer/PageContainer";
 
-export async function generateMetadata(
-  props: {
-    params: Promise<{ locale: Language }>;
-    searchParams: Promise<SearchParams>;
-  }
-) {
+interface IProps {
+  params: Promise<{ locale: Language }>;
+  searchParams: Promise<SearchParams>;
+}
+export async function generateMetadata(props: IProps) {
   const searchParams = await props.searchParams;
   const params = await props.params;
 
-  const {
-    locale
-  } = params;
+  const { locale } = params;
 
   const page = getPageNum(searchParams);
   const title =
@@ -29,11 +27,16 @@ export async function generateMetadata(
   };
 }
 
-const ModalPage = async (props: { searchParams: Promise<SearchParams> }) => {
+const ModalPage = async (props: IProps) => {
   const searchParams = await props.searchParams;
   const page = getPageNum(searchParams);
+  const { locale } = await props.params;
 
-  return <ModalClient page={+page} />;
+  return (
+    <PageContainer isStory lang={locale}>
+      <ModalClient page={+page} />
+    </PageContainer>
+  );
 };
 
 export default ModalPage;

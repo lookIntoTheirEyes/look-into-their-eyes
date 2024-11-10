@@ -2,16 +2,13 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import styles from "./AccessibilityStatement.module.css";
 import { Language } from "@/lib/model/language";
+import PageContainer from "@/components/PageContainer/PageContainer";
 
 const AccessibilityStatement: React.FC<{ lang: Language }> = ({ lang }) => {
   const t = useTranslations("accessibility");
 
   return (
-    <div
-      className={`${styles.container} ${
-        lang === Language.he ? styles.rtl : ""
-      }`}
-    >
+    <>
       <h1 className={styles.title}>{t("title")}</h1>
       <p className={styles.paragraph}>
         <b>{t("company_name")}</b> {t("intro_paragraph_1")}
@@ -49,7 +46,7 @@ const AccessibilityStatement: React.FC<{ lang: Language }> = ({ lang }) => {
       </ul>
 
       <p className={styles.paragraph}>{t("accessibility_commitment")}</p>
-    </div>
+    </>
   );
 };
 
