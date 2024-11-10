@@ -45,6 +45,7 @@ const HeroDetails = async (props: IProps) => {
         imageUrls={imageUrls}
       />
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     redirect("/story");
   }

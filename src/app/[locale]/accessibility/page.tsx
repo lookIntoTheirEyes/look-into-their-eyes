@@ -8,7 +8,7 @@ export default async function Accessibility(props: {
   const { locale } = await props.params;
   return (
     <PageContainer lang={locale}>
-      <AccessibilityStatement lang={locale} />
+      <AccessibilityStatement />
     </PageContainer>
   );
 }

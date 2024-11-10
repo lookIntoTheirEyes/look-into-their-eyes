@@ -12,7 +12,7 @@ import {
 } from "@/lib/utils/heroesService";
 
 interface Props {
-  params: Params;
+  params: Promise<Params>;
 }
 
 type Params = {

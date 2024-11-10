@@ -8,7 +8,7 @@ export default async function TermsPage(props: {
   const { locale } = await props.params;
   return (
     <PageContainer lang={locale}>
-      <Terms lang={locale} />
+      <Terms />
     </PageContainer>
   );
 }

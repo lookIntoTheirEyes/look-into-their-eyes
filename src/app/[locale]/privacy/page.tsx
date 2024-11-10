@@ -8,7 +8,7 @@ export default async function PrivacyPage(props: {
   const { locale } = await props.params;
   return (
     <PageContainer lang={locale}>
-      <PrivacyPolicy lang={locale} />
+      <PrivacyPolicy />
     </PageContainer>
   );
 }

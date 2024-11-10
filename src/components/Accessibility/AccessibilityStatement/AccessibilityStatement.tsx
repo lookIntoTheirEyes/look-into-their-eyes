@@ -1,10 +1,7 @@
-import React from "react";
 import { useTranslations } from "next-intl";
 import styles from "./AccessibilityStatement.module.css";
-import { Language } from "@/lib/model/language";
-import PageContainer from "@/components/PageContainer/PageContainer";
 
-const AccessibilityStatement: React.FC<{ lang: Language }> = ({ lang }) => {
+const AccessibilityStatement = () => {
   const t = useTranslations("accessibility");
 
   return (

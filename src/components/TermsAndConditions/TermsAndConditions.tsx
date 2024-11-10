@@ -1,12 +1,8 @@
 import { useTranslations } from "next-intl";
 import styles from "./TermsAndConditions.module.css";
-import { Language } from "@/lib/model/language";
 import Link from "next/link";
-import PageContainer from "../PageContainer/PageContainer";
 
-const TermsAndConditions: React.FC<{
-  lang: Language;
-}> = ({ lang }) => {
+const TermsAndConditions = () => {
   const t = useTranslations("terms");
   const email = "look.into.their.eyes.0710@gmail.com";
 

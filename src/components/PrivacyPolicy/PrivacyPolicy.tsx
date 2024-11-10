@@ -1,10 +1,7 @@
-import React from "react";
 import { useTranslations } from "next-intl";
 import styles from "./PrivacyPolicy.module.css";
-import { Language } from "@/lib/model/language";
-import PageContainer from "../PageContainer/PageContainer";
 
-const PrivacyPolicy: React.FC<{ lang: Language }> = ({ lang }) => {
+const PrivacyPolicy = () => {
   const t = useTranslations("privacy_policy");
   const email = "look.into.their.eyes.0710@gmail.com";
 
