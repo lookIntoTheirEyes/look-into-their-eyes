@@ -1,7 +1,7 @@
 .footer {
   background-color: #333333;
   color: white;
-  font-size: 20px;
+  font-size: 2.2rem;
   position: relative;
   display: flex;
   padding: 8px 16px;
@@ -10,7 +10,7 @@
   flex-direction: row;
 
   @media (max-width: 768px) {
-    font-size: 16px;
+    font-size: 1.8rem;
     flex-direction: column;
     align-items: center;
     gap: 8px;
@@ -43,7 +43,7 @@
   color: white;
   font-weight: 600;
   @media (max-width: 768px) {
-    font-size: 12px;
+    font-size: 1.6rem;
     justify-content: space-between;
     width: 90%;
   }

@@ -6,6 +6,20 @@
   --light-grey: #f5f5f5;
   --footer-height: 60px;
   --footer-height-mobile: 20px;
+  --bp-largest: 75em;
+  --bp-large: 68.75em;
+  --bp-medium: 56.25em;
+  --bp-small: 37.5em;
+  --bp-smallest: 31.25em;
+}
+
+@font-face {
+  font-family: "OHSavyonChenKipper";
+  src: url("/fonts/OHSavyonChenKipper-Regular.woff2") format("woff2"),
+    url("/fonts/OHSavyonChenKipper-Regular.woff") format("woff"),
+    url("/OHSavyonChenKipper-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 html,
@@ -14,13 +28,6 @@ body {
   overflow-x: hidden;
   line-height: 1.6;
   scroll-behavior: smooth;
-}
-
-html[dir="rtl"] {
-  body {
-    --_access-icon-left: 10px;
-    --_access-icon-right: auto;
-  }
 }
 
 body {
@@ -35,6 +42,18 @@ body {
   --_access-icon-bottom: var(--footer-height);
 }
 
+html[dir="rtl"] {
+  body {
+    --_access-icon-left: 10px;
+    --_access-icon-right: auto;
+  }
+  * {
+    &:not(._access-icon) {
+      font-family: "OHSavyonChenKipper", sans-serif;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   body {
     --_access-icon-bottom: var(--footer-height-mobile);
@@ -42,9 +61,23 @@ body {
 }
 
 * {
-  box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+
+  @media only screen and (max-width: var(--bp-large)) {
+    font-size: 50%;
+  }
 }
 
 a {
@@ -58,14 +91,14 @@ ul {
   padding: 0;
 }
 
+p {
+  font-size: 2rem;
+}
+
 h1,
 h2,
 h3 {
   color: var(--yellow);
-}
-
-p {
-  font-size: 1.1em;
 }
 
 *::-webkit-scrollbar {

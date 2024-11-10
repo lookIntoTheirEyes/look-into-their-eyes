@@ -39,7 +39,7 @@
     text-align: right;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: var(--bp-largest)) {
     width: 100%;
   }
 }
