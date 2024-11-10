@@ -12,7 +12,7 @@
   background-size: cover;
   filter: grayscale(50%) contrast(1.2);
 
-  &.cool-font {
+  &:dir(rtl) {
     font-family: "OHSavyonChenKipper", sans-serif;
   }
 
@@ -37,10 +37,6 @@
 
   &.center {
     align-items: center;
-  }
-
-  &.rtl {
-    text-align: right;
   }
 
   @media (max-width: var(--bp-largest)) {

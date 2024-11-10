@@ -7,7 +7,6 @@ interface ControlsProps extends BookActions {
   goToPrevious: () => void;
   goToNext: () => void;
   styles: Record<string, string>;
-  rtl: boolean;
 }
 
 export default function Controls({
@@ -17,18 +16,17 @@ export default function Controls({
   pageCount,
   goToNext,
   goToPrevious,
-  rtl,
 }: ControlsProps) {
   return (
     <div className={localStyles.controls}>
-      {getButton({ styles, func: goToPrevious, text: previous, rtl })}
+      {getButton({ styles, func: goToPrevious, text: previous })}
 
-      <div className={`${localStyles.pageCount} ${rtl ? localStyles.rtl : ""}`}>
+      <div className={localStyles.pageCount}>
         <span>{currPage}</span>
         <span>/</span>
         <span>{pageCount}</span>
       </div>
-      {getButton({ styles, func: goToNext, text: next, rtl })}
+      {getButton({ styles, func: goToNext, text: next })}
     </div>
   );
 }
@@ -37,18 +35,13 @@ function getButton({
   styles,
   text,
   func,
-  rtl,
 }: {
   func: () => void;
   styles: Record<string, string>;
   text: string;
-  rtl: boolean;
 }) {
   return (
-    <button
-      className={`${styles.button} ${rtl ? styles["cool-font"] : ""}`}
-      onClick={func}
-    >
+    <button className={styles.button} onClick={func}>
       {text}
     </button>
   );

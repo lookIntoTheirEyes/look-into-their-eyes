@@ -20,7 +20,7 @@
   overflow: auto;
 
   max-height: 100%;
-  &.cool-font {
+  &:dir(rtl) {
     font-family: "OHSavyonChenKipper", sans-serif;
   }
 

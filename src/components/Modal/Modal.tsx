@@ -13,7 +13,6 @@ interface IProps {
   imageUrls: string[];
   hero?: string;
   description?: string;
-  isRtl: boolean;
 }
 
 const modalVariants = {
@@ -40,7 +39,7 @@ const backdropVariants = {
   exit: { opacity: 0 },
 };
 
-const ModalClient = ({ title, description, imageUrls, isRtl }: IProps) => {
+const ModalClient = ({ title, description, imageUrls }: IProps) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
 
@@ -69,7 +68,7 @@ const ModalClient = ({ title, description, imageUrls, isRtl }: IProps) => {
             exit='exit'
             transition={{ duration: 0.5 }}
             onClick={(e) => e.stopPropagation()}
-            className={`${styles.modal} ${isRtl ? styles["cool-font"] : ""}`}
+            className={styles.modal}
           >
             <div className={styles.modalContent}>
               <h2 className={styles.title}>{title}</h2>

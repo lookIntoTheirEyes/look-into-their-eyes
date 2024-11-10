@@ -1,4 +1,4 @@
-import { ILanguageProps, Language } from "@/lib/model/language";
+import { ILanguageProps } from "@/lib/model/language";
 import ModalClient from "@/components/Modal/Modal";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
 import PageContainer from "@/components/PageContainer/PageContainer";
@@ -39,9 +39,8 @@ const ModalPage = async (props: IProps) => {
     } = await getHero(pageNum, locale);
 
     return (
-      <PageContainer isStory lang={locale} isCoolFont={locale === Language.he}>
+      <PageContainer isStory>
         <ModalClient
-          isRtl={locale === Language.he}
           page={+pageNum}
           title={title}
           description={longDescription}

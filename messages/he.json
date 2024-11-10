@@ -26,7 +26,8 @@
   "Story": {
     "actions": {
       "previous": "הקודם",
-      "next": "הבא"
+      "next": "הבא",
+      "pageCta": "המשך לקרוא"
     }
   },
   "terms": {

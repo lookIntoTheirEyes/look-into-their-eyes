@@ -10,10 +10,11 @@ interface PageProps {
   styles: Record<string, string>;
   rtl: boolean;
   details: HeroPage;
+  cta: string;
 }
 
 const Page = forwardRef<HTMLDivElement, PageProps>(
-  ({ pageNum, styles, rtl, details }, ref) => {
+  ({ pageNum, styles, rtl, details, cta }, ref) => {
     const isRightPage = pageNum % 2 === 0 ? rtl : !rtl;
 
     return (
@@ -34,7 +35,7 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
             className={styles.button}
             scroll={false}
           >
-            {rtl ? "המשך לקרוא" : "read more"}
+            {cta}
           </Link>
         </div>
       </div>

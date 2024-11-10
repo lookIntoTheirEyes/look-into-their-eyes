@@ -1,14 +1,11 @@
 import { useTranslations } from "next-intl";
 import styles from "./Footer.module.css";
-import { Language } from "@/lib/model/language";
 import NavLink from "../NavLink/NavLink";
 import { getRoute } from "@/lib/utils/utils";
 import { IconType } from "react-icons";
 import { FaFacebook, FaLinkedin } from "react-icons/fa";
 
-export default function Footer({ locale }: { locale: Language }) {
-  const isRTL = locale === Language.he;
-
+export default function Footer() {
   const t = useTranslations("Links");
 
   const links = [
@@ -34,9 +31,7 @@ export default function Footer({ locale }: { locale: Language }) {
         {linkedin}
         {fb}
       </div>
-      <div className={`${styles.links} ${isRTL ? styles.rtl : ""}`}>
-        {links}
-      </div>
+      <div className={styles.links}>{links}</div>
     </footer>
   );
 }

@@ -1,5 +1,5 @@
 import ModalClient from "@/components/Modal/Modal";
-import { ILanguageProps, Language } from "@/lib/model/language";
+import { ILanguageProps } from "@/lib/model/language";
 import { getHero } from "@/lib/utils/heroesService";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
 import { redirect } from "next/navigation";
@@ -38,7 +38,6 @@ const HeroDetails = async (props: IProps) => {
 
     return (
       <ModalClient
-        isRtl={locale === Language.he}
         page={+pageNum}
         title={title}
         description={longDescription}

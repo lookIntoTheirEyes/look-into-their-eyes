@@ -26,7 +26,8 @@
   "Story": {
     "actions": {
       "previous": "Previous",
-      "next": "Next"
+      "next": "Next",
+      "pageCta": "Read More"
     }
   },
   "terms": {

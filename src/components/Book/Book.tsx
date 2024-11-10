@@ -20,12 +20,12 @@ interface CustomPageFlip {
 }
 
 interface BookProps extends BookActions {
-  rtl?: boolean;
+  rtl: boolean;
   book: { pages: HeroPage[]; front: HeroPage; back: HeroPage };
 }
 
 const Book: React.FC<BookProps> = ({
-  rtl = false,
+  rtl,
   book: { pages, front, back },
   actions,
 }) => {
@@ -151,6 +151,7 @@ const Book: React.FC<BookProps> = ({
             key={content.title}
             details={content}
             pageNum={(rtl ? pages.length - i : i + 1) + 1}
+            cta={actions.cta}
           ></Page>
         ))}
         <PageCover styles={styles} details={back} />
@@ -162,7 +163,6 @@ const Book: React.FC<BookProps> = ({
         goToNext={goToNext}
         actions={actions}
         styles={styles}
-        rtl={rtl}
       />
     </div>
   );

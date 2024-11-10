@@ -1,5 +1,10 @@
+.header {
+  font-size: 4rem;
+}
+
 .action {
   display: flex;
   gap: 4px;
   align-items: center;
+  font-size: 3rem;
 }

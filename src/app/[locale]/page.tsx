@@ -1,17 +1,13 @@
 import PageContainer from "@/components/PageContainer/PageContainer";
-import { ILanguageProps, Language } from "@/lib/model/language";
-
-import { getTranslations } from "next-intl/server";
 
 import styles from "./page.module.css";
+import { useTranslations } from "next-intl";
 
-export default async function Home(props: ILanguageProps) {
-  const params = await props.params;
-  const { locale: lang } = params;
-  const t = await getTranslations("HomePage");
+export default function Home() {
+  const t = useTranslations("HomePage");
 
   return (
-    <PageContainer center lang={lang} isCoolFont={lang === Language.he}>
+    <PageContainer center>
       <h1 className={styles.header}>{t("title")}</h1>
     </PageContainer>
   );

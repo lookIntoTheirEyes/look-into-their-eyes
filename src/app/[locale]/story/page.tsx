@@ -25,7 +25,7 @@ const BookComponent: React.FC<Props> = async (props) => {
   const rtl = locale === Language.he;
 
   return (
-    <PageContainer lang={locale} isStory isCoolFont={rtl}>
+    <PageContainer isStory>
       <Book
         book={{
           front: getFrontPage(locale),
@@ -36,6 +36,7 @@ const BookComponent: React.FC<Props> = async (props) => {
         actions={{
           next: t("actions.next"),
           previous: t("actions.previous"),
+          cta: t("actions.pageCta"),
         }}
       />
     </PageContainer>

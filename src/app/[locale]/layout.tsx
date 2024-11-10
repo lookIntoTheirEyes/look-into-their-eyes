@@ -42,7 +42,7 @@ export default async function RootLayout(props: IProps) {
             links={{ story: t("story"), home: t("home"), about: t("about") }}
           />
           {children}
-          <Footer locale={locale} />
+          <Footer />
 
           <Widgets lang={locale} />
           <Analytics />

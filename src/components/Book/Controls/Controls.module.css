@@ -14,7 +14,7 @@
   padding: 8px 16px;
   border-radius: 5px;
   font-size: 1.8rem;
-  &.rtl {
+  &:dir(rtl) {
     flex-direction: row-reverse;
   }
 }
