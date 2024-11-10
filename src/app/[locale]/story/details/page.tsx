@@ -3,6 +3,7 @@ import ModalClient from "@/components/Modal/Modal";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
 import PageContainer from "@/components/PageContainer/PageContainer";
 import { getHero } from "@/lib/utils/heroesService";
+import { redirect } from "next/navigation";
 
 interface IProps {
   params: Promise<{ locale: Language }>;
@@ -30,18 +31,21 @@ const ModalPage = async (props: IProps) => {
   const params = await props.params;
 
   const { locale } = params;
+  try {
+    const { name: title, longDescription } = await getHero(pageNum, locale);
 
-  const { name: title, longDescription } = await getHero(pageNum, locale);
-
-  return (
-    <PageContainer isStory lang={locale}>
-      <ModalClient
-        page={+pageNum}
-        title={title}
-        description={longDescription}
-      />
-    </PageContainer>
-  );
+    return (
+      <PageContainer isStory lang={locale}>
+        <ModalClient
+          page={+pageNum}
+          title={title}
+          description={longDescription}
+        />
+      </PageContainer>
+    );
+  } catch (error) {
+    redirect("/story");
+  }
 };
 
 export default ModalPage;
