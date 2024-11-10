@@ -19,10 +19,17 @@
   flex-direction: column;
   overflow: auto;
   max-height: 100%;
+
+  @media (max-width: 768px) {
+    width: 90vw;
+  }
 }
 
 .modalContent {
-  padding: 2rem;
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+  }
+
   flex-grow: 1;
 }
 .pageImages {
@@ -40,6 +47,10 @@
   min-height: 250px;
   margin-bottom: 10px;
   border-radius: 4px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 }
 
 .title {
