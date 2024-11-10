@@ -20,7 +20,3 @@ export function getRoute(
 ) {
   return { href, name };
 }
-
-export function ensurePromise<T>(value: T | Promise<T>): Promise<T> {
-  return value instanceof Promise ? value : Promise.resolve(value);
-}

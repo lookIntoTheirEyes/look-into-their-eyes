@@ -96,7 +96,16 @@ const Book: React.FC<BookProps> = ({
   }, [page, queryParamPage, updateUrlWithSearchParams]);
 
   return (
-    <>
+    <div
+      className={`${styles.storyContainer} ${
+        !pageFlipRef.current ? styles.loading : ""
+      }`}
+    >
+      {!pageFlipRef.current && (
+        <div className={styles.loaderContainer}>
+          <div className={styles.loader}></div>
+        </div>
+      )}
       <PageFlip
         ref={pageFlipRef}
         className={""}
@@ -155,7 +164,7 @@ const Book: React.FC<BookProps> = ({
         styles={styles}
         rtl={rtl}
       />
-    </>
+    </div>
   );
 };
 

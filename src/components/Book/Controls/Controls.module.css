@@ -1,8 +1,8 @@
 .controls {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
-  z-index: 3;
   margin-top: 16px;
 }
 
@@ -10,6 +10,10 @@
   display: flex;
   gap: 4px;
   align-items: center;
+  background-color: rgb(203, 36, 36);
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 13px;
   &.rtl {
     flex-direction: row-reverse;
   }
