@@ -1,11 +1,10 @@
 import ModalClient from "@/components/Modal/Modal";
-import { Language } from "@/lib/model/language";
+import { ILanguageProps, Language } from "@/lib/model/language";
 import { getHero } from "@/lib/utils/heroesService";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
 import { redirect } from "next/navigation";
 
-interface IProps {
-  params: Promise<{ locale: Language }>;
+interface IProps extends ILanguageProps {
   searchParams: Promise<SearchParams>;
 }
 

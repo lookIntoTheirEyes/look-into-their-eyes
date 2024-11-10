@@ -1,11 +1,15 @@
 import Header from "@/components/Header/Header";
 import "../globals.css";
-import { Language } from "../../lib/model/language";
+import { ILanguageProps, Language } from "../../lib/model/language";
 import Footer from "@/components/Footer/Footer";
 import Widgets from "@/components/Widgets/Widgets";
 import { getTranslations, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { Analytics } from "@vercel/analytics/react";
+
+interface IProps extends ILanguageProps {
+  children: React.ReactNode;
+}
 
 export async function generateMetadata() {
   const t = await getTranslations("Metadata");
@@ -19,10 +23,7 @@ export async function generateMetadata() {
   };
 }
 
-export default async function RootLayout(props: {
-  children: React.ReactNode;
-  params: Promise<{ locale: Language }>;
-}) {
+export default async function RootLayout(props: IProps) {
   const params = await props.params;
 
   const { locale } = params;

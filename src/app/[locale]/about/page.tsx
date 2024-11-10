@@ -2,12 +2,10 @@ import { FaFacebook, FaInstagram } from "react-icons/fa";
 import styles from "./page.module.css";
 import { IconType } from "react-icons";
 import PageContainer from "@/components/PageContainer/PageContainer";
-import { Language } from "@/lib/model/language";
+import { ILanguageProps, Language } from "@/lib/model/language";
 import { getTranslations } from "next-intl/server";
 
-export default async function About(props: {
-  params: Promise<{ locale: Language }>;
-}) {
+export default async function About(props: ILanguageProps) {
   const params = await props.params;
   const { locale: lang } = params;
 

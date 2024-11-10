@@ -1,14 +1,14 @@
-import { Language } from "@/lib/model/language";
+import { ILanguageProps, Language } from "@/lib/model/language";
 import ModalClient from "@/components/Modal/Modal";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
 import PageContainer from "@/components/PageContainer/PageContainer";
 import { getHero } from "@/lib/utils/heroesService";
 import { redirect } from "next/navigation";
 
-interface IProps {
-  params: Promise<{ locale: Language }>;
+interface IProps extends ILanguageProps {
   searchParams: Promise<SearchParams>;
 }
+
 export async function generateMetadata(props: IProps) {
   const searchParams = await props.searchParams;
   const params = await props.params;

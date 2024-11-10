@@ -1,12 +1,10 @@
 import PageContainer from "@/components/PageContainer/PageContainer";
-import { Language } from "@/lib/model/language";
+import { ILanguageProps, Language } from "@/lib/model/language";
 import { getTranslations } from "next-intl/server";
 import styles from "./page.module.css";
 import NavLink from "@/components/NavLink/NavLink";
 
-export default async function CatchAllPage(props: {
-  params: Promise<{ locale: Language }>;
-}) {
+export default async function CatchAllPage(props: ILanguageProps) {
   const params = await props.params;
   const { locale: lang } = params;
 
