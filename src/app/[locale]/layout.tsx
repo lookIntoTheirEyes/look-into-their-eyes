@@ -5,17 +5,11 @@ import Footer from "@/components/Footer/Footer";
 import Widgets from "@/components/Widgets/Widgets";
 import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata(props: {
-  params: Promise<{ locale: Language }>;
-}) {
-  const params = await props.params;
+export async function generateMetadata() {
+  const t = await getTranslations("Metadata");
 
-  const { locale } = params;
-
-  const title =
-    locale === Language.en ? "Look in their eyes" : "הסתכלו להם בעיניים";
-  const description =
-    locale === Language.en ? "Look in their eyes" : "הסתכלו להם בעיניים";
+  const title = t("layout.title");
+  const description = t("layout.description");
 
   return {
     title,
