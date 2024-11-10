@@ -20,7 +20,8 @@ export default function LanguageInput({ locale }: { locale: Language }) {
 
     startTransition(() => {
       const page = searchParams.get("page");
-      router.replace({ pathname, query: { page } }, { locale: language });
+      const query = page ? { query: { page } } : {};
+      router.replace({ pathname, ...query }, { locale: language });
     });
   };
 
