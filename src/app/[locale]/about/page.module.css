@@ -4,6 +4,10 @@
   align-items: center;
 }
 
+.header {
+  font-size: 4rem;
+}
+
 .socialIcons {
   margin-top: 20px;
   display: flex;

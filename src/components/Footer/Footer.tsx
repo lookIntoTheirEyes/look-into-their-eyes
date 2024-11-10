@@ -20,7 +20,7 @@ export default function Footer({ locale }: { locale: Language }) {
     </NavLink>
   ));
   const linkedin = getSocialLink(
-    "https://www.linkedin.com/in/nati-gurevich-36868711b/",
+    "https://www.linkedin.com/in/nati-gurevich-36868711b",
     FaLinkedin
   );
   const fb = getSocialLink(

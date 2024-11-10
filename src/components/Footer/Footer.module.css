@@ -31,10 +31,10 @@
   & a {
     height: 20px;
 
-    color: var(--red);
+    color: var(--yellow);
     transition: color 0.3s ease;
     &:hover {
-      color: red;
+      color: #ff6f00;
     }
   }
 }

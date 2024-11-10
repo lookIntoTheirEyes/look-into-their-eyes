@@ -15,16 +15,14 @@ export default async function About(props: {
 
   const icons = [
     { href: "https://facebook.com", icon: FaFacebook },
-    { href: "https://twitter.com", icon: FaTwitter },
     { href: "https://instagram.com", icon: FaInstagram },
-    { href: "https://linkedin.com", icon: FaLinkedin },
   ].map(({ href, icon: Icon }) => {
     return getSocialLink(href, Icon);
   });
   return (
     <PageContainer center lang={lang} isCoolFont={lang === Language.he}>
       <>
-        <h1>{t("intro")}</h1>
+        <h1 className={styles.header}>{t("intro")}</h1>
         <p> {t("artist")}</p>
         <div className={styles.socialIcons}>{icons}</div>
       </>
