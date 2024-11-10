@@ -47,10 +47,9 @@ html[dir="rtl"] {
     --_access-icon-left: 10px;
     --_access-icon-right: auto;
   }
-  * {
-    &:not(._access-icon) {
-      font-family: "OHSavyonChenKipper", sans-serif;
-    }
+  footer,
+  header {
+    font-family: "OHSavyonChenKipper", sans-serif;
   }
 }
 

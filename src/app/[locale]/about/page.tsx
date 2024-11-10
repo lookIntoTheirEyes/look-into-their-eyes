@@ -22,7 +22,7 @@ export default async function About(props: {
     return getSocialLink(href, Icon);
   });
   return (
-    <PageContainer center lang={lang}>
+    <PageContainer center lang={lang} isCoolFont={lang === Language.he}>
       <>
         <h1>{t("intro")}</h1>
         <p> {t("artist")}</p>

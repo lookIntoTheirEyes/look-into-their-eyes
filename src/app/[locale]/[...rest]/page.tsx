@@ -13,7 +13,7 @@ export default async function CatchAllPage(props: {
   const t = await getTranslations("404");
 
   return (
-    <PageContainer center lang={lang}>
+    <PageContainer center lang={lang} isCoolFont={lang === Language.he}>
       <>
         <h1>404 - {t("header")}</h1>
         <div className={styles.action}>

@@ -21,17 +21,35 @@ export default function Controls({
 }: ControlsProps) {
   return (
     <div className={localStyles.controls}>
-      <button className={styles.button} onClick={goToPrevious}>
-        {previous}
-      </button>
+      {getButton({ styles, func: goToPrevious, text: previous, rtl })}
+
       <div className={`${localStyles.pageCount} ${rtl ? localStyles.rtl : ""}`}>
         <span>{currPage}</span>
         <span>/</span>
         <span>{pageCount}</span>
       </div>
-      <button className={styles.button} onClick={goToNext}>
-        {next}
-      </button>
+      {getButton({ styles, func: goToNext, text: next, rtl })}
     </div>
+  );
+}
+
+function getButton({
+  styles,
+  text,
+  func,
+  rtl,
+}: {
+  func: () => void;
+  styles: Record<string, string>;
+  text: string;
+  rtl: boolean;
+}) {
+  return (
+    <button
+      className={`${styles.button} ${rtl ? styles["cool-font"] : ""}`}
+      onClick={func}
+    >
+      {text}
+    </button>
   );
 }

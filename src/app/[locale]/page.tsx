@@ -13,7 +13,7 @@ export default async function Home(props: {
   const t = await getTranslations("HomePage");
 
   return (
-    <PageContainer center lang={lang}>
+    <PageContainer center lang={lang} isCoolFont={lang === Language.he}>
       <p>{t("title")}</p>
     </PageContainer>
   );
