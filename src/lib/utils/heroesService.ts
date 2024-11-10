@@ -114,7 +114,6 @@ export interface Page {
 
 function getImageUrl(url: string) {
   const imageUrl = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  console.log("getImageUrl", imageUrl);
 
   return `https://res.cloudinary.com/${imageUrl}/image/upload/${url}`;
 }
