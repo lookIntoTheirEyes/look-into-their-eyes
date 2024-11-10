@@ -14,8 +14,6 @@ const PageContainer: React.FC<{
   isStory = false,
   isCoolFont = false,
 }) => {
-  console.log("isCoolFont");
-
   const view = isStory ? (
     children
   ) : (
