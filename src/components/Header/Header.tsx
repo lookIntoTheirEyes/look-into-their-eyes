@@ -1,6 +1,6 @@
 "use client";
 import { motion, useScroll, useTransform } from "framer-motion";
-import styles from "./header.module.css";
+import styles from "./Header.module.css";
 
 import LanguageInput from "../LanguageInput/LanguageInput";
 import NavLink from "../NavLink/NavLink";

@@ -48,6 +48,7 @@ const ModalPage = async (props: IProps) => {
         />
       </PageContainer>
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     redirect("/story");
   }
