@@ -80,7 +80,7 @@ const ModalClient = ({ title, description, imageUrls, isRtl }: IProps) => {
                   </div>
                 ))}
               </div>
-              <p>{description}</p>
+              <p className={styles.text}>{description}</p>
             </div>
           </motion.div>
         </motion.div>

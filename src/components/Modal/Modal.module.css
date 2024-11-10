@@ -31,6 +31,9 @@
 
 .modalContent {
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   @media (max-width: 768px) {
     padding: 0.5rem;
   }
@@ -60,8 +63,12 @@
 }
 
 .title {
+  align-self: center;
   color: var(--red);
   font-size: 3rem;
   justify-self: center;
-  margin-bottom: 0.5rem;
+}
+
+.text {
+  padding: 0 2rem;
 }
