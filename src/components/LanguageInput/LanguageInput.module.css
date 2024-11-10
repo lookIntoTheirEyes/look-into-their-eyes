@@ -11,4 +11,7 @@
   &.active {
     color: var(--red);
   }
+  &.disabled {
+    cursor: not-allowed;
+  }
 }

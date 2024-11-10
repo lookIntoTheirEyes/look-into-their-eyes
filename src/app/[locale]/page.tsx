@@ -2,6 +2,7 @@ import PageContainer from "@/components/PageContainer/PageContainer";
 import { Language } from "@/lib/model/language";
 
 import { getTranslations } from "next-intl/server";
+
 // import styles from "./page.module.css";
 
 export default async function Home(props: {

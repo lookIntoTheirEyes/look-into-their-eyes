@@ -15,7 +15,7 @@ const heroes: Hero[] = [
     he: {
       name: "ענבר היימן",
       description: "אנחנו מתגעגעים אליה מאוד",
-      longDescription: "אין דרך אפילו לתאר עד כמה שיש לנו געגוע עצום",
+      longDescription: "אין דרך אפילו לתאר עד כמה עצום הגעגוע",
     },
   },
   {
@@ -32,7 +32,7 @@ const heroes: Hero[] = [
     he: {
       name: "יצחק איציק אלגרט",
       description: "אנחנו מתגעגעים אליו מאוד",
-      longDescription: "אין דרך אפילו לתאר עד כמה שיש לנו געגוע עצום",
+      longDescription: "אין דרך אפילו לתאר עד כמה עצום הגעגוע",
     },
   },
 ];

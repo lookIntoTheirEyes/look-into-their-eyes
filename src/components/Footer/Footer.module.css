@@ -45,8 +45,8 @@
   font-weight: 600;
 
   @media (max-width: 768px) {
-    justify-content: space-around;
-    width: 100%;
+    justify-content: space-between;
+    width: 90%;
   }
 }
 

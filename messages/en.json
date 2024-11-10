@@ -218,5 +218,18 @@
       },
       "consent": "By using this website, you consent to the use of cookies in accordance with this Privacy and Cookie Policy."
     }
+  },
+  "404": {
+    "header": "It seems like you got to an unknown page",
+    "link1": "Click ",
+    "cta": "here",
+    "link2": "to go back home"
+  },
+  "Error": {
+    "header": "Error page",
+    "description": "It seems like we encountered an unexpected error",
+    "link1": "Click ",
+    "cta": "here",
+    "link2": "to go back home"
   }
 }
