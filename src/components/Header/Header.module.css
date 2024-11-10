@@ -12,7 +12,39 @@
 
 .header .nav {
   display: flex;
-  gap: 8px;
   font-size: 2.5rem;
   font-weight: 600;
+}
+
+.nav > li {
+  position: relative;
+
+  &:not(:first-child) {
+    padding-left: 10px;
+  }
+
+  &:not(:last-child) {
+    padding-right: 10px;
+  }
+}
+
+.nav:dir(rtl) > li {
+  padding: 0 10px;
+  padding-left: 10px;
+}
+
+.nav > li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 0;
+  width: 2px;
+  height: 80%;
+  background-color: #ccc;
+}
+
+.nav:dir(rtl) > li:not(:last-child)::after {
+  right: auto;
+  left: 0;
+  top: 8px;
 }
