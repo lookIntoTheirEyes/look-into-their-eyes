@@ -2,16 +2,17 @@
 import { forwardRef } from "react";
 import localStyles from "./Page.module.css";
 import Link from "next/link";
+import { Page as HeroPage } from "@/lib/utils/heroesService";
 
 interface PageProps {
   pageNum: number;
   styles: Record<string, string>;
   rtl: boolean;
-  children: React.ReactNode;
+  details: HeroPage;
 }
 
 const Page = forwardRef<HTMLDivElement, PageProps>(
-  ({ pageNum, styles, rtl, children }, ref) => {
+  ({ pageNum, styles, rtl, details }, ref) => {
     const isRightPage = pageNum % 2 === 0 ? rtl : !rtl;
 
     return (
@@ -20,11 +21,10 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
         ref={ref}
       >
         <div className={styles.pageContent}>
-          <h2 className={localStyles.pageHeader}>
-            {`${rtl ? "עמוד" : "Page"} - ${pageNum}`}
-          </h2>
-          <div className={localStyles.pageImage}></div>
-          <div className={localStyles.pageText}>{children}</div>
+          <h2 className={localStyles.pageHeader}>{details.title}</h2>
+          <div className={localStyles.pageImage} />
+          <p className={localStyles.pageText}>{details.description}</p>
+
           <div className={localStyles.pageFooter}>{pageNum}</div>
           <Link
             href={`/story/details?page=${pageNum}`}

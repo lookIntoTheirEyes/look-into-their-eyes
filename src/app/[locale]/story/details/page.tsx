@@ -2,6 +2,7 @@ import { Language } from "@/lib/model/language";
 import ModalClient from "@/components/Modal/Modal";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
 import PageContainer from "@/components/PageContainer/PageContainer";
+import { getHero } from "@/lib/utils/heroesService";
 
 interface IProps {
   params: Promise<{ locale: Language }>;
@@ -12,14 +13,10 @@ export async function generateMetadata(props: IProps) {
   const params = await props.params;
 
   const { locale } = params;
-
-  const page = getPageNum(searchParams);
-  const title =
-    locale === Language.en
-      ? `${page} Look in their eyes"`
-      : `${page} הסתכלו להם בעיניים`;
-  const description =
-    locale === Language.en ? "Look in their eyes" : "הסתכלו להם בעיניים";
+  const { name: title, description } = await getHero(
+    getPageNum(searchParams),
+    locale
+  );
 
   return {
     title,
@@ -29,12 +26,20 @@ export async function generateMetadata(props: IProps) {
 
 const ModalPage = async (props: IProps) => {
   const searchParams = await props.searchParams;
-  const page = getPageNum(searchParams);
-  const { locale } = await props.params;
+  const pageNum = getPageNum(searchParams);
+  const params = await props.params;
+
+  const { locale } = params;
+
+  const { name: title, longDescription } = await getHero(pageNum, locale);
 
   return (
     <PageContainer isStory lang={locale}>
-      <ModalClient page={+page} />
+      <ModalClient
+        page={+pageNum}
+        title={title}
+        description={longDescription}
+      />
     </PageContainer>
   );
 };

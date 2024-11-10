@@ -8,6 +8,7 @@ import PageCover from "@/components/Book/PageCover/PageCover";
 import Page from "@/components/Book/Page/Page";
 import { BookActions } from "@/lib/utils/utils";
 import Controls from "./Controls/Controls";
+import { Page as HeroPage } from "@/lib/utils/heroesService";
 
 interface PageFlipMethods {
   flipNext: () => void;
@@ -20,7 +21,7 @@ interface CustomPageFlip {
 
 interface BookProps extends BookActions {
   rtl?: boolean;
-  book: { pages: string[]; front: string; back: string };
+  book: { pages: HeroPage[]; front: HeroPage; back: HeroPage };
 }
 
 const Book: React.FC<BookProps> = ({
@@ -122,18 +123,17 @@ const Book: React.FC<BookProps> = ({
           updateUrlWithSearchParams(pageNum);
         }}
       >
-        <PageCover styles={styles}>{front}</PageCover>
+        <PageCover styles={styles} details={front} />
         {pages.map((content, i) => (
           <Page
             rtl={rtl}
             styles={styles}
-            key={content}
+            key={content.title}
+            details={content}
             pageNum={(rtl ? pages.length - i : i + 1) + 1}
-          >
-            {content}
-          </Page>
+          ></Page>
         ))}
-        <PageCover styles={styles}>{back}</PageCover>
+        <PageCover styles={styles} details={back} />
       </PageFlip>
       <Controls
         currPage={currPage}

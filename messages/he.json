@@ -24,8 +24,10 @@
     "artist": "בנצי ברופמן"
   },
   "Story": {
-    "previous": "הקודם",
-    "next": "הבא"
+    "actions": {
+      "previous": "הקודם",
+      "next": "הבא"
+    }
   },
   "terms": {
     "title": "תנאים והגבלות",

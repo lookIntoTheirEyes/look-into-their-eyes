@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import styles from "./modal.module.css";
 
+interface IProps {
+  page?: number;
+  title: string;
+  hero?: string;
+  description?: string;
+}
+
 const modalVariants = {
   hidden: {
     opacity: 0,
@@ -29,7 +36,7 @@ const backdropVariants = {
   exit: { opacity: 0 },
 };
 
-const ModalClient = ({ page }: { page: number }) => {
+const ModalClient = ({ title, description }: IProps) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
 
@@ -61,35 +68,9 @@ const ModalClient = ({ page }: { page: number }) => {
             className={styles.modal}
           >
             <div className={styles.modalContent}>
-              <h2>Details - {page}</h2>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-                auctor, nisl eget ultricies tincidunt, nisi nisl aliquam nisl,
-                eget aliquam nisl nisl sit amet nisl. Donec auctor, nisl eget
-                ultricies tincidunt, nisi nisl aliquam nisl, eget aliquam nisl
-                nisl sit amet nisl. Donec auctor, nisl eget ultricies tincidunt,
-                nisi nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl.
-                Donec auctor, nisl eget ultricies tincidunt, nisi nisl aliquam
-                nisl, eget aliquam nisl nisl sit amet nisl.
-              </p>
-              <p>
-                Donec auctor, nisl eget ultricies tincidunt, nisi nisl aliquam
-                nisl, eget aliquam nisl nisl sit amet nisl. Donec auctor, nisl
-                eget ultricies tincidunt, nisi nisl aliquam nisl, eget aliquam
-                nisl nisl sit amet nisl. Donec auctor, nisl eget ultricies
-                tincidunt, nisi nisl aliquam nisl, eget aliquam nisl nisl sit
-                amet nisl. Donec auctor, nisl eget ultricies tincidunt, nisi
-                nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl.
-              </p>
-              <p>
-                Donec auctor, nisl eget ultricies tincidunt, nisi nisl aliquam
-                nisl, eget aliquam nisl nisl sit amet nisl. Donec auctor, nisl
-                eget ultricies tincidunt, nisi nisl aliquam nisl, eget aliquam
-                nisl nisl sit amet nisl. Donec auctor, nisl eget ultricies
-                tincidunt, nisi nisl aliquam nisl, eget aliquam nisl nisl sit
-                amet nisl. Donec auctor, nisl eget ultricies tincidunt, nisi
-                nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl.
-              </p>
+              <h2 className={styles.title}>{title}</h2>
+              <div className={styles.pageImage} />
+              <p>{description}</p>
             </div>
           </motion.div>
         </motion.div>

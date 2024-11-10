@@ -24,8 +24,10 @@
     "artist": "Benzi Brofman"
   },
   "Story": {
-    "previous": "Previous",
-    "next": "Next"
+    "actions": {
+      "previous": "Previous",
+      "next": "Next"
+    }
   },
   "terms": {
     "title": "Terms and Conditions",
