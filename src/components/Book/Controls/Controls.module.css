@@ -10,4 +10,7 @@
   display: flex;
   gap: 4px;
   align-items: center;
+  &.rtl {
+    flex-direction: row-reverse;
+  }
 }

@@ -142,6 +142,7 @@ const Book: React.FC<BookProps> = ({
         goToNext={goToNext}
         actions={actions}
         styles={styles}
+        rtl={rtl}
       />
     </>
   );
