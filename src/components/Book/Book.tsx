@@ -152,7 +152,7 @@ const Book: React.FC<BookProps> = ({
       >
         <PageCover styles={styles} details={front} />
         {hasDummyPage && rtl ? (
-          <Page styles={styles} pageNum={pagesAmount + 2} />
+          <Page details={{}} styles={styles} pageNum={pagesAmount + 2} />
         ) : (
           <DummyPage />
         )}
@@ -168,7 +168,7 @@ const Book: React.FC<BookProps> = ({
           />
         ))}
         {hasDummyPage && !rtl ? (
-          <Page styles={styles} pageNum={pagesAmount + 2} />
+          <Page details={{}} styles={styles} pageNum={pagesAmount + 2} />
         ) : (
           <DummyPage />
         )}

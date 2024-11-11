@@ -9,14 +9,14 @@ import StyledButton from "@/components/StyledButton/StyledButton";
 interface PageProps {
   pageNum: number;
   styles: Record<string, string>;
+  details: HeroPage;
   rtl?: boolean;
-  details?: HeroPage;
   cta?: string;
   title?: string;
 }
 
 const Page = forwardRef<HTMLDivElement, PageProps>(
-  ({ pageNum, styles, rtl, details = {}, cta, title: chapter }, ref) => {
+  ({ pageNum, styles, rtl, details, cta, title: chapter }, ref) => {
     const router = useRouter();
     const isRightPage = pageNum % 2 === 0 ? rtl : !rtl;
 
