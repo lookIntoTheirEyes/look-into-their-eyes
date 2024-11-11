@@ -10,10 +10,10 @@ import StyledButton from "@/components/StyledButton/StyledButton";
 interface PageProps {
   pageNum: number;
   styles: Record<string, string>;
-  rtl: boolean;
-  details: HeroPage;
-  cta: string;
-  title: string;
+  rtl?: boolean;
+  details?: HeroPage;
+  cta?: string;
+  title?: string;
 }
 
 const Page = forwardRef<HTMLDivElement, PageProps>(
@@ -31,20 +31,27 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
         ref={ref}
       >
         <div className={styles.pageContent}>
-          <h2 className={localStyles.pageHeader}>{`${title} ${pageNum - 1} - ${
-            details.title
-          }`}</h2>
-          <div className={localStyles.imageSection}>
-            <div className={localStyles.pageImage}>
-              <Image imageUrl={details.imageUrl!} alt='Sample Image' />
-            </div>
-          </div>
-          <p className={localStyles.pageText}>{details.description}</p>
+          {details && (
+            <>
+              <h2 className={localStyles.pageHeader}>{`${title} ${
+                pageNum - 1
+              } - ${details.title}`}</h2>
+              <div className={localStyles.imageSection}>
+                <div className={localStyles.pageImage}>
+                  <Image imageUrl={details.imageUrl!} alt='Sample Image' />
+                </div>
+              </div>
+              <p className={localStyles.pageText}>{details.description}</p>
 
+              <StyledButton
+                onClick={handleClick}
+                className={localStyles.button}
+              >
+                {cta}
+              </StyledButton>
+            </>
+          )}
           <div className={localStyles.pageFooter}>{pageNum}</div>
-          <StyledButton onClick={handleClick} className={localStyles.button}>
-            {cta}
-          </StyledButton>
         </div>
       </div>
     );

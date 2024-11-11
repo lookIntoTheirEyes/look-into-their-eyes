@@ -9,6 +9,7 @@ import Page from "@/components/Book/Page/Page";
 import { BookActions } from "@/lib/utils/utils";
 import Controls from "./Controls/Controls";
 import { Page as HeroPage } from "@/lib/utils/heroesService";
+import DummyPage from "./DummyPage";
 
 interface PageFlipMethods {
   flipNext: () => void;
@@ -29,12 +30,16 @@ const Book: React.FC<BookProps> = ({
   book: { pages, front, back, title },
   actions,
 }) => {
+  const pagesAmount = pages.length;
+  const hasDummyPage = pagesAmount % 2 === 1;
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
   const [pageCount, setPageCount] = useState<number>(0);
   const searchParams = useSearchParams();
   const queryParamPage = +searchParams.get("page")!;
   const page =
-    !queryParamPage || queryParamPage > pages.length + 2 ? 1 : queryParamPage;
+    !queryParamPage || queryParamPage > pagesAmount + (hasDummyPage ? 3 : 2)
+      ? 1
+      : queryParamPage;
   const pathname = usePathname();
   const router = useRouter();
 
@@ -80,11 +85,13 @@ const Book: React.FC<BookProps> = ({
   };
 
   const calculatePageForRtl = (pageNum: number, isInit = false) => {
+    const adjustedPagesAmount = hasDummyPage ? pagesAmount + 1 : pagesAmount;
+
     const num = (isInit ? pageNum < 0 : !pageNum)
-      ? pages.length + 2
-      : pageNum === pages.length + 1
+      ? adjustedPagesAmount + 2
+      : pageNum === adjustedPagesAmount + 1
       ? 1
-      : pages.length + 1 - pageNum;
+      : adjustedPagesAmount + 1 - pageNum;
 
     return num;
   };
@@ -144,6 +151,11 @@ const Book: React.FC<BookProps> = ({
         }}
       >
         <PageCover styles={styles} details={front} />
+        {hasDummyPage && rtl ? (
+          <Page styles={styles} pageNum={pagesAmount + 2} />
+        ) : (
+          <DummyPage />
+        )}
         {pages.map((content, i) => (
           <Page
             title={title}
@@ -151,10 +163,15 @@ const Book: React.FC<BookProps> = ({
             styles={styles}
             key={content.title}
             details={content}
-            pageNum={(rtl ? pages.length - i : i + 1) + 1}
+            pageNum={(rtl ? pagesAmount - i : i + 1) + 1}
             cta={actions.cta}
-          ></Page>
+          />
         ))}
+        {hasDummyPage && !rtl ? (
+          <Page styles={styles} pageNum={pagesAmount + 2} />
+        ) : (
+          <DummyPage />
+        )}
         <PageCover styles={styles} details={back} />
       </PageFlip>
       <Controls
