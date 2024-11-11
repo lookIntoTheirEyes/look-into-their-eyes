@@ -74,8 +74,10 @@ const ModalClient = ({ title, description, imageUrls }: IProps) => {
               <h2 className={styles.title}>{title}</h2>
               <div className={styles.pageImages}>
                 {imageUrls.map((imageUrl, i) => (
-                  <div key={imageUrl + i} className={styles.pageImage}>
-                    <Image imageUrl={imageUrl} alt='Sample Image' />
+                  <div key={imageUrl + i} className={styles.imageBackground}>
+                    <div className={styles.pageImage}>
+                      <Image imageUrl={imageUrl} alt='Sample Image' />
+                    </div>
                   </div>
                 ))}
               </div>

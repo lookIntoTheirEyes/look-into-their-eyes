@@ -47,9 +47,14 @@
   justify-content: space-around;
   gap: 16px;
   flex-wrap: wrap;
-  background-color: var(--light-blue);
+}
+
+.imageBackground {
+  min-height: 250px;
+  width: 282px;
   border-radius: 4px;
-  padding: 16px 0;
+  background-color: var(--image-background);
+  padding: 16px;
 }
 
 .pageImage {
@@ -61,7 +66,7 @@
   border-radius: 4px;
 
   @media (max-width: 768px) {
-    width: 100%;
+    width: calc(100% -16px);
   }
 }
 

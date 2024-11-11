@@ -6,7 +6,7 @@
 
 .imageSection {
   width: 100%;
-  background-color: var(--light-blue);
+  background-color: var(--image-background);
   padding: 16px 0;
   border-radius: 4px;
 }
