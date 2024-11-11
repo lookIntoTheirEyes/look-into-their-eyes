@@ -44,15 +44,18 @@
 .pageImages {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   gap: 16px;
   flex-wrap: wrap;
+  background-color: var(--light-blue);
+  border-radius: 4px;
+  padding: 16px 0;
 }
 
 .pageImage {
   justify-self: center;
   position: relative;
-  width: 48%;
+  width: 250px;
   min-height: 250px;
   margin-bottom: 10px;
   border-radius: 4px;

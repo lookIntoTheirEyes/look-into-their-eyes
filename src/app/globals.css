@@ -4,6 +4,7 @@
   --black: #1a1a1a;
   --link: #0070f3;
   --light-grey: #f5f5f5;
+  --light-blue: #66b3ff8a;
   --footer-height: 60px;
   --footer-height-mobile: 20px;
   --bp-largest: 75em;
@@ -115,7 +116,7 @@ h3 {
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: #66b3ff;
+  background-color: var(--light-blue);
   transform: scale(1.1);
 }
 

@@ -24,8 +24,10 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
       >
         <div className={styles.pageContent}>
           <h2 className={localStyles.pageHeader}>{details.title}</h2>
-          <div className={localStyles.pageImage}>
-            <Image imageUrl={details.imageUrl!} alt='Sample Image' />
+          <div className={localStyles.imageSection}>
+            <div className={localStyles.pageImage}>
+              <Image imageUrl={details.imageUrl!} alt='Sample Image' />
+            </div>
           </div>
           <p className={localStyles.pageText}>{details.description}</p>
 

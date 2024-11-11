@@ -4,11 +4,20 @@
   color: var(--red);
 }
 
+.imageSection {
+  width: 100%;
+  background-color: var(--light-blue);
+  padding: 16px 0;
+  border-radius: 4px;
+}
+
 .pageImage {
   position: relative;
   min-height: 250px;
+  width: 300px;
   margin-bottom: 10px;
   border-radius: 4px;
+  margin: 0 auto;
 }
 
 .pageText {

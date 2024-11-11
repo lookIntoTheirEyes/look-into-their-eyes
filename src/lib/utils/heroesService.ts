@@ -4,6 +4,7 @@ const heroes: Hero[] = [
   {
     id: 1,
     imageUrls: [
+      "v1731313087/456207074_3815139565409372_4521394713267543061_n_euu2qs.jpg",
       "v1731240476/Screen-Shot-2023-10-25-at-1.59.37-PM-e1698231614287-640x400_smp4xr.png",
     ],
     en: {
@@ -69,13 +70,12 @@ export async function getHero(page: string, lang: Language) {
 
   const { name, description, longDescription } = hero;
 
-  const images = heroDetails.imageUrls.map((url) => getImageUrl(url));
+  const imageUrls = heroDetails.imageUrls.map((url) => getImageUrl(url));
   return {
     name,
     description,
     longDescription,
-
-    imageUrls: [...images.slice(), ...images.slice(), ...images.slice()],
+    imageUrls,
   };
 }
 

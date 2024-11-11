@@ -8,8 +8,11 @@ export default function About() {
   const t = useTranslations("About");
 
   const icons = [
-    { href: "https://facebook.com", icon: FaFacebook },
-    { href: "https://instagram.com", icon: FaInstagram },
+    {
+      href: "https://www.facebook.com/people/%D7%91%D7%A0%D7%A6%D7%99-%D7%91%D7%A8%D7%95%D7%A4%D7%9E%D7%9F-%D7%90%D7%9E%D7%9F-%D7%92%D7%A8%D7%A4%D7%99%D7%98%D7%99/100063486852636",
+      icon: FaFacebook,
+    },
+    { href: "https://www.instagram.com/benzi_brofman", icon: FaInstagram },
   ].map(({ href, icon: Icon }) => (
     <SocialIcon key={href} href={href} Icon={Icon} />
   ));
