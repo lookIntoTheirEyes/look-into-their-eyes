@@ -17,6 +17,12 @@
   &:dir(rtl) {
     font-family: "OHSavyonChenKipper", sans-serif;
   }
+
+  @media (max-width: 768px) {
+    &:not(:dir(rtl)) {
+      font-size: 1.8rem;
+    }
+  }
 }
 
 .nav > li {

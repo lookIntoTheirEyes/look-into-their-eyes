@@ -2,7 +2,7 @@
   bottom: var(--footer-height) !important;
 }
 
-@media (max-width: var(--bp-largest)) {
+@media (max-width: 768px) {
   .bthn {
     bottom: var(--footer-height-mobile) !important;
   }

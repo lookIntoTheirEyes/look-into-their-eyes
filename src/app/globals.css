@@ -7,11 +7,6 @@
   --light-blue: #66b3ff8a;
   --footer-height: 60px;
   --footer-height-mobile: 20px;
-  --bp-largest: 75em;
-  --bp-large: 68.75em;
-  --bp-medium: 56.25em;
-  --bp-small: 37.5em;
-  --bp-smallest: 31.25em;
 }
 
 @font-face {
@@ -53,7 +48,7 @@ html[dir="rtl"] {
   }
 }
 
-@media (max-width: var(--bp-largest)) {
+@media (max-width: 768px) {
   body {
     --_access-icon-bottom: var(--footer-height-mobile);
   }
@@ -74,7 +69,7 @@ html {
   box-sizing: border-box;
   font-size: 62.5%;
 
-  @media only screen and (max-width: var(--bp-large)) {
+  @media only screen and (max-width: 768px) {
     font-size: 50%;
   }
 }

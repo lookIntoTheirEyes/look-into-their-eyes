@@ -14,7 +14,7 @@ export default function About() {
     },
     { href: "https://www.instagram.com/benzi_brofman", icon: FaInstagram },
   ].map(({ href, icon: Icon }) => (
-    <SocialIcon key={href} href={href} Icon={Icon} />
+    <SocialIcon key={href} href={href} Icon={Icon} size={40} />
   ));
   return (
     <PageContainer center>
