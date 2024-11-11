@@ -1,16 +1,16 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import styles from "./LanguageInput.module.css";
 import { Language } from "@/lib/model/language";
-import { usePathname, useRouter } from "@/i18n/routing";
 
 export default function LanguageInput({ locale }: { locale: Language }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const page = searchParams.get("page");
   const isParallelRoute = pathname.includes("details");
 
   const onSelectChange = (language: Language) => {
@@ -19,9 +19,11 @@ export default function LanguageInput({ locale }: { locale: Language }) {
     }
 
     startTransition(() => {
-      const page = searchParams.get("page");
-      const query = page ? { query: { page } } : {};
-      router.replace({ pathname, ...query }, { locale: language });
+      const path = getUpdatedPath(pathname, language, page!);
+
+      router.replace(path, {
+        scroll: false,
+      });
     });
   };
 
@@ -42,4 +44,10 @@ export default function LanguageInput({ locale }: { locale: Language }) {
       }
     </div>
   );
+}
+
+function getUpdatedPath(path: string, language: string, page = "") {
+  const [, , ...route] = path.split("/");
+
+  return `/${language}/${route.join("/")}${page ? `?page=${page}` : ""}`;
 }

@@ -107,7 +107,7 @@ export function getFrontPage(lang: Language) {
 export function getBackPage(lang: Language) {
   return lang === Language.he
     ? {
-        title: "בין השישי לשביעי לאוקטובר",
+        title: "בין השישי לשביעי באוקטובר",
         author: "בנצי ברופמן",
         description: "",
         longDescription: "",
