@@ -59,8 +59,8 @@
   height: 95%;
   display: flex;
   flex-direction: column;
-
   overflow: auto;
+  overflow-x: hidden;
 
   @media (max-width: 1024px) {
     height: 90%;
