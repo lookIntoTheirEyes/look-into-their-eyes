@@ -3,13 +3,15 @@ import Image from "next/image";
 const BookImage = ({
   alt = "imageUrl",
   imageUrl,
+  borderRadius = "4px",
 }: {
   alt?: string;
   imageUrl: string;
+  borderRadius?: string;
 }) => {
   return (
     <Image
-      style={{ borderRadius: "4px" }}
+      style={{ borderRadius }}
       src={imageUrl}
       alt={alt}
       fill

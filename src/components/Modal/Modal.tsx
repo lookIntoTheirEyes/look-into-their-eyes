@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import styles from "./Modal.module.css";
 
-import Image from "../Book/Image/Image";
+import Image from "../Image/Image";
 
 interface IProps {
   page?: number;

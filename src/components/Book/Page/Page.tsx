@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import localStyles from "./Page.module.css";
 import Link from "next/link";
 import { Page as HeroPage } from "@/lib/utils/heroesService";
-import Image from "../Image/Image";
+import Image from "../../Image/Image";
 
 interface PageProps {
   pageNum: number;
