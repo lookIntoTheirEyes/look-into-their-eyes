@@ -75,10 +75,10 @@ html[dir="rtl"] {
 
 html {
   box-sizing: border-box;
-  font-size: 62.5%;
+  font-size: 62.5% !important;
 
   @media only screen and (max-width: 768px) {
-    font-size: 50%;
+    font-size: 50% !important;
   }
 }
 
@@ -106,9 +106,9 @@ h3 {
 }
 
 *::-webkit-scrollbar {
-  width: 14px;
-  height: 14px;
-  border-radius: 10px;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 1.4rem;
 }
 
 *::-webkit-scrollbar-thumb {

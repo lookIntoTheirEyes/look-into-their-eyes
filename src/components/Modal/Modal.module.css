@@ -35,6 +35,7 @@
   flex-direction: column;
   gap: 1.6rem;
   flex-grow: 1;
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
     gap: 0;
@@ -51,8 +52,8 @@
 }
 
 .imageBackground {
-  min-height: 250px;
-  width: 332px;
+  min-height: 25rem;
+  width: 33.2rem;
   border-radius: 0.4rem;
   background-color: var(--image-background);
   padding: 1.6rem;
@@ -61,8 +62,8 @@
 .pageImage {
   justify-self: center;
   position: relative;
-  width: 300px;
-  min-height: 250px;
+  width: 30rem;
+  min-height: 25rem;
   border-radius: 0.4rem;
 
   @media (max-width: 768px) {
