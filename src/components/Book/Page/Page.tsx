@@ -4,6 +4,8 @@ import localStyles from "./Page.module.css";
 import Link from "next/link";
 import { Page as HeroPage } from "@/lib/utils/heroesService";
 import Image from "../../Image/Image";
+import { useRouter } from "next/navigation";
+import StyledButton from "@/components/StyledButton/StyledButton";
 
 interface PageProps {
   pageNum: number;
@@ -16,7 +18,12 @@ interface PageProps {
 
 const Page = forwardRef<HTMLDivElement, PageProps>(
   ({ pageNum, styles, rtl, details, cta, title }, ref) => {
+    const router = useRouter();
     const isRightPage = pageNum % 2 === 0 ? rtl : !rtl;
+
+    const handleClick = () => {
+      router.push(`/story/details?page=${pageNum}`, { scroll: false });
+    };
 
     return (
       <div
@@ -35,13 +42,9 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
           <p className={localStyles.pageText}>{details.description}</p>
 
           <div className={localStyles.pageFooter}>{pageNum}</div>
-          <Link
-            href={`/story/details?page=${pageNum}`}
-            className={`${styles.button} ${localStyles.button}`}
-            scroll={false}
-          >
+          <StyledButton onClick={handleClick} className={localStyles.button}>
             {cta}
-          </Link>
+          </StyledButton>
         </div>
       </div>
     );

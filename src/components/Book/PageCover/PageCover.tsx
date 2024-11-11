@@ -10,7 +10,11 @@ interface PageCoverProps {
 const PageCover = forwardRef<HTMLDivElement, PageCoverProps>(
   ({ styles, details }, ref) => {
     return (
-      <div className={`${styles.page} ${localStyles.pageCover}`} ref={ref}>
+      <div
+        className={`${styles.page} ${localStyles.pageCover}`}
+        data-density='hard'
+        ref={ref}
+      >
         <div className={styles.pageContent}>
           <h2 className={localStyles.title}>{details.title}</h2>
           {details.author && (

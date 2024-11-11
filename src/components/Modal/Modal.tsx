@@ -1,11 +1,14 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import styles from "./Modal.module.css";
 
 import Image from "../Image/Image";
+import { getUpdatedPath } from "@/lib/utils/utils";
+import { Language } from "@/lib/model/language";
+import StyledButton from "../StyledButton/StyledButton";
 
 interface IProps {
   page?: number;
@@ -13,6 +16,7 @@ interface IProps {
   imageUrls: string[];
   hero?: string;
   description?: string;
+  lang: Language;
 }
 
 const modalVariants = {
@@ -30,6 +34,9 @@ const modalVariants = {
     opacity: 0,
     scale: 0.2,
     rotate: 180,
+    transition: {
+      duration: 0.5,
+    },
   },
 };
 
@@ -39,16 +46,36 @@ const backdropVariants = {
   exit: { opacity: 0 },
 };
 
-const ModalClient = ({ title, description, imageUrls }: IProps) => {
+const ModalClient = ({ title, description, imageUrls, lang }: IProps) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
+  const [isClosing, setIsClosing] = useState(false);
+  const path = usePathname();
+  const searchParams = useSearchParams();
+
+  const page = searchParams.get("page");
 
   const handleClose = () => {
-    setIsVisible(false);
+    setIsClosing(true);
+    setTimeout(() => setIsVisible(false), 500);
+  };
+
+  useEffect(() => {
+    path.includes("details") && setIsVisible(true);
+  }, [path]);
+
+  const handleExitComplete = () => {
+    if (!isClosing) return;
+
+    const path = getUpdatedPath(`/${lang}/story`, lang, page!);
+
+    router.push(path, {
+      scroll: false,
+    });
   };
 
   return (
-    <AnimatePresence mode='wait' onExitComplete={() => router.back()}>
+    <AnimatePresence mode='wait' onExitComplete={handleExitComplete}>
       {isVisible && (
         <motion.div
           key='backdrop'
@@ -70,6 +97,14 @@ const ModalClient = ({ title, description, imageUrls }: IProps) => {
             onClick={(e) => e.stopPropagation()}
             className={styles.modal}
           >
+            <button
+              onClick={handleClose}
+              className={styles.closeButton}
+              aria-label='Close Modal'
+            >
+              X
+            </button>
+
             <div className={styles.modalContent}>
               <h2 className={styles.title}>{title}</h2>
               <div className={styles.pageImages}>
@@ -83,6 +118,14 @@ const ModalClient = ({ title, description, imageUrls }: IProps) => {
               </div>
               <p className={styles.text}>{description}</p>
             </div>
+
+            <StyledButton
+              onClick={handleClose}
+              className={styles.closeButtonBottom}
+              aria-label='Close Modal'
+            >
+              Close
+            </StyledButton>
           </motion.div>
         </motion.div>
       )}

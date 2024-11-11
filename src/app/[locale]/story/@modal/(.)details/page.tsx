@@ -38,6 +38,7 @@ const HeroDetails = async (props: IProps) => {
 
     return (
       <ModalClient
+        lang={locale}
         page={+pageNum}
         title={title}
         description={longDescription}

@@ -163,7 +163,6 @@ const Book: React.FC<BookProps> = ({
         goToPrevious={goToPrevious}
         goToNext={goToNext}
         actions={actions}
-        styles={styles}
       />
     </div>
   );

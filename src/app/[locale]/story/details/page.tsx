@@ -41,6 +41,7 @@ const ModalPage = async (props: IProps) => {
     return (
       <PageContainer isStory>
         <ModalClient
+          lang={locale}
           page={+pageNum}
           title={title}
           description={longDescription}

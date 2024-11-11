@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import styles from "./LanguageInput.module.css";
 import { Language } from "@/lib/model/language";
+import { getUpdatedPath } from "@/lib/utils/utils";
 
 export default function LanguageInput({ locale }: { locale: Language }) {
   const [isPending, startTransition] = useTransition();
@@ -21,7 +22,7 @@ export default function LanguageInput({ locale }: { locale: Language }) {
     startTransition(() => {
       const path = getUpdatedPath(pathname, language, page!);
 
-      router.replace(path, {
+      router.push(path, {
         scroll: false,
       });
     });
@@ -44,10 +45,4 @@ export default function LanguageInput({ locale }: { locale: Language }) {
       }
     </div>
   );
-}
-
-function getUpdatedPath(path: string, language: string, page = "") {
-  const [, , ...route] = path.split("/");
-
-  return `/${language}/${route.join("/")}${page ? `?page=${page}` : ""}`;
 }
