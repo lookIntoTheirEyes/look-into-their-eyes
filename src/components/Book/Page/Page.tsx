@@ -17,10 +17,16 @@ interface PageProps {
 }
 
 const Page = forwardRef<HTMLDivElement, PageProps>(
-  ({ pageNum, styles, rtl, details, cta, title }, ref) => {
+  ({ pageNum, styles, rtl, details = {}, cta, title: chapter }, ref) => {
     const router = useRouter();
     const isRightPage = pageNum % 2 === 0 ? rtl : !rtl;
 
+    const {
+      title,
+      imageUrl,
+      description,
+      imageDescription = "Sample Image",
+    } = details;
     const handleClick = () => {
       router.push(`/story/details?page=${pageNum}`, { scroll: false });
     };
@@ -31,18 +37,23 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
         ref={ref}
       >
         <div className={styles.pageContent}>
-          {details && (
+          {Object.keys(details).length && (
             <>
-              <h2 className={localStyles.pageHeader}>{`${title} ${
-                pageNum - 1
-              } - ${details.title}`}</h2>
-              <div className={localStyles.imageSection}>
-                <div className={localStyles.pageImage}>
-                  <Image imageUrl={details.imageUrl!} alt='Sample Image' />
+              {chapter && (
+                <h2 className={localStyles.pageHeader}>{`${chapter} ${
+                  pageNum - 1
+                } - ${title}`}</h2>
+              )}
+              {imageUrl && (
+                <div className={localStyles.imageSection}>
+                  <div className={localStyles.pageImage}>
+                    <Image imageUrl={imageUrl!} alt={imageDescription} />
+                  </div>
                 </div>
-              </div>
-              <p className={localStyles.pageText}>{details.description}</p>
-
+              )}
+              {description && (
+                <p className={localStyles.pageText}>{description}</p>
+              )}
               <StyledButton
                 onClick={handleClick}
                 className={localStyles.button}
