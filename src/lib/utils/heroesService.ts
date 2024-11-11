@@ -96,13 +96,21 @@ export function getAllPages(lang: Language) {
 export function getFrontPage(lang: Language) {
   return lang === Language.he
     ? { title: "הסוף", description: "", longDescription: "" }
-    : { title: "My Story", description: "", longDescription: "" };
+    : {
+        title: "Between the 6th and the 7th of October",
+        description: "",
+        longDescription: "",
+      };
 }
 
 export function getBackPage(lang: Language) {
   return lang === Language.he
-    ? { title: "הסיפור שלנו", description: "", longDescription: "" }
-    : { title: "This is the last page", description: "", longDescription: "" };
+    ? {
+        title: "בין השישי לשביעי לאוקטובר",
+        description: "",
+        longDescription: "",
+      }
+    : { title: "The end", description: "", longDescription: "" };
 }
 
 export interface Page {

@@ -14,6 +14,9 @@
   display: flex;
   font-size: 2.5rem;
   font-weight: 600;
+  &:dir(rtl) {
+    font-family: "OHSavyonChenKipper", sans-serif;
+  }
 }
 
 .nav > li {

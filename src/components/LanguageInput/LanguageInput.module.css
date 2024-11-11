@@ -7,12 +7,16 @@
 .language {
   cursor: pointer;
   text-transform: uppercase;
-  font-family: "Helvetica", sans-serif !important;
   font-size: 2rem;
+
+  @media (max-width: var(--bp-largest)) {
+    font-size: 1.6rem;
+  }
 
   &.active {
     color: var(--red);
   }
+
   &.disabled {
     cursor: not-allowed;
   }

@@ -68,7 +68,7 @@
 }
 
 .button {
-  font-size: 2rem;
+  font-size: 1.3rem;
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
@@ -78,6 +78,7 @@
   transition: background-color 0.3s;
   align-self: center;
   &:dir(rtl) {
+    font-size: 2rem;
     padding: 0 15px;
     font-family: "OHSavyonChenKipper", sans-serif;
   }

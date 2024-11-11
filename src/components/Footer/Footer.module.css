@@ -7,9 +7,9 @@
   padding: 8px 16px;
   width: 100%;
   justify-content: space-between;
-  flex-direction: row;
+  align-items: center;
 
-  @media (max-width: 768px) {
+  @media (max-width: var(--bp-largest)) {
     flex-direction: column;
     align-items: center;
     gap: 8px;
@@ -47,7 +47,8 @@
   color: white;
   font-weight: 600;
   font-size: 2rem;
-  @media (max-width: 768px) {
+
+  @media (max-width: var(--bp-largest)) {
     justify-content: space-between;
     width: 90%;
   }

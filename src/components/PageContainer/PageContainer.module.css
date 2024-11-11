@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: url("/images/brick-wall.jpg") no-repeat center center fixed;
+  background: url("/images/7.jpg") no-repeat center center fixed;
   background-size: cover;
   filter: grayscale(50%) contrast(1.2);
 
@@ -18,11 +18,11 @@
     font-family: "OHSavyonChenKipper", sans-serif;
   }
 
-  &.story {
+  /* &.story {
     background: url("/images/book-background.jpg") no-repeat center center fixed;
-  }
+  } */
 
-  @media (max-width: 768px) {
+  @media (max-width: var(--bp-largest)) {
     margin-top: 56px;
   }
 }
@@ -44,7 +44,7 @@
     width: 70%;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: var(--bp-largest)) {
     width: 100%;
   }
 }

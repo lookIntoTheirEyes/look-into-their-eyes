@@ -27,7 +27,7 @@
   font-weight: bold;
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--bp-largest)) {
   .title {
     font-size: 2.5rem;
   }

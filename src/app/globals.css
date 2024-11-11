@@ -48,13 +48,12 @@ html[dir="rtl"] {
     --_access-icon-left: 10px;
     --_access-icon-right: auto;
   }
-  footer,
-  header {
+  footer {
     font-family: "OHSavyonChenKipper", sans-serif;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--bp-largest)) {
   body {
     --_access-icon-bottom: var(--footer-height-mobile);
   }
