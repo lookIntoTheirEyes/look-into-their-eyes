@@ -3,7 +3,7 @@ import PageContainer from "@/components/PageContainer/PageContainer";
 
 export default function Accessibility() {
   return (
-    <PageContainer>
+    <PageContainer isLegal>
       <AccessibilityStatement />
     </PageContainer>
   );

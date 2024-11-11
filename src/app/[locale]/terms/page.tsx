@@ -3,7 +3,7 @@ import Terms from "@/components/TermsAndConditions/TermsAndConditions";
 
 export default function TermsPage() {
   return (
-    <PageContainer>
+    <PageContainer isLegal>
       <Terms />
     </PageContainer>
   );

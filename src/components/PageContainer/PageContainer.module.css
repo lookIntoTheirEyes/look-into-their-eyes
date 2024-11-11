@@ -12,7 +12,9 @@
   background-size: cover;
   filter: grayscale(50%) contrast(1.2);
 
-  &:dir(rtl) {
+  text-align: justify;
+
+  &:dir(rtl):not(.legal) {
     font-family: "OHSavyonChenKipper", sans-serif;
   }
 
@@ -28,7 +30,6 @@
 .container {
   width: 85%;
   margin: 0 auto;
-  text-align: left;
   background-color: #1a1a1aa9;
   padding: 0 24px 24px 24px;
   flex: 1;
@@ -39,7 +40,11 @@
     align-items: center;
   }
 
-  @media (max-width: var(--bp-largest)) {
+  @media (max-width: 1100px) {
+    width: 70%;
+  }
+
+  @media (max-width: 768px) {
     width: 100%;
   }
 }

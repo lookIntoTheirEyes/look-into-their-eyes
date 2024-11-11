@@ -3,7 +3,7 @@ import PrivacyPolicy from "@/components/PrivacyPolicy/PrivacyPolicy";
 
 export default function PrivacyPage() {
   return (
-    <PageContainer>
+    <PageContainer isLegal>
       <PrivacyPolicy />
     </PageContainer>
   );
