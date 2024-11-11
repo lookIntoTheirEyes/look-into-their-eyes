@@ -6,8 +6,8 @@
   --light-grey: #f5f5f5;
   --light-blue: #66b3ff8a;
   --image-background: #333333;
-  --footer-height: 60px;
-  --footer-height-mobile: 20px;
+  --footer-height: 6rem;
+  --footer-height-mobile: 2rem;
 }
 
 @font-face {
@@ -15,6 +15,13 @@
   src: url("/fonts/OHSavyonChenKipper-Regular.woff2") format("woff2"),
     url("/fonts/OHSavyonChenKipper-Regular.woff") format("woff"),
     url("/OHSavyonChenKipper-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Graffiti";
+  src: url("/fonts/Mar_a Mercedes Graffiti Shop.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -28,7 +35,7 @@ body {
 }
 
 body {
-  font-family: "Helvetica", sans-serif;
+  font-family: "Graffiti", sans-serif;
   background-color: #1a1a1a;
   color: white;
   display: flex;
@@ -41,7 +48,7 @@ body {
 
 html[dir="rtl"] {
   body {
-    --_access-icon-left: 10px;
+    --_access-icon-left: 1rem;
     --_access-icon-right: auto;
   }
   footer {
@@ -94,6 +101,7 @@ p {
 h1,
 h2,
 h3 {
+  font-weight: 500;
   color: var(--yellow);
 }
 

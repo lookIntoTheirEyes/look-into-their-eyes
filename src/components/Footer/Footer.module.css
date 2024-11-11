@@ -1,13 +1,16 @@
 .creator {
   display: flex;
-  gap: 6px;
+  gap: 0.6rem;
   align-items: center;
   & > p {
-    font-weight: 600;
     font-size: 2.2rem;
+
+    &:dir(ltr) {
+      font-size: 2.5rem;
+    }
   }
   & a {
-    height: 20px;
+    height: 2.4rem;
     color: var(--yellow);
     transition: color 0.3s ease;
 
@@ -22,7 +25,7 @@
   color: white;
   position: relative;
   display: flex;
-  padding: 8px 16px;
+  padding: 0.8rem 1.6rem;
   width: 100%;
   justify-content: space-between;
   align-items: center;
@@ -30,7 +33,7 @@
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 0.8rem;
 
     .footer > p:not(:dir(rtl)) {
       font-size: 1.8rem;
@@ -41,11 +44,15 @@
 .links {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.8rem;
   justify-content: center;
   color: white;
-  font-weight: 600;
+
   font-size: 2rem;
+
+  &:dir(ltr) {
+    font-size: 2.5rem;
+  }
 
   @media (max-width: 768px) {
     justify-content: space-between;
@@ -54,7 +61,7 @@
 
   @media (max-width: 768px) {
     &:not(:dir(rtl)) {
-      font-size: 1.8rem;
+      font-size: 2.1rem;
     }
   }
 }

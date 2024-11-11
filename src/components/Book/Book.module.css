@@ -2,7 +2,7 @@
   margin: 0 auto;
   position: relative;
   width: 100%;
-  padding: 24px;
+  padding: 2.4rem;
   flex: 1;
 
   &.loading {
@@ -32,14 +32,14 @@
   width: 100%;
   transform-origin: center;
   background: white;
-  border-radius: 5px;
+  border-radius: 0.4rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 8px 20px;
+  padding: 0.8rem 2rem;
 
   @media (max-width: 1024px) {
-    padding: 8px;
+    padding: 0.8rem;
   }
 
   &.left {
@@ -72,18 +72,19 @@
 }
 
 .button {
-  font-size: 1.3rem;
-  padding: 10px 15px;
+  font-size: 3rem;
+  padding: 1rem 1.5rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.4rem;
   background-color: rgb(203, 36, 36);
   color: var(--light-grey);
   cursor: pointer;
   transition: background-color 0.3s;
   align-self: center;
+  font-family: "Graffiti", sans-serif;
   &:dir(rtl) {
     font-size: 2rem;
-    padding: 0 15px;
+    padding: 0 1.6rem;
     font-family: "OHSavyonChenKipper", sans-serif;
   }
 }
@@ -100,7 +101,7 @@
 }
 
 .loader {
-  height: 80px;
+  height: 0.8rem;
   aspect-ratio: 1;
   display: grid;
 }

@@ -7,21 +7,15 @@
   align-items: baseline;
   color: white;
   z-index: 1000;
-  padding: 16px;
+  padding: 0.8rem 1.6rem;
 }
 
 .header .nav {
   display: flex;
-  font-size: 2.5rem;
-  font-weight: 600;
+  font-size: 3.5rem;
+
   &:dir(rtl) {
     font-family: "OHSavyonChenKipper", sans-serif;
-  }
-
-  @media (max-width: 768px) {
-    &:not(:dir(rtl)) {
-      font-size: 1.8rem;
-    }
   }
 }
 
@@ -29,25 +23,25 @@
   position: relative;
 
   &:not(:first-child) {
-    padding-left: 10px;
+    padding-left: 1rem;
   }
 
   &:not(:last-child) {
-    padding-right: 10px;
+    padding-right: 1rem;
   }
 }
 
 .nav:dir(rtl) > li {
-  padding: 0 10px;
-  padding-left: 10px;
+  padding: 0 1rem;
+  padding-left: 1rem;
 }
 
 .nav > li:not(:last-child)::after {
   content: "";
   position: absolute;
-  top: 4px;
+  top: 0.4rem;
   right: 0;
-  width: 2px;
+  width: 0.2rem;
   height: 80%;
   background-color: #ccc;
 }
@@ -55,5 +49,5 @@
 .nav:dir(rtl) > li:not(:last-child)::after {
   right: auto;
   left: 0;
-  top: 8px;
+  top: 0.8rem;
 }

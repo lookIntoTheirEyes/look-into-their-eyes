@@ -1,16 +1,20 @@
 .container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.8rem;
 }
 
 .language {
   cursor: pointer;
   text-transform: uppercase;
-  font-size: 2rem;
+  font-size: 2.5rem;
+
+  &:dir(ltr) {
+    font-family: "OHSavyonChenKipper", sans-serif;
+  }
 
   @media (max-width: 768px) {
-    font-size: 1.6rem;
+    font-size: 2rem;
   }
 
   &.active {

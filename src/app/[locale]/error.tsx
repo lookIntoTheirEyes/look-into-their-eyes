@@ -21,7 +21,7 @@ export default function Error({ error }: Props) {
     <PageContainer center>
       <>
         <h1 className={styles.header}>{t("header")}</h1>
-        <p>{t("description")}</p>
+        <p className={styles.text}>{t("description")}</p>
         <div className={styles.action}>
           <p>{t("link1")}</p>
           <NavLink isColor bold href={{ pathname: "/" }}>

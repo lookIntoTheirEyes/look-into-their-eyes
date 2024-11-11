@@ -37,7 +37,7 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
           <div className={localStyles.pageFooter}>{pageNum}</div>
           <Link
             href={`/story/details?page=${pageNum}`}
-            className={styles.button}
+            className={`${styles.button} ${localStyles.button}`}
             scroll={false}
           >
             {cta}

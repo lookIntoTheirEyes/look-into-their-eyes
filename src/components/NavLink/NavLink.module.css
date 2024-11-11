@@ -1,7 +1,7 @@
 .link {
   text-transform: uppercase;
   &.bold {
-    font-weight: 600;
+    font-weight: 500;
   }
 }
 
