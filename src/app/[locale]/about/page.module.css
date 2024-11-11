@@ -2,11 +2,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+
+  .nameContainer {
+    margin-top: -30px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    & > h2,
+    & > span {
+      font-size: 3rem;
+      color: white;
+    }
+  }
 }
 
 .header {
-  font-size: 4rem;
+  font-size: 6rem;
+  padding-bottom: 2rem;
 }
 
 .imageContainer {

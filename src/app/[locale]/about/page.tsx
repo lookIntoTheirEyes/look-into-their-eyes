@@ -19,8 +19,11 @@ export default function About() {
   return (
     <PageContainer center>
       <div className={styles.aboutContainer}>
-        <h1 className={styles.header}>{t("intro")}</h1>
-        <p> {t("artist")}</p>
+        <div className={styles.nameContainer}>
+          <h1 className={styles.header}>{t("intro")}</h1>
+          <span>-</span>
+          <h2> {t("artist")}</h2>
+        </div>
         <div className={styles.imageContainer}>
           <Image
             imageUrl='https://res.cloudinary.com/dycup1zmv/image/upload/v1731312284/kijbzwguwzq2ukypz1ug.jpg'

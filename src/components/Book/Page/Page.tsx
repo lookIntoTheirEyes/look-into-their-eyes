@@ -11,10 +11,11 @@ interface PageProps {
   rtl: boolean;
   details: HeroPage;
   cta: string;
+  title: string;
 }
 
 const Page = forwardRef<HTMLDivElement, PageProps>(
-  ({ pageNum, styles, rtl, details, cta }, ref) => {
+  ({ pageNum, styles, rtl, details, cta, title }, ref) => {
     const isRightPage = pageNum % 2 === 0 ? rtl : !rtl;
 
     return (
@@ -23,7 +24,9 @@ const Page = forwardRef<HTMLDivElement, PageProps>(
         ref={ref}
       >
         <div className={styles.pageContent}>
-          <h2 className={localStyles.pageHeader}>{details.title}</h2>
+          <h2 className={localStyles.pageHeader}>{`${title} ${pageNum - 1} - ${
+            details.title
+          }`}</h2>
           <div className={localStyles.imageSection}>
             <div className={localStyles.pageImage}>
               <Image imageUrl={details.imageUrl!} alt='Sample Image' />

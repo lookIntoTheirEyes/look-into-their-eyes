@@ -21,12 +21,12 @@ interface CustomPageFlip {
 
 interface BookProps extends BookActions {
   rtl: boolean;
-  book: { pages: HeroPage[]; front: HeroPage; back: HeroPage };
+  book: { pages: HeroPage[]; front: HeroPage; back: HeroPage; title: string };
 }
 
 const Book: React.FC<BookProps> = ({
   rtl,
-  book: { pages, front, back },
+  book: { pages, front, back, title },
   actions,
 }) => {
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
@@ -146,6 +146,7 @@ const Book: React.FC<BookProps> = ({
         <PageCover styles={styles} details={front} />
         {pages.map((content, i) => (
           <Page
+            title={title}
             rtl={rtl}
             styles={styles}
             key={content.title}

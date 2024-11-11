@@ -98,6 +98,7 @@ export function getFrontPage(lang: Language) {
     ? { title: "הסוף", description: "", longDescription: "" }
     : {
         title: "Between the 6th and the 7th of October",
+        author: "Benzi Brofman",
         description: "",
         longDescription: "",
       };
@@ -107,6 +108,7 @@ export function getBackPage(lang: Language) {
   return lang === Language.he
     ? {
         title: "בין השישי לשביעי לאוקטובר",
+        author: "בנצי ברופמן",
         description: "",
         longDescription: "",
       }
@@ -118,6 +120,10 @@ export interface Page {
   description: string;
   longDescription: string;
   imageUrl?: string;
+}
+
+export interface CoverPage extends Page {
+  author?: string;
 }
 
 function getImageUrl(url: string) {

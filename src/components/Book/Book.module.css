@@ -65,6 +65,10 @@
   @media (max-width: 1024px) {
     height: 90%;
   }
+
+  & > h2 {
+    color: var(--red);
+  }
 }
 
 .button {

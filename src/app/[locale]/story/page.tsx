@@ -31,6 +31,7 @@ const BookComponent: React.FC<Props> = async (props) => {
           front: getFrontPage(locale),
           back: getBackPage(locale),
           pages: pagesContent(locale),
+          title: t("title"),
         }}
         rtl={rtl}
         actions={{
