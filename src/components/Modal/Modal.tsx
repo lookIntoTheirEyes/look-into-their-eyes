@@ -61,7 +61,9 @@ const ModalClient = ({ title, description, imageUrls, lang }: IProps) => {
   };
 
   useEffect(() => {
-    path.includes("details") && setIsVisible(true);
+    if (path.includes("details")) {
+      setIsVisible(true);
+    }
   }, [path]);
 
   const handleExitComplete = () => {
