@@ -9,7 +9,7 @@
 }
 
 .modal {
-  background-color: var(--white);
+  background-color: var(--page-background);
   width: 70vw;
   height: 70vh;
   color: var(--black);
@@ -97,6 +97,7 @@
   cursor: pointer;
   z-index: 60;
   transition: all 0.3s ease;
+  background-color: transparent;
 
   &:dir(ltr) {
     left: auto;
