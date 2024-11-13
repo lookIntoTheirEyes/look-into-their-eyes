@@ -1,3 +1,5 @@
+"use client";
+
 import StyledButton from "@/components/StyledButton/StyledButton";
 import { Page } from "@/lib/utils/heroesService";
 import localStyles from "./PageContent.module.css";

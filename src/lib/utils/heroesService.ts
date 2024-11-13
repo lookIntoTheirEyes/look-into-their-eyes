@@ -56,7 +56,7 @@ interface HeroDetails {
 }
 
 export function getHeroId(page: number) {
-  return (+page - 1).toString();
+  return (+page - 2).toString();
 }
 
 export async function getHero(page: string, lang: Language) {
