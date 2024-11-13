@@ -24,6 +24,21 @@ const AccessibilityStatement = () => {
         {t("accessibility_initiative_2")}
       </p>
 
+      <h2 className={styles.subTitle}>{t("accessibility_features_title")}</h2>
+      <ul className={styles.list}>
+        <li>{t("feature_text_resize")}</li>
+        <li>{t("feature_text_spacing")}</li>
+        <li>{t("feature_line_height")}</li>
+        <li>{t("feature_invert_colors")}</li>
+        <li>{t("feature_gray_hues")}</li>
+        <li>{t("feature_underline_links")}</li>
+        <li>{t("feature_big_cursor")}</li>
+        <li>{t("feature_reading_guide")}</li>
+        <li>{t("feature_text_to_speech")}</li>
+        <li>{t("feature_speech_to_text")}</li>
+        <li>{t("feature_disable_animations")}</li>
+      </ul>
+
       <h2 className={styles.subTitle}>{t("contact_us_title")}</h2>
       <p className={styles.paragraph}>{t("contact_us_paragraph")}</p>
 

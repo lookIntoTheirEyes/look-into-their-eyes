@@ -23,6 +23,7 @@
 }
 
 .contactHeader {
+  color: var(--yellow);
   margin-top: 2rem;
   font-weight: bold;
 }
