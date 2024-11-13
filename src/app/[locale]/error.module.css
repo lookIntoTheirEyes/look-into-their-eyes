@@ -15,8 +15,16 @@
 
   & > * {
     font-size: 5rem;
+
     &:not(a) {
       font-size: 3rem;
+    }
+
+    &:dir(rtl) {
+      padding-bottom: 1.5rem;
+      &:not(a) {
+        padding-bottom: 0;
+      }
     }
   }
 }
