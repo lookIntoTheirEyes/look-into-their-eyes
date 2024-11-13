@@ -16,9 +16,9 @@ button.disabled {
   align-items: center;
   justify-content: center;
   background-color: var(--red);
-  padding: 0.8rem 1.6rem;
+  font-size: 2rem;
+  padding: 0 0.8rem;
   border-radius: 0.4rem;
-  font-size: 2.5rem;
   min-width: 9rem;
 
   &:dir(rtl) {
