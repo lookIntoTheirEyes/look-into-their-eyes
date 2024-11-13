@@ -1,5 +1,7 @@
 import { Language } from "../model/language";
 
+export const NO_CONTENT_PAGES = 3;
+
 const heroes: Hero[] = [
   {
     id: 1,
@@ -56,7 +58,7 @@ interface HeroDetails {
 }
 
 export function getHeroId(page: number) {
-  return (+page - 2).toString();
+  return (+page - NO_CONTENT_PAGES + 1).toString();
 }
 
 export async function getHero(page: string, lang: Language) {
