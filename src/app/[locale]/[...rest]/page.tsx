@@ -10,10 +10,11 @@ export default function CatchAllPage() {
   return (
     <PageContainer center>
       <>
-        <h1 className={styles.header}>404 - {t("header")}</h1>
+        <h1 className={styles.header}>101 {t("header")}</h1>
+        <h2 className={styles.secondary}>{t("secondary-header")}</h2>
         <div className={styles.action}>
           <p>{t("link1")}</p>
-          <NavLink isColor bold href={{ pathname: "/" }}>
+          <NavLink isColor href={{ pathname: "/" }}>
             {t("cta")}
           </NavLink>
           <p>{t("link2")}</p>

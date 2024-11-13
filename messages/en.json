@@ -235,7 +235,8 @@
     }
   },
   "404": {
-    "header": "It seems like you got to an unknown page",
+    "header": "Hostages are still missing",
+    "secondary-header": "Also it seems like you got to an unknown page",
     "link1": "Click ",
     "cta": "here",
     "link2": "to go back home"

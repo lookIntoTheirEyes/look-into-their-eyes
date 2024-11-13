@@ -8,7 +8,7 @@ import styles from "./NavLink.module.css";
 interface NavLinkProps {
   href: { pathname: Pathnames; query?: Record<string, string | number> };
   children: React.ReactNode;
-  bold?: boolean;
+
   isColor?: boolean;
 }
 
@@ -16,7 +16,6 @@ const NavLink: React.FC<NavLinkProps> = ({
   href,
   children,
   isColor = false,
-  bold = false,
 }) => {
   const selectedLayoutSegment = useSelectedLayoutSegment();
   const pathname = selectedLayoutSegment ? `/${selectedLayoutSegment}` : "/";
@@ -24,9 +23,7 @@ const NavLink: React.FC<NavLinkProps> = ({
 
   return (
     <Link
-      className={`${styles.link} ${isColor || isActive ? styles.active : ""} ${
-        bold ? styles.bold : ""
-      }`}
+      className={`${styles.link} ${isColor || isActive ? styles.active : ""}`}
       href={href}
     >
       {children}

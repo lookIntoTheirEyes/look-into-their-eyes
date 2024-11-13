@@ -1,5 +1,9 @@
 .header {
-  font-size: 6rem;
+  font-size: 7rem;
+}
+
+.secondary {
+  font-size: 4rem;
 }
 
 .action {
@@ -8,6 +12,9 @@
   align-items: center;
 
   & > * {
-    font-size: 4rem;
+    font-size: 5rem;
+    &:not(a) {
+      font-size: 3rem;
+    }
   }
 }
