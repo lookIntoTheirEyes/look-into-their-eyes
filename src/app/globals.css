@@ -76,10 +76,10 @@ html[dir="rtl"] {
 
 html {
   box-sizing: border-box;
-  font-size: 62.5% !important;
+  font-size: 62.5%;
 
   @media only screen and (max-width: 768px) {
-    font-size: 50% !important;
+    font-size: 50%;
   }
 }
 

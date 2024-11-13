@@ -7,9 +7,18 @@ const AccessibilityWidget: React.FC<{
   lang: Language;
 }> = ({ lang }) => {
   useEffect(() => {
+    const speechLang = lang === Language.he ? "he-IL" : "en-US";
+
     const defaultOptions = {
       session: {
         persistent: true,
+      },
+      language: {
+        textToSpeechLang: speechLang,
+        speechToTextLang: speechLang,
+      },
+      icon: {
+        img: "accessible",
       },
     };
     const accessibilityOptions =
@@ -46,11 +55,8 @@ function getHebrewOptions() {
     disableAnimations: "כיבוי אנימציות",
     hotkeyPrefix: "מקש חם: ",
   };
-
   const options = {
     labels,
-    textToSpeechLang: "he-IL",
-    speechToTextLang: "he-IL",
   };
 
   return options;
