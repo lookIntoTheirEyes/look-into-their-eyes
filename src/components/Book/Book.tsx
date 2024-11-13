@@ -11,6 +11,7 @@ import Controls from "./Controls/Controls";
 import { Page as HeroPage } from "@/lib/utils/heroesService";
 import TableOfContents from "./TableOfContents/TableOfContents";
 import PageContent from "./Page/PageContent/PageContent";
+import DummyPage from "./DummyPage";
 
 interface PageFlipMethods {
   flipNext: () => void;
@@ -96,28 +97,33 @@ const Book: React.FC<BookProps> = ({
 
   const calculatePageForRtl = (pageNum: number, isInit = false) => {
     const num = (isInit ? pageNum < 0 : !pageNum)
-      ? pagesAmount + 2
-      : pageNum === pagesAmount + 1
+      ? pagesAmount + 3
+      : pageNum === pagesAmount + 2
       ? 1
-      : pagesAmount + 1 - pageNum;
+      : pagesAmount + 2 - pageNum;
 
     return num;
   };
 
-  const toc = (
-    <TableOfContents
-      title={tocTitle}
-      styles={styles}
-      rtl={rtl}
-      navigateToPage={goToPage}
-      pages={pages.map((page, i) => {
-        return {
-          title: page.title!,
-          pageNum: (rtl ? pagesAmount - i : i + 1) + 1,
-        };
-      })}
-    />
-  );
+  const toc = (rtl: boolean) =>
+    rtl ? (
+      <Page rtl={rtl} styles={styles} pageNum={(rtl ? pagesAmount - 2 : 1) + 1}>
+        <TableOfContents
+          title={tocTitle}
+          styles={styles}
+          rtl={rtl}
+          navigateToPage={goToPage}
+          pages={pages.map((page, i) => {
+            return {
+              title: page.title!,
+              pageNum: (rtl ? pagesAmount - i : i + 1) + 1,
+            };
+          })}
+        />
+      </Page>
+    ) : (
+      <DummyPage />
+    );
 
   useEffect(() => {
     if (page !== queryParamPage) {
@@ -175,15 +181,7 @@ const Book: React.FC<BookProps> = ({
       >
         <PageCover styles={styles} details={front} />
 
-        {
-          <Page
-            rtl={rtl}
-            styles={styles}
-            pageNum={(rtl ? pagesAmount - 2 : 1) + 1}
-          >
-            {toc}
-          </Page>
-        }
+        {toc(!rtl)}
         {pages.map((content, i) => (
           <Page
             rtl={rtl}
@@ -200,6 +198,7 @@ const Book: React.FC<BookProps> = ({
             />
           </Page>
         ))}
+        {toc(rtl)}
         <PageCover styles={styles} details={back} />
       </PageFlip>
       <Controls
