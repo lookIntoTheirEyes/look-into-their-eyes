@@ -18,11 +18,11 @@ export default function Footer() {
   ));
 
   const icons = [
+    { href: "https://www.facebook.com/nati.gurevich.3", icon: FaFacebook },
     {
       href: "https://www.linkedin.com/in/nati-gurevich-36868711b",
       icon: FaLinkedin,
     },
-    { href: "https://www.facebook.com/nati.gurevich.3", icon: FaFacebook },
   ].map(({ href, icon: Icon }) => (
     <SocialIcon key={href} href={href} Icon={Icon} />
   ));
