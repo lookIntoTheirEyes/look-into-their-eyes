@@ -1,9 +1,14 @@
 .header {
   font-size: 7rem;
+  line-height: 1;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .secondary {
   font-size: 4rem;
+  line-height: 0.8;
 }
 
 .action {
@@ -13,8 +18,16 @@
 
   & > * {
     font-size: 5rem;
+
     &:not(a) {
       font-size: 3rem;
+    }
+
+    &:dir(rtl) {
+      padding-bottom: 1.5rem;
+      &:not(a) {
+        padding-bottom: 0;
+      }
     }
   }
 }
