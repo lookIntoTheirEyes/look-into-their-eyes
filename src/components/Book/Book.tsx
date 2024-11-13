@@ -39,8 +39,6 @@ const Book: React.FC<BookProps> = ({
     goToPage,
   } = useBookNavigation(pagesAmount, rtl);
 
-  console.log("currPage", currPage);
-
   const renderToc = (isRender: boolean) => {
     return isRender ? (
       <Page rtl={rtl} styles={styles} pageNum={2}>
@@ -64,21 +62,19 @@ const Book: React.FC<BookProps> = ({
     );
   };
 
-  const calculatePageForRtl = (pageNum: number, isInit = false) => {
-    if (isInit && pageNum < 2) return pagesAmount - 1;
-    const startPage = pagesAmount - NO_CONTENT_PAGES - 1 + pageNum;
-    console.log("startPage", startPage);
-
-    return startPage;
-  };
-
   return (
     <div className={styles.storyContainer}>
       <PageFlip
         ref={pageFlipRef}
         className={""}
         style={{}}
-        startPage={rtl ? calculatePageForRtl(currPage, true) : currPage - 1}
+        startPage={
+          rtl
+            ? currPage < 2
+              ? pagesAmount - 1
+              : pagesAmount - currPage
+            : currPage - 1
+        }
         width={550}
         height={720}
         size='stretch'
@@ -101,8 +97,9 @@ const Book: React.FC<BookProps> = ({
         renderOnlyPageLengthChange
         disableFlipByClick={false}
         onFlip={({ data }) => {
-          const pageNum = rtl ? pagesAmount - data - 1 : data + 1;
-          updatePage(pageNum);
+          const pageNum = rtl ? pagesAmount - (data || -1) - 1 : data + 1;
+
+          updatePage(pageNum || 1);
         }}
       >
         <PageCover styles={styles} details={front} />

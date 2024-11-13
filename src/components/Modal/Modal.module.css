@@ -110,4 +110,8 @@ button.closeButtonBottom {
   margin-top: 1rem;
   margin-bottom: 1rem;
   z-index: 60;
+
+  &:dir(rtl) {
+    margin-bottom: 1.5rem;
+  }
 }

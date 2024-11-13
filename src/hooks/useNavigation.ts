@@ -62,7 +62,7 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
 
   const goToPage = (pageNum: number) => {
     const pageFlip = pageFlipRef.current?.pageFlip();
-    pageFlip?.flip(pageNum - 1);
+    pageFlip?.flip((isRtl ? pagesAmount - pageNum : pageNum) - 1);
   };
 
   useEffect(() => {
