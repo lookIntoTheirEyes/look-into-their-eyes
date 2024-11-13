@@ -29,7 +29,8 @@
       "next": "הבא",
       "pageCta": "המשך לקרוא"
     },
-    "title": "פרק"
+    "title": "פרק",
+    "closeText": "חזור"
   },
   "terms": {
     "title": "תנאים והגבלות",

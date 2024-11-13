@@ -29,7 +29,8 @@
       "next": "Next",
       "pageCta": "Read More"
     },
-    "title": "Chapter"
+    "title": "Chapter",
+    "closeText": "Back"
   },
   "terms": {
     "title": "Terms and Conditions",

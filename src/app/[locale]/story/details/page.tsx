@@ -4,6 +4,7 @@ import { getPageNum, SearchParams } from "@/lib/utils/utils";
 import PageContainer from "@/components/PageContainer/PageContainer";
 import { getHero } from "@/lib/utils/heroesService";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 interface IProps extends ILanguageProps {
   searchParams: Promise<SearchParams>;
@@ -29,6 +30,7 @@ const ModalPage = async (props: IProps) => {
   const searchParams = await props.searchParams;
   const pageNum = getPageNum(searchParams);
   const params = await props.params;
+  const t = await getTranslations("Story");
 
   const { locale } = params;
   try {
@@ -41,6 +43,7 @@ const ModalPage = async (props: IProps) => {
     return (
       <PageContainer isStory>
         <ModalClient
+          closeText={t("closeText")}
           lang={locale}
           page={+pageNum}
           title={title}

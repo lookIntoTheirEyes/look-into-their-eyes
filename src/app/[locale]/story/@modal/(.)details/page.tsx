@@ -2,6 +2,7 @@ import ModalClient from "@/components/Modal/Modal";
 import { ILanguageProps } from "@/lib/model/language";
 import { getHero } from "@/lib/utils/heroesService";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 interface IProps extends ILanguageProps {
@@ -27,6 +28,7 @@ const HeroDetails = async (props: IProps) => {
   const searchParams = await props.searchParams;
   const pageNum = getPageNum(searchParams);
   const params = await props.params;
+  const t = await getTranslations("Story");
 
   const { locale } = params;
   try {
@@ -43,6 +45,7 @@ const HeroDetails = async (props: IProps) => {
         title={title}
         description={longDescription}
         imageUrls={imageUrls}
+        closeText={t("closeText")}
       />
     );
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

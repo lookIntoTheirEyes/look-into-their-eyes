@@ -17,6 +17,7 @@ interface IProps {
   hero?: string;
   description?: string;
   lang: Language;
+  closeText: string;
 }
 
 const modalVariants = {
@@ -46,7 +47,13 @@ const backdropVariants = {
   exit: { opacity: 0 },
 };
 
-const ModalClient = ({ title, description, imageUrls, lang }: IProps) => {
+const ModalClient = ({
+  title,
+  description,
+  imageUrls,
+  lang,
+  closeText,
+}: IProps) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
@@ -126,7 +133,7 @@ const ModalClient = ({ title, description, imageUrls, lang }: IProps) => {
               className={styles.closeButtonBottom}
               aria-label='Close Modal'
             >
-              Close
+              {closeText}
             </StyledButton>
           </motion.div>
         </motion.div>

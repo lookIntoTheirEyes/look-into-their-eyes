@@ -88,8 +88,8 @@
 
 .closeButton {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
+  top: 3rem;
+  left: 3rem;
   background: none;
   border: none;
   color: var(--red);
@@ -101,12 +101,8 @@
 
   &:dir(ltr) {
     left: auto;
-    right: 1rem;
+    right: 3rem;
   }
-}
-
-.closeButton:hover {
-  color: #ff5555;
 }
 
 button.closeButtonBottom {
