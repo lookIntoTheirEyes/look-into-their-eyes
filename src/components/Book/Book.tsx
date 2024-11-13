@@ -1,27 +1,16 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import PageFlip from "react-pageflip";
+import { useBookNavigation } from "@/hooks/useNavigation";
 import styles from "./Book.module.css";
 import PageCover from "@/components/Book/PageCover/PageCover";
 import Page from "@/components/Book/Page/Page";
-import { BookActions } from "@/lib/utils/utils";
-import Controls from "./Controls/Controls";
-import { Page as HeroPage } from "@/lib/utils/heroesService";
 import TableOfContents from "./TableOfContents/TableOfContents";
 import PageContent from "./Page/PageContent/PageContent";
-import DummyPage from "./DummyPage";
-
-interface PageFlipMethods {
-  flipNext: () => void;
-  flipPrev: () => void;
-  flip: (pageNum: number) => void;
-}
-
-interface CustomPageFlip {
-  pageFlip: () => PageFlipMethods;
-}
+import Controls from "@/components/Book/Controls/Controls";
+import { BookActions } from "@/lib/utils/utils";
+import { Page as HeroPage, NO_CONTENT_PAGES } from "@/lib/utils/heroesService";
+import DummyPage from "@/components/Book/DummyPage";
 
 interface BookProps extends BookActions {
   rtl: boolean;
@@ -39,75 +28,22 @@ const Book: React.FC<BookProps> = ({
   book: { pages, front, back, title, tocTitle },
   actions,
 }) => {
-  const pagesAmount = pages.length;
-  const pageFlipRef = useRef<CustomPageFlip | null>(null);
-  const [pageCount, setPageCount] = useState<number>(0);
-  const searchParams = useSearchParams();
-  const queryParamPage = +searchParams.get("page")!;
-  const page =
-    !queryParamPage || queryParamPage > pagesAmount + 2 ? 1 : queryParamPage;
-  const pathname = usePathname();
-  const router = useRouter();
+  const pagesAmount = pages.length + NO_CONTENT_PAGES;
 
-  const [currPage, setCurrPage] = useState<number>(page);
+  const {
+    currPage,
+    pageFlipRef,
+    goToNext,
+    goToPrevious,
+    updatePage,
+    goToPage,
+  } = useBookNavigation(pagesAmount, rtl);
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
+  console.log("currPage", currPage);
 
-      return params.toString();
-    },
-    [searchParams]
-  );
-
-  const updateUrlWithSearchParams = useCallback(
-    (pageNum: number) => {
-      router.push(
-        pathname + "?" + createQueryString("page", pageNum.toString()),
-        { scroll: false }
-      );
-    },
-    [createQueryString, pathname, router]
-  );
-
-  const goToNext = () => {
-    const pageFlip = pageFlipRef.current?.pageFlip();
-    if (rtl) {
-      pageFlip?.flipPrev();
-    } else {
-      pageFlip?.flipNext();
-    }
-  };
-
-  const goToPrevious = () => {
-    const pageFlip = pageFlipRef.current?.pageFlip();
-
-    if (rtl) {
-      pageFlip?.flipNext();
-    } else {
-      pageFlip?.flipPrev();
-    }
-  };
-
-  const goToPage = (pageNum: number) => {
-    const pageFlip = pageFlipRef.current?.pageFlip();
-    pageFlip?.flip(pageNum);
-  };
-
-  const calculatePageForRtl = (pageNum: number, isInit = false) => {
-    const num = (isInit ? pageNum < 0 : !pageNum)
-      ? pagesAmount + 3
-      : pageNum === pagesAmount + 2
-      ? 1
-      : pagesAmount + 2 - pageNum;
-
-    return num;
-  };
-
-  const toc = (rtl: boolean) =>
-    rtl ? (
-      <Page rtl={rtl} styles={styles} pageNum={(rtl ? pagesAmount - 2 : 1) + 1}>
+  const renderToc = (isRender: boolean) => {
+    return isRender ? (
+      <Page rtl={rtl} styles={styles} pageNum={2}>
         <TableOfContents
           title={tocTitle}
           styles={styles}
@@ -116,7 +52,9 @@ const Book: React.FC<BookProps> = ({
           pages={pages.map((page, i) => {
             return {
               title: page.title!,
-              pageNum: (rtl ? pagesAmount - i : i + 1) + 1,
+              pageNum: rtl
+                ? pagesAmount - i - NO_CONTENT_PAGES + 1
+                : i + NO_CONTENT_PAGES,
             };
           })}
         />
@@ -124,31 +62,23 @@ const Book: React.FC<BookProps> = ({
     ) : (
       <DummyPage />
     );
+  };
 
-  useEffect(() => {
-    if (page !== queryParamPage) {
-      updateUrlWithSearchParams(page);
-    }
-  }, [page, queryParamPage, updateUrlWithSearchParams]);
+  const calculatePageForRtl = (pageNum: number, isInit = false) => {
+    if (isInit && pageNum < 2) return pagesAmount - 1;
+    const startPage = pagesAmount - NO_CONTENT_PAGES - 1 + pageNum;
+    console.log("startPage", startPage);
+
+    return startPage;
+  };
 
   return (
-    <div
-      className={`${styles.storyContainer} ${
-        !pageFlipRef.current ? styles.loading : ""
-      }`}
-    >
-      {!pageFlipRef.current && (
-        <div className={styles.loaderContainer}>
-          <div className={styles.loader}></div>
-        </div>
-      )}
+    <div className={styles.storyContainer}>
       <PageFlip
         ref={pageFlipRef}
         className={""}
         style={{}}
-        startPage={
-          (rtl ? calculatePageForRtl(currPage - 2, true) : currPage) - 1
-        }
+        startPage={rtl ? calculatePageForRtl(currPage, true) : currPage - 1}
         width={550}
         height={720}
         size='stretch'
@@ -170,40 +100,35 @@ const Book: React.FC<BookProps> = ({
         showPageCorners
         renderOnlyPageLengthChange
         disableFlipByClick={false}
-        onInit={({ object }) => {
-          setPageCount(object.getPageCount());
-        }}
         onFlip={({ data }) => {
-          const pageNum = rtl ? calculatePageForRtl(data) : data + 1;
-          setCurrPage(pageNum);
-          updateUrlWithSearchParams(pageNum);
+          const pageNum = rtl ? pagesAmount - data - 1 : data + 1;
+          updatePage(pageNum);
         }}
       >
         <PageCover styles={styles} details={front} />
-
-        {toc(!rtl)}
+        {renderToc(!rtl)}
         {pages.map((content, i) => (
           <Page
             rtl={rtl}
             styles={styles}
             key={content.title}
-            pageNum={(rtl ? pagesAmount - i : i + 1) + 2}
+            pageNum={(rtl ? pagesAmount - i - NO_CONTENT_PAGES : i + 1) + 2}
           >
             <PageContent
               cta={actions.cta}
               details={content}
-              pageNum={(rtl ? pagesAmount - i : i + 1) + 2}
+              pageNum={(rtl ? pagesAmount - i - NO_CONTENT_PAGES : i + 1) + 2}
               styles={styles}
               title={title}
             />
           </Page>
         ))}
-        {toc(rtl)}
+        {renderToc(rtl)}
         <PageCover styles={styles} details={back} />
       </PageFlip>
       <Controls
         currPage={currPage}
-        pageCount={pageCount}
+        pageCount={pagesAmount}
         goToPrevious={goToPrevious}
         goToNext={goToNext}
         actions={actions}

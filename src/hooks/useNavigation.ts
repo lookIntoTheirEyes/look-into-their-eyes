@@ -13,7 +13,6 @@ interface CustomPageFlip {
 }
 
 export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
-  const [currPage, setCurrPage] = useState<number>(1);
   const pageFlipRef = useRef<CustomPageFlip>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -21,7 +20,9 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
 
   const queryParamPage = +searchParams.get("page")!;
   const page =
-    !queryParamPage || queryParamPage > pagesAmount + 2 ? 1 : queryParamPage;
+    queryParamPage <= 0 || queryParamPage > pagesAmount ? 1 : queryParamPage;
+
+  const [currPage, setCurrPage] = useState<number>(page);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -61,7 +62,7 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
 
   const goToPage = (pageNum: number) => {
     const pageFlip = pageFlipRef.current?.pageFlip();
-    pageFlip?.flip(pageNum);
+    pageFlip?.flip(pageNum - 1);
   };
 
   useEffect(() => {
@@ -69,7 +70,7 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
       setCurrPage(page);
       updateUrlWithSearchParams(page);
     }
-  }, [page, queryParamPage, updateUrlWithSearchParams]);
+  }, [page, queryParamPage, updateUrlWithSearchParams, isRtl]);
 
   return {
     currPage,
