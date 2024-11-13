@@ -20,8 +20,11 @@ button.disabled {
   border-radius: 0.4rem;
   font-size: 2.5rem;
   min-width: 9rem;
+
   &:dir(rtl) {
     font-size: 1.8rem;
     flex-direction: row-reverse;
+    line-height: 0.7;
+    padding: 0.4rem 1.6rem 0.8rem 1.6rem;
   }
 }

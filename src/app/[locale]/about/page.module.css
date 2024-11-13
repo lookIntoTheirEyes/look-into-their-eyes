@@ -15,7 +15,7 @@
     & > h2,
     & > span {
       font-size: 3rem;
-      color: white;
+      color: var(--white);
     }
 
     &:dir(rtl) {
@@ -52,5 +52,5 @@
 }
 
 .socialIcons a:hover {
-  color: #ff6f00;
+  color: var(--social-hover);
 }

@@ -12,7 +12,9 @@
 
   &:dir(rtl) {
     font-size: 2rem;
-    padding: 0 1.6rem;
+    padding: 1rem;
+    padding-top: 0.4rem;
+    line-height: 0.5;
     font-family: "OHSavyonChenKipper", sans-serif;
   }
 

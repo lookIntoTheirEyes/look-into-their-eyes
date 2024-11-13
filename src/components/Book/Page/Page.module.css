@@ -24,24 +24,19 @@
   font-size: 2rem;
   line-height: 1.5;
   margin-bottom: 2rem;
-  color: black;
+  color: var(--page-text-color);
   text-align: justify;
 }
 
 .pageFooter {
   font-size: 2rem;
-  color: #666;
+  color: var(--page-text-color);
   position: absolute;
   bottom: 1rem;
   left: 1rem;
   width: 94%;
   border-top: 1px dashed #998466;
-  text-align: left;
-  .page.page-cover {
-    background-color: #e3d0b5;
-    color: #785e3a;
-    border: 1px solid #998466;
-  }
+  text-align: justify;
 }
 
 button.button {

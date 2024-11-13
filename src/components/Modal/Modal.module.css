@@ -9,7 +9,7 @@
 }
 
 .modal {
-  background-color: white;
+  background-color: var(--white);
   width: 70vw;
   height: 70vh;
   color: var(--black);
@@ -90,7 +90,6 @@
   position: absolute;
   top: 3rem;
   left: 3rem;
-  background: none;
   border: none;
   color: var(--red);
   font-size: 2rem;

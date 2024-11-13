@@ -31,7 +31,7 @@
   position: absolute;
   width: 100%;
   transform-origin: center;
-  background: white;
+  background-color: var(--page-background);
   border-radius: 0.4rem;
   display: flex;
   justify-content: center;
