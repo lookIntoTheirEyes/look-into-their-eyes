@@ -1,0 +1,78 @@
+.tocList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  &:dir(rtl) {
+    flex-direction: column-reverse;
+  }
+}
+
+.tocItem {
+  display: flex;
+  align-items: center;
+}
+
+.tocEntry {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  position: relative;
+  &:hover {
+    .tocButton,
+    .pageNumber {
+      color: #005bb5;
+    }
+  }
+}
+
+.tocTitle {
+  flex-grow: 1;
+  text-align: left;
+  font-size: 1.2em;
+  white-space: nowrap;
+  line-height: 0.5;
+}
+
+.tocEntry::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px dotted var(--page-text-color);
+  width: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.pageNumber {
+  font-size: 2.5rem;
+  color: var(--page-text-color);
+  white-space: nowrap;
+  line-height: 1;
+
+  &:dir(ltr) {
+    padding-left: 10px;
+  }
+}
+
+.tocButton {
+  border: none;
+  color: var(--page-text-color);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.4rem;
+  width: 100%;
+  text-align: justify;
+  font-family: "Graffiti", sans-serif;
+
+  &:dir(rtl) {
+    font-size: 2.5rem;
+    padding: 0;
+    line-height: 0.5;
+    font-family: "OHSavyonChenKipper", sans-serif;
+  }
+}

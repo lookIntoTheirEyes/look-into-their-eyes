@@ -9,11 +9,13 @@ import Page from "@/components/Book/Page/Page";
 import { BookActions } from "@/lib/utils/utils";
 import Controls from "./Controls/Controls";
 import { Page as HeroPage } from "@/lib/utils/heroesService";
-import DummyPage from "./DummyPage";
+import TableOfContents from "./TableOfContents/TableOfContents";
+import PageContent from "./Page/PageContent/PageContent";
 
 interface PageFlipMethods {
   flipNext: () => void;
   flipPrev: () => void;
+  flip: (pageNum: number) => void;
 }
 
 interface CustomPageFlip {
@@ -22,24 +24,27 @@ interface CustomPageFlip {
 
 interface BookProps extends BookActions {
   rtl: boolean;
-  book: { pages: HeroPage[]; front: HeroPage; back: HeroPage; title: string };
+  book: {
+    pages: HeroPage[];
+    front: HeroPage;
+    back: HeroPage;
+    title: string;
+    tocTitle: string;
+  };
 }
 
 const Book: React.FC<BookProps> = ({
   rtl,
-  book: { pages, front, back, title },
+  book: { pages, front, back, title, tocTitle },
   actions,
 }) => {
   const pagesAmount = pages.length;
-  const hasDummyPage = pagesAmount % 2 === 1;
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
   const [pageCount, setPageCount] = useState<number>(0);
   const searchParams = useSearchParams();
   const queryParamPage = +searchParams.get("page")!;
   const page =
-    !queryParamPage || queryParamPage > pagesAmount + (hasDummyPage ? 3 : 2)
-      ? 1
-      : queryParamPage;
+    !queryParamPage || queryParamPage > pagesAmount + 2 ? 1 : queryParamPage;
   const pathname = usePathname();
   const router = useRouter();
 
@@ -84,17 +89,35 @@ const Book: React.FC<BookProps> = ({
     }
   };
 
-  const calculatePageForRtl = (pageNum: number, isInit = false) => {
-    const adjustedPagesAmount = hasDummyPage ? pagesAmount + 1 : pagesAmount;
+  const goToPage = (pageNum: number) => {
+    const pageFlip = pageFlipRef.current?.pageFlip();
+    pageFlip?.flip(pageNum);
+  };
 
+  const calculatePageForRtl = (pageNum: number, isInit = false) => {
     const num = (isInit ? pageNum < 0 : !pageNum)
-      ? adjustedPagesAmount + 2
-      : pageNum === adjustedPagesAmount + 1
+      ? pagesAmount + 2
+      : pageNum === pagesAmount + 1
       ? 1
-      : adjustedPagesAmount + 1 - pageNum;
+      : pagesAmount + 1 - pageNum;
 
     return num;
   };
+
+  const toc = (
+    <TableOfContents
+      title={tocTitle}
+      styles={styles}
+      rtl={rtl}
+      navigateToPage={goToPage}
+      pages={pages.map((page, i) => {
+        return {
+          title: page.title!,
+          pageNum: (rtl ? pagesAmount - i : i + 1) + 1,
+        };
+      })}
+    />
+  );
 
   useEffect(() => {
     if (page !== queryParamPage) {
@@ -128,7 +151,7 @@ const Book: React.FC<BookProps> = ({
         minHeight={400}
         maxHeight={1533}
         maxShadowOpacity={1}
-        drawShadow
+        drawShadow={false}
         flippingTime={700}
         startZIndex={30}
         swipeDistance={1}
@@ -151,27 +174,32 @@ const Book: React.FC<BookProps> = ({
         }}
       >
         <PageCover styles={styles} details={front} />
-        {hasDummyPage && rtl ? (
-          <Page details={{}} styles={styles} pageNum={pagesAmount + 2} />
-        ) : (
-          <DummyPage />
-        )}
+
+        {
+          <Page
+            rtl={rtl}
+            styles={styles}
+            pageNum={(rtl ? pagesAmount - 2 : 1) + 1}
+          >
+            {toc}
+          </Page>
+        }
         {pages.map((content, i) => (
           <Page
-            title={title}
             rtl={rtl}
             styles={styles}
             key={content.title}
-            details={content}
-            pageNum={(rtl ? pagesAmount - i : i + 1) + 1}
-            cta={actions.cta}
-          />
+            pageNum={(rtl ? pagesAmount - i : i + 1) + 2}
+          >
+            <PageContent
+              cta={actions.cta}
+              details={content}
+              pageNum={(rtl ? pagesAmount - i : i + 1) + 2}
+              styles={styles}
+              title={title}
+            />
+          </Page>
         ))}
-        {hasDummyPage && !rtl ? (
-          <Page details={{}} styles={styles} pageNum={pagesAmount + 2} />
-        ) : (
-          <DummyPage />
-        )}
         <PageCover styles={styles} details={back} />
       </PageFlip>
       <Controls

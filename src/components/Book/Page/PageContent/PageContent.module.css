@@ -22,17 +22,6 @@
   text-align: justify;
 }
 
-.pageFooter {
-  font-size: 2rem;
-  color: var(--page-text-color);
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  width: 94%;
-  border-top: 1px dashed #998466;
-  text-align: justify;
-}
-
 button.button {
   font-size: 2rem;
   padding: 0 1.5rem;
