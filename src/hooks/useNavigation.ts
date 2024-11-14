@@ -46,13 +46,15 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
   const flipPage = (direction: "next" | "previous") => {
     const pageFlip = pageFlipRef.current?.pageFlip();
 
-    isRtl
+    const flipDirection = isRtl
       ? direction === "next"
-        ? pageFlip?.flipPrev()
-        : pageFlip?.flipNext()
+        ? "flipPrev"
+        : "flipNext"
       : direction === "next"
-      ? pageFlip?.flipNext()
-      : pageFlip?.flipPrev();
+      ? "flipNext"
+      : "flipPrev";
+
+    pageFlip?.[flipDirection]();
   };
 
   const updatePage = (pageNum: number) => {
