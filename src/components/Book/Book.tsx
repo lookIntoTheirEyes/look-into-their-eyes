@@ -12,6 +12,8 @@ import { BookActions } from "@/lib/utils/utils";
 import { Page as HeroPage, NO_CONTENT_PAGES } from "@/lib/utils/heroesService";
 import DummyPage from "@/components/Book/DummyPage";
 
+const pagesFactor = NO_CONTENT_PAGES - 1;
+
 interface BookProps extends BookActions {
   rtl: boolean;
   book: {
@@ -39,6 +41,12 @@ const Book: React.FC<BookProps> = ({
     goToPage,
   } = useBookNavigation(pagesAmount, rtl);
 
+  const getPageNum = (i: number) => {
+    return rtl
+      ? pagesAmount - i - NO_CONTENT_PAGES + pagesFactor
+      : i + NO_CONTENT_PAGES;
+  };
+
   const renderToc = (isRender: boolean) => {
     return isRender ? (
       <Page rtl={rtl} styles={styles} pageNum={2}>
@@ -50,9 +58,7 @@ const Book: React.FC<BookProps> = ({
           pages={pages.map((page, i) => {
             return {
               title: page.title!,
-              pageNum: rtl
-                ? pagesAmount - i - NO_CONTENT_PAGES + 1
-                : i + NO_CONTENT_PAGES,
+              pageNum: getPageNum(i),
             };
           })}
         />
@@ -70,7 +76,7 @@ const Book: React.FC<BookProps> = ({
         style={{}}
         startPage={
           rtl
-            ? currPage < 2
+            ? currPage < pagesFactor
               ? pagesAmount - 1
               : pagesAmount - currPage
             : currPage - 1
@@ -96,8 +102,13 @@ const Book: React.FC<BookProps> = ({
         showPageCorners
         renderOnlyPageLengthChange
         disableFlipByClick={false}
-        onFlip={({ data }) => {
-          const pageNum = rtl ? pagesAmount - (data || -1) - 1 : data + 1;
+        onFlip={({ data, object }) => {
+          const isOnePageMode = object.render.orientation === "portrait";
+          const pageNum = rtl
+            ? !data
+              ? pagesAmount
+              : pagesAmount - data - (isOnePageMode ? 0 : 1)
+            : data + 1;
 
           updatePage(pageNum || 1);
         }}
@@ -109,12 +120,16 @@ const Book: React.FC<BookProps> = ({
             rtl={rtl}
             styles={styles}
             key={content.title}
-            pageNum={(rtl ? pagesAmount - i - NO_CONTENT_PAGES : i + 1) + 2}
+            pageNum={
+              (rtl ? pagesAmount - i - NO_CONTENT_PAGES : i + 1) + pagesFactor
+            }
           >
             <PageContent
               cta={actions.cta}
               details={content}
-              pageNum={(rtl ? pagesAmount - i - NO_CONTENT_PAGES : i + 1) + 2}
+              pageNum={
+                (rtl ? pagesAmount - i - NO_CONTENT_PAGES : i + 1) + pagesFactor
+              }
               styles={styles}
               title={title}
             />
