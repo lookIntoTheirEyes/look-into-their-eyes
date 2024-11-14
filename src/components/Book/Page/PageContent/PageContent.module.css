@@ -16,12 +16,13 @@
 
 .pageText {
   font-size: 2rem;
-  line-height: 1.5;
   margin-bottom: 2rem;
   color: var(--page-text-color);
   text-align: justify;
+  line-height: 1;
 
   &:dir(ltr) {
+    line-height: 1.2;
     font-size: 1.5rem;
     padding-top: 0.8rem;
   }
