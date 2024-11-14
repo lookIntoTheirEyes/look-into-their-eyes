@@ -16,10 +16,11 @@ button.disabled {
   align-items: center;
   justify-content: center;
   background-color: var(--red);
-  font-size: 2rem;
+  font-size: 1.6rem;
   padding: 0 0.8rem;
   border-radius: 0.4rem;
   min-width: 9rem;
+  padding-top: 0.8rem;
 
   &:dir(rtl) {
     font-size: 1.8rem;

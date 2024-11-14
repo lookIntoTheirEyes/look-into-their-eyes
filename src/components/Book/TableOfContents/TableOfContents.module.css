@@ -20,20 +20,13 @@
   width: 100%;
   align-items: center;
   position: relative;
+  padding: 0 0.4rem;
   &:hover {
     .tocButton,
     .pageNumber {
       color: #005bb5;
     }
   }
-}
-
-.tocTitle {
-  flex-grow: 1;
-  text-align: left;
-  font-size: 1.2em;
-  white-space: nowrap;
-  line-height: 0.5;
 }
 
 .tocEntry::after {
@@ -48,6 +41,30 @@
   pointer-events: none;
 }
 
+.tocButton {
+  border: none;
+  color: var(--page-text-color);
+  font-size: 1.5rem;
+  line-height: 0.5;
+  padding: 0.4rem 0;
+  cursor: pointer;
+  width: 100%;
+  text-align: justify;
+  font-family: "Graffiti", sans-serif;
+  padding-top: 1.2rem;
+
+  &:dir(rtl) {
+    padding-top: 0;
+    font-size: 2.5rem;
+    font-family: "OHSavyonChenKipper", sans-serif;
+  }
+}
+
+.tocTitle {
+  flex-grow: 1;
+  white-space: nowrap;
+}
+
 .pageNumber {
   font-size: 2.5rem;
   color: var(--page-text-color);
@@ -55,24 +72,6 @@
   line-height: 1;
 
   &:dir(ltr) {
-    padding-left: 10px;
-  }
-}
-
-.tocButton {
-  border: none;
-  color: var(--page-text-color);
-  font-size: 2rem;
-  cursor: pointer;
-  padding: 0.4rem;
-  width: 100%;
-  text-align: justify;
-  font-family: "Graffiti", sans-serif;
-
-  &:dir(rtl) {
-    font-size: 2.5rem;
-    padding: 0;
-    line-height: 0.5;
-    font-family: "OHSavyonChenKipper", sans-serif;
+    font-size: 1.5rem;
   }
 }

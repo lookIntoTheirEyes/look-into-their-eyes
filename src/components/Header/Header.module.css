@@ -7,15 +7,16 @@
   align-items: baseline;
   color: white;
   z-index: 1000;
-  padding: 0.8rem 1.6rem;
+  padding: 0 1.6rem 0.8rem 1.6rem;
 }
 
 .header .nav {
   display: flex;
-  font-size: 3.5rem;
+  font-size: 2rem;
 
   &:dir(rtl) {
     font-family: "OHSavyonChenKipper", sans-serif;
+    font-size: 3rem;
   }
 }
 
@@ -34,12 +35,15 @@
 .nav:dir(rtl) > li {
   padding: 0 1rem;
   padding-left: 1rem;
+  &:first-child {
+    padding-right: 0;
+  }
 }
 
 .nav > li:not(:last-child)::after {
   content: "";
   position: absolute;
-  top: 0.4rem;
+  top: 0rem;
   right: 0;
   width: 0.2rem;
   height: 80%;

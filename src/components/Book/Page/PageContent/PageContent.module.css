@@ -20,13 +20,18 @@
   margin-bottom: 2rem;
   color: var(--page-text-color);
   text-align: justify;
+
+  &:dir(ltr) {
+    font-size: 1.5rem;
+    padding-top: 0.8rem;
+  }
 }
 
 button.button {
-  font-size: 2rem;
-  padding: 0 1.5rem;
+  font-size: 1.5rem;
+
   &:dir(rtl) {
     font-size: 2rem;
-    padding: 0.5rem 1.5rem 1rem 1.5rem;
+    padding: 0.4rem 1.6rem 0.8rem 1.6rem;
   }
 }

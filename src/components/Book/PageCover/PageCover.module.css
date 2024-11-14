@@ -3,9 +3,17 @@
   font-size: 3.5rem;
   padding: 2rem;
   line-height: 0.8;
+  &:dir(ltr) {
+    line-height: 1;
+  }
 
   .title {
     padding-bottom: 1rem;
+
+    &:dir(ltr) {
+      padding-top: 0.5rem;
+      padding-bottom: 2rem;
+    }
   }
 
   &:dir(rtl) {
@@ -18,7 +26,8 @@
 }
 
 .author {
-  color: #4d4d4d;
+  color: var(--page-text-color);
+
   &:dir(ltr) {
     font-size: 3rem;
   }

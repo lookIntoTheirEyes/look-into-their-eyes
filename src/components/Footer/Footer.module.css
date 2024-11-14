@@ -1,3 +1,29 @@
+.footer {
+  background-color: var(--image-background);
+  color: var(--white);
+  position: relative;
+  display: flex;
+  padding: 0.8rem 1.6rem;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+
+    &:dir(rtl) {
+      gap: 0;
+      padding: 0 1.6rem 0.8rem 1.6rem;
+
+      & > p {
+        font-size: 1.8rem;
+      }
+    }
+  }
+}
+
 .creator {
   display: flex;
   gap: 0.6rem;
@@ -6,7 +32,7 @@
     font-size: 2.2rem;
 
     &:dir(ltr) {
-      font-size: 2.5rem;
+      font-size: 2rem;
     }
   }
   & a {
@@ -21,27 +47,6 @@
   }
 }
 
-.footer {
-  background-color: var(--image-background);
-  color: var(--white);
-  position: relative;
-  display: flex;
-  padding: 0.8rem 1.6rem;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
-
-    .footer > p:not(:dir(rtl)) {
-      font-size: 1.8rem;
-    }
-  }
-}
-
 .links {
   display: flex;
   flex-wrap: wrap;
@@ -52,17 +57,18 @@
   font-size: 2rem;
 
   &:dir(ltr) {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
+    gap: 1.6rem;
   }
 
   @media (max-width: 768px) {
     justify-content: space-between;
-    width: 90%;
+    width: 80%;
   }
 
   @media (max-width: 768px) {
-    &:not(:dir(rtl)) {
-      font-size: 2.1rem;
+    &:dir(ltr) {
+      font-size: 1.3rem;
     }
   }
 }

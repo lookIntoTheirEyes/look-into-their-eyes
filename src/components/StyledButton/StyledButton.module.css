@@ -1,6 +1,6 @@
 .button {
   font-size: 2rem;
-  padding: 0.8rem;
+  padding: 0.4rem 1.6rem;
   border: none;
   border-radius: 0.4rem;
   background-color: var(--red);

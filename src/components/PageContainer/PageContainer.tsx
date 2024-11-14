@@ -14,15 +14,9 @@ const PageContainer: React.FC<{
     </div>
   );
 
-  return (
-    <main
-      className={`${styles.main} ${isStory ? styles.story : ""} ${
-        isLegal ? styles.legal : ""
-      }`}
-    >
-      {view}
-    </main>
-  );
+  const classNameMain = `${styles.main} ${isLegal ? styles.legal : ""}`;
+
+  return <main className={classNameMain}>{view}</main>;
 };
 
 export default PageContainer;
