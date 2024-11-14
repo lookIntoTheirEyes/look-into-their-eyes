@@ -42,10 +42,10 @@ const heroes: Hero[] = [
     id: 3,
     imageUrls: ["v1731581087/IMG_6007_cia4fy.jpg"],
     en: {
-      name: "Shani Louk",
+      name: "Shani Nicole Louk",
       description: "We miss her",
       longDescription:
-        "There isn't a lot we can say that will explain how much we miss him",
+        "There isn't a lot we can say that will explain how much we miss her",
     },
     he: {
       name: "שני ניקול לוק",
