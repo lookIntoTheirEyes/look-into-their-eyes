@@ -38,10 +38,29 @@ const heroes: Hero[] = [
       longDescription: "אין דרך אפילו לתאר עד כמה עצום הגעגוע",
     },
   },
+  {
+    id: 3,
+    imageUrls: ["v1731581087/IMG_6007_cia4fy.jpg"],
+    en: {
+      name: "Shani Louk",
+      description: "We miss her",
+      longDescription:
+        "There isn't a lot we can say that will explain how much we miss him",
+    },
+    he: {
+      name: "שני ניקול לוק",
+      description: "אנחנו מתגעגעים אליה מאוד",
+      longDescription: "אין דרך אפילו לתאר עד כמה עצום הגעגוע",
+    },
+  },
 ];
 
 export function getAllHeroes() {
   return heroes;
+}
+
+if (heroes.length % 2 === 0) {
+  throw new Error("Heroes amount must be uneven due to styling issues");
 }
 
 interface Hero {

@@ -63,7 +63,6 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
   const goToPage = (pageNum: number) => {
     const pageFlip = pageFlipRef.current?.pageFlip();
     const adjustedPageNum = (isRtl ? pagesAmount - pageNum + 1 : pageNum) - 1;
-    console.log("adjustedPageNum", adjustedPageNum);
 
     pageFlip?.flip(adjustedPageNum);
   };
