@@ -32,14 +32,8 @@ const Book: React.FC<BookProps> = ({
 }) => {
   const pagesAmount = pages.length + NO_CONTENT_PAGES;
 
-  const {
-    currPage,
-    pageFlipRef,
-    goToNext,
-    goToPrevious,
-    updatePage,
-    goToPage,
-  } = useBookNavigation(pagesAmount, rtl);
+  const { currPage, pageFlipRef, flipPage, updatePage, goToPage } =
+    useBookNavigation(pagesAmount, rtl);
 
   const getPageNum = (i: number) => {
     return rtl
@@ -141,8 +135,7 @@ const Book: React.FC<BookProps> = ({
       <Controls
         currPage={currPage}
         pageCount={pagesAmount}
-        goToPrevious={goToPrevious}
-        goToNext={goToNext}
+        flipPage={flipPage}
         actions={actions}
       />
     </div>

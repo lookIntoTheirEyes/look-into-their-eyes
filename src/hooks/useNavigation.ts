@@ -43,16 +43,16 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
     [createQueryString, pathname, router]
   );
 
-  const goToNext = () => {
-    const newPage = isRtl ? currPage - 1 : currPage + 1;
-    setCurrPage(newPage);
-    updateUrlWithSearchParams(newPage);
-  };
+  const flipPage = (direction: "next" | "previous") => {
+    const pageFlip = pageFlipRef.current?.pageFlip();
 
-  const goToPrevious = () => {
-    const newPage = isRtl ? currPage + 1 : currPage - 1;
-    setCurrPage(newPage);
-    updateUrlWithSearchParams(newPage);
+    isRtl
+      ? direction === "next"
+        ? pageFlip?.flipPrev()
+        : pageFlip?.flipNext()
+      : direction === "next"
+      ? pageFlip?.flipNext()
+      : pageFlip?.flipPrev();
   };
 
   const updatePage = (pageNum: number) => {
@@ -61,8 +61,8 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
   };
 
   const goToPage = (pageNum: number) => {
-    const pageFlip = pageFlipRef.current?.pageFlip();
     const adjustedPageNum = (isRtl ? pagesAmount - pageNum + 1 : pageNum) - 1;
+    const pageFlip = pageFlipRef.current?.pageFlip();
 
     pageFlip?.flip(adjustedPageNum);
   };
@@ -77,8 +77,7 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
   return {
     currPage,
     pageFlipRef,
-    goToNext,
-    goToPrevious,
+    flipPage,
     updatePage,
     goToPage,
   };

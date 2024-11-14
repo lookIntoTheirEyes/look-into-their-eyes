@@ -5,23 +5,21 @@ import StyledButton from "@/components/StyledButton/StyledButton";
 interface ControlsProps extends BookActions {
   currPage: number;
   pageCount: number;
-  goToPrevious: () => void;
-  goToNext: () => void;
+  flipPage: (direction: "next" | "previous") => void;
 }
 
 export default function Controls({
   actions: { previous, next },
   currPage,
   pageCount,
-  goToNext,
-  goToPrevious,
+  flipPage,
 }: ControlsProps) {
   return (
     <div className={styles.controls}>
       {
         <StyledButton
           className={currPage === 1 ? styles.disabled : ""}
-          onClick={goToPrevious}
+          onClick={() => flipPage("previous")}
         >
           {previous}
         </StyledButton>
@@ -35,7 +33,7 @@ export default function Controls({
       {
         <StyledButton
           className={currPage === pageCount ? styles.disabled : ""}
-          onClick={goToNext}
+          onClick={() => flipPage("next")}
         >
           {next}
         </StyledButton>
