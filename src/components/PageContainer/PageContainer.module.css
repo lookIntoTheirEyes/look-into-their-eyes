@@ -18,6 +18,7 @@
   }
 
   &:dir(rtl) {
+    padding-top: 4.8rem;
     &:not(.legal) {
       font-family: "OHSavyonChenKipper", sans-serif;
     }
