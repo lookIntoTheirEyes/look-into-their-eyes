@@ -11,7 +11,7 @@ export function getPageNum(params: SearchParams) {
 }
 
 export interface BookActions {
-  actions: { next: string; previous: string; cta: string };
+  actions: { next: string; previous: string };
 }
 
 export function getRoute(

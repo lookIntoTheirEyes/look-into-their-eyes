@@ -5,11 +5,6 @@
   padding: 2.4rem;
   flex: 1;
 
-  &.loading {
-    display: flex;
-    flex-direction: column;
-  }
-
   @media (min-width: 680px) {
     width: 75%;
   }
@@ -24,59 +19,5 @@
 
   @media only screen and (min-width: 1670px) {
     width: 57%;
-  }
-}
-
-.page {
-  position: absolute;
-  width: 100%;
-  transform-origin: center;
-  background-color: var(--page-background);
-  border-radius: 0.4rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.8rem 2rem;
-
-  @media (max-width: 1024px) {
-    padding: 0.8rem;
-  }
-
-  &.left {
-    box-shadow: inset -7px 0 30px -7px rgba(0, 0, 0, 0.4),
-      7px 0 30px -7px rgba(0, 0, 0, 0.4);
-  }
-
-  &.right {
-    box-shadow: inset 7px 0 30px -7px rgba(0, 0, 0, 0.4),
-      7px 0 30px -7px rgba(0, 0, 0, 0.4);
-  }
-}
-
-.pageHeader {
-  font-size: 2.8rem;
-  padding-bottom: 1rem;
-  color: var(--red);
-
-  &:dir(ltr) {
-    font-size: 2.4rem;
-  }
-  &:dir(rtl) {
-    line-height: 0.8;
-    padding-bottom: 2.5rem;
-  }
-}
-
-.pageContent {
-  text-align: center;
-  width: 100%;
-  height: 95%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-  overflow-x: hidden;
-
-  @media (max-width: 1024px) {
-    height: 90%;
   }
 }

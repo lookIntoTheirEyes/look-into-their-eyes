@@ -2,6 +2,7 @@ import { ImageLoaderProps } from "next/image";
 import { Language } from "../model/language";
 
 export const NO_CONTENT_PAGES = 3;
+export const PAGES_FACTOR = NO_CONTENT_PAGES - 1;
 
 const heroes: Hero[] = [
   {
@@ -99,7 +100,7 @@ export async function getHero(page: string, lang: Language) {
   };
 }
 
-export function getAllPages(lang: Language) {
+export function getAllPages(lang: Language): Page[] {
   const heroes = getAllHeroes().map((hero) => {
     const { name: title, description, longDescription } = hero[lang];
     return {
@@ -113,7 +114,7 @@ export function getAllPages(lang: Language) {
   return lang === Language.he ? heroes.reverse() : heroes;
 }
 
-export function getFrontPage(lang: Language) {
+export function getFrontPage(lang: Language): CoverPage {
   return lang === Language.he
     ? { title: "הסוף", description: "", longDescription: "" }
     : {
@@ -124,7 +125,7 @@ export function getFrontPage(lang: Language) {
       };
 }
 
-export function getBackPage(lang: Language) {
+export function getBackPage(lang: Language): CoverPage {
   return lang === Language.he
     ? {
         title: "בין השישי לשביעי באוקטובר",

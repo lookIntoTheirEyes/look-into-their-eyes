@@ -1,24 +1,23 @@
 import { forwardRef } from "react";
-import localStyles from "./PageCover.module.css";
+import styles from "./PageCover.module.css";
 import { CoverPage } from "@/lib/utils/heroesService";
 
 interface PageCoverProps {
-  styles: Record<string, string>;
   details: CoverPage;
 }
 
 const PageCover = forwardRef<HTMLDivElement, PageCoverProps>(
-  ({ styles, details }, ref) => {
+  ({ details }, ref) => {
     return (
       <div
-        className={`${styles.page} ${localStyles.pageCover}`}
+        className={`bookPage ${styles.pageCover}`}
         data-density='hard'
         ref={ref}
       >
-        <div className={styles.pageContent}>
-          <h2 className={localStyles.title}>{details.title}</h2>
+        <div className='pageContent'>
+          <h2 className={styles.title}>{details.title}</h2>
           {details.author && (
-            <h3 className={localStyles.author}>{details.author}</h3>
+            <h3 className={styles.author}>{details.author}</h3>
           )}
           <h3>{details.description}</h3>
           <p>{details.longDescription}</p>

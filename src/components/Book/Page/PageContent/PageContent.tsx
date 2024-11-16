@@ -2,13 +2,12 @@
 
 import StyledButton from "@/components/StyledButton/StyledButton";
 import { Page } from "@/lib/utils/heroesService";
-import localStyles from "./PageContent.module.css";
+import styles from "./PageContent.module.css";
 import { useRouter } from "next/navigation";
 import Image from "../../../Image/Image";
 
 interface PageProps {
   pageNum: number;
-  styles: Record<string, string>;
   details: Page;
   cta?: string;
   title?: string;
@@ -16,7 +15,6 @@ interface PageProps {
 
 const PageContent: React.FC<PageProps> = ({
   pageNum,
-  styles,
   details,
   cta,
   title: chapter,
@@ -38,19 +36,19 @@ const PageContent: React.FC<PageProps> = ({
       {Object.keys(details).length && (
         <>
           {chapter && (
-            <h2 className={styles.pageHeader}>{`${chapter} ${
+            <h2 className='pageHeader'>{`${chapter} ${
               pageNum - 1
             } - ${title}`}</h2>
           )}
           {imageUrl && (
-            <div className={localStyles.imageSection}>
-              <div className={localStyles.pageImage}>
+            <div className={styles.imageSection}>
+              <div className={styles.pageImage}>
                 <Image imageUrl={imageUrl!} alt={imageDescription} />
               </div>
             </div>
           )}
-          {description && <p className={localStyles.pageText}>{description}</p>}
-          <StyledButton onClick={handleClick} className={localStyles.button}>
+          {description && <p className={styles.pageText}>{description}</p>}
+          <StyledButton onClick={handleClick} className={styles.button}>
             {cta}
           </StyledButton>
         </>
