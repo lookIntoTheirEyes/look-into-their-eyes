@@ -1,0 +1,44 @@
+.mobileMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.mobileMenu button {
+  z-index: 1001;
+}
+
+.hamburger {
+  font-size: 2.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.mobileNav {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  background-color: rgba(51, 51, 51, 0.9);
+  width: 80%;
+  right: 0;
+  top: 5rem;
+
+  &:dir(ltr) {
+    top: 5.2rem;
+    right: auto;
+    left: 0;
+    align-items: baseline;
+  }
+}
+
+.mobileNav > li {
+  padding: 1rem;
+  padding-bottom: 0;
+  width: 100%;
+  border-bottom: var(--border-white);
+}
+
+.mobileMenu.open .mobileNav {
+  display: flex;
+}

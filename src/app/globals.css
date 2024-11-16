@@ -13,6 +13,7 @@
   --social-hover: #ff6f00;
   --footer-height: 6rem;
   --footer-height-mobile: 2rem;
+  --border-white: 1px solid var(--white);
 }
 
 @font-face {
@@ -49,6 +50,7 @@ body {
   --_access-icon-border-radius: 50%;
   --_access-icon-border: 0.5px solid white;
   --_access-icon-bottom: var(--footer-height);
+  --is-mobile: 0;
 }
 
 html[dir="rtl"] {
@@ -64,6 +66,7 @@ html[dir="rtl"] {
 @media (max-width: 768px) {
   body {
     --_access-icon-bottom: var(--footer-height-mobile);
+    --is-mobile: 1;
   }
 }
 

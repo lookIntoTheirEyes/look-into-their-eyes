@@ -1,0 +1,47 @@
+.nav {
+  display: flex;
+  font-size: 2rem;
+  margin-top: 1.5rem;
+
+  &:dir(rtl) {
+    font-family: "OHSavyonChenKipper", sans-serif;
+    font-size: 3rem;
+    margin-top: 0;
+  }
+}
+
+.nav > li {
+  position: relative;
+
+  &:not(:first-child) {
+    padding-left: 1rem;
+  }
+
+  &:not(:last-child) {
+    padding-right: 1rem;
+  }
+}
+
+.nav:dir(rtl) > li {
+  padding: 0 1rem;
+  padding-left: 1rem;
+  &:first-child {
+    padding-right: 0;
+  }
+}
+
+.nav > li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 0rem;
+  right: 0;
+  width: 0.2rem;
+  height: 80%;
+  background-color: #ccc;
+}
+
+.nav:dir(rtl) > li:not(:last-child)::after {
+  right: auto;
+  left: 0;
+  top: 0.8rem;
+}
