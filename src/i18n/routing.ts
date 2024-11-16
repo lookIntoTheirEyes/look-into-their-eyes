@@ -3,7 +3,7 @@ import { defineRouting } from "next-intl/routing";
 import { Language } from "@/lib/model/language";
 
 export const routing = defineRouting({
-  locales: [Language.en, Language.he],
+  locales: Object.values(Language),
   defaultLocale: Language.he,
   pathnames: {
     "/": "/",

@@ -13,17 +13,14 @@ export default function LanguageInput({ locale }: { locale: Language }) {
   const searchParams = useSearchParams();
   const page = searchParams.get("page");
 
-  const onSelectChange = (language: Language) => {
+  const onSelectChange = (locale: Language) => {
     if (isPending) {
       return;
     }
 
     startTransition(() => {
       const query = page ? { query: { page } } : {};
-      router.replace(
-        { pathname, ...query },
-        { locale: language, scroll: false }
-      );
+      router.push({ pathname, ...query }, { locale, scroll: false });
     });
   };
 

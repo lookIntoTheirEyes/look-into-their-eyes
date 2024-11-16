@@ -16,8 +16,6 @@ type Params = {
   locale: Language;
 };
 
-const pagesContent = (lang: Language) => getAllPages(lang);
-
 const BookComponent: React.FC<Props> = async (props) => {
   const { locale } = await props.params;
 
@@ -30,7 +28,7 @@ const BookComponent: React.FC<Props> = async (props) => {
         book={{
           front: getFrontPage(locale),
           back: getBackPage(locale),
-          pages: pagesContent(locale),
+          pages: getAllPages(locale),
           title: t("title"),
           tocTitle: t("tableOfContents"),
         }}

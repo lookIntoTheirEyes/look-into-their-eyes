@@ -121,7 +121,7 @@ const ModalClient = ({
                 {imageUrls.map((imageUrl, i) => (
                   <div key={imageUrl + i} className={styles.imageBackground}>
                     <div className={styles.pageImage}>
-                      <Image imageUrl={imageUrl} alt='Sample Image' />
+                      <Image imageUrl={imageUrl} alt='Sample Image' priority />
                     </div>
                   </div>
                 ))}
