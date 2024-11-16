@@ -3,7 +3,7 @@ import styles from "./page.module.css";
 import NavLink from "@/components/NavLink/NavLink";
 import { useTranslations } from "next-intl";
 
-export default function CatchAllPage() {
+export default function NotFoundPage() {
   const t = useTranslations("404");
 
   return (
