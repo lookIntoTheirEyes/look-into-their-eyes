@@ -9,7 +9,7 @@
 }
 
 .hamburger {
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   background: none;
   border: none;
   cursor: pointer;
@@ -33,10 +33,14 @@
 }
 
 .mobileNav > li {
-  padding: 1rem;
-  padding-bottom: 0;
   width: 100%;
-  border-bottom: var(--border-white);
+  & > a {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    padding-bottom: 0;
+    border-bottom: var(--border-white);
+  }
 }
 
 .mobileMenu.open .mobileNav {
