@@ -23,10 +23,9 @@
   background-color: rgba(51, 51, 51, 0.9);
   width: 80%;
   right: 0;
-  top: var(--header-height-he);
+  top: var(--header-height);
 
   &:dir(ltr) {
-    top: var(--header-height);
     right: auto;
     left: 0;
     align-items: baseline;
