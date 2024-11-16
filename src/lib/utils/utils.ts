@@ -20,9 +20,3 @@ export function getRoute(
 ) {
   return { href, name };
 }
-
-export function getUpdatedPath(path: string, language: string, page = "") {
-  const [, , ...route] = path.split("/");
-
-  return `/${language}/${route.join("/")}${page ? `?page=${page}` : ""}`;
-}

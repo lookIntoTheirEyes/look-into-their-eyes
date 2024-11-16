@@ -1,12 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { startTransition, useEffect, useState } from "react";
 import styles from "./Modal.module.css";
+import { useRouter, usePathname } from "@/i18n/routing";
 
 import Image from "../Image/Image";
-import { getUpdatedPath } from "@/lib/utils/utils";
 import { Language } from "@/lib/model/language";
 import StyledButton from "../StyledButton/StyledButton";
 
@@ -51,13 +51,13 @@ const ModalClient = ({
   title,
   description,
   imageUrls,
-  lang,
+  lang: locale,
   closeText,
 }: IProps) => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
-  const path = usePathname();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const page = searchParams.get("page");
@@ -68,18 +68,16 @@ const ModalClient = ({
   };
 
   useEffect(() => {
-    if (path.includes("details")) {
+    if (pathname.includes("details")) {
       setIsVisible(true);
     }
-  }, [path]);
+  }, [pathname]);
 
   const handleExitComplete = () => {
     if (!isClosing) return;
 
-    const path = getUpdatedPath(`/${lang}/story`, lang, page!);
-
-    router.push(path, {
-      scroll: false,
+    startTransition(() => {
+      router.push({ pathname: "/story", query: { page } }, { locale });
     });
   };
 
