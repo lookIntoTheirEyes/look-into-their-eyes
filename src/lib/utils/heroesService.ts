@@ -1,3 +1,4 @@
+import { ImageLoaderProps } from "next/image";
 import { Language } from "../model/language";
 
 export const NO_CONTENT_PAGES = 3;
@@ -150,4 +151,15 @@ export function getImageUrl(url: string) {
   const imageUrl = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
   return `https://res.cloudinary.com/${imageUrl}/image/upload/${url}`;
+}
+
+export function imageLoader({
+  src,
+  quality = 100,
+  width = 300,
+}: ImageLoaderProps) {
+  const urlStart = src.split("upload/")[0];
+  const urlEnd = src.split("upload/")[1];
+  const transformations = `w_${width},q_${quality}`;
+  return `${urlStart}upload/${transformations}/${urlEnd}`;
 }
