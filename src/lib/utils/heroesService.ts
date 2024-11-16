@@ -23,17 +23,15 @@ const heroes: Hero[] = [
   },
   {
     id: 2,
-    imageUrls: [
-      "v1731240549/449519894_122166290984079173_8342929443094545662_n.jpg_rpeskl.jpg",
-    ],
+    imageUrls: ["v1731753758/IMG_1150_jldnwd.jpg"],
     en: {
-      name: "Itzhak Elgarat",
+      name: "Matan Angrest",
       description: "We miss him",
       longDescription:
         "There isn't a lot we can say that will explain how much we miss him",
     },
     he: {
-      name: "יצחק איציק אלגרט",
+      name: "מתן אנגרסט",
       description: "אנחנו מתגעגעים אליו מאוד",
       longDescription: "אין דרך אפילו לתאר עד כמה עצום הגעגוע",
     },
@@ -148,7 +146,7 @@ export interface CoverPage extends Page {
   author?: string;
 }
 
-function getImageUrl(url: string) {
+export function getImageUrl(url: string) {
   const imageUrl = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
   return `https://res.cloudinary.com/${imageUrl}/image/upload/${url}`;

@@ -4,6 +4,8 @@ import styles from "./page.module.css";
 import PageContainer from "@/components/PageContainer/PageContainer";
 import SocialIcon from "@/components/SocialIcon/SocialIcon";
 import Image from "@/components/Image/Image";
+import { getImageUrl } from "@/lib/utils/heroesService";
+
 export default function About() {
   const t = useTranslations("About");
 
@@ -26,7 +28,9 @@ export default function About() {
         </div>
         <div className={styles.imageContainer}>
           <Image
-            imageUrl='https://res.cloudinary.com/dycup1zmv/image/upload/v1731312284/kijbzwguwzq2ukypz1ug.jpg'
+            imageUrl={getImageUrl(
+              "v1731753364/Photo_by_Clemens_Hirmke_1_unwdvq.jpg"
+            )}
             alt={t("artist")}
             borderRadius='1000px'
           />
