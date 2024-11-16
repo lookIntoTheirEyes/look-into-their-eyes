@@ -12,15 +12,17 @@ export default function LanguageInput({ locale }: { locale: Language }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const page = searchParams.get("page");
-  const isParallelRoute = pathname.includes("details");
 
   const onSelectChange = (language: Language) => {
-    if (isPending || isParallelRoute) {
+    if (isPending) {
       return;
     }
 
     startTransition(() => {
-      router.replace({ pathname, query: { page } }, { locale: language });
+      router.replace(
+        { pathname, query: { page } },
+        { locale: language, scroll: false }
+      );
     });
   };
 
@@ -28,13 +30,10 @@ export default function LanguageInput({ locale }: { locale: Language }) {
     <div className={styles.container}>
       {
         <span
-          className={`${styles.language} ${
-            isParallelRoute ? styles.disabled : ""
-          }`}
+          className={`${styles.language}`}
           onClick={() =>
             onSelectChange(locale === Language.en ? Language.he : Language.en)
           }
-          aria-disabled={isParallelRoute}
         >
           {locale === Language.he ? "English" : "עברית"}
         </span>

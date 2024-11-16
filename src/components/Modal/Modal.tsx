@@ -77,7 +77,10 @@ const ModalClient = ({
     if (!isClosing) return;
 
     startTransition(() => {
-      router.push({ pathname: "/story", query: { page } }, { locale });
+      router.push(
+        { pathname: "/story", query: { page } },
+        { locale, scroll: false }
+      );
     });
   };
 

@@ -76,6 +76,11 @@
   color: var(--red);
   font-size: 3rem;
   justify-self: center;
+
+  &:dir(rtl) {
+    line-height: 0.8;
+    padding-bottom: 1rem;
+  }
 }
 
 .text {
