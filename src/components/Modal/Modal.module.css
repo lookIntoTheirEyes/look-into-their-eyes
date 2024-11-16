@@ -99,9 +99,18 @@
   transition: all 0.3s ease;
   background-color: transparent;
 
+  @media (max-width: 768px) {
+    top: 1rem;
+    left: 1rem;
+  }
+
   &:dir(ltr) {
     left: auto;
     right: 3rem;
+
+    @media (max-width: 768px) {
+      right: 1rem;
+    }
   }
 }
 
