@@ -43,4 +43,6 @@ const TableOfContentsContainer = forwardRef<
   );
 });
 
+TableOfContentsContainer.displayName = "TableOfContentsContainer";
+
 export default TableOfContentsContainer;
