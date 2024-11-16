@@ -24,7 +24,9 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
 
   return (
     <>
-      <h2 className={styles.pageHeader}>{title}</h2>
+      <h2 className={`${styles.pageHeader} ${localStyles.pageHeader}`}>
+        {title}
+      </h2>
       <ul className={localStyles.tocList}>
         {pages.map(({ pageNum, title }, index) => (
           <li key={index} className={localStyles.tocItem}>
