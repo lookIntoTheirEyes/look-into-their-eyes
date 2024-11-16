@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 export default function NotFoundPage() {
   const t = useTranslations("404");
 
+  throw new Error("");
+
   return (
     <PageContainer center>
       <>
