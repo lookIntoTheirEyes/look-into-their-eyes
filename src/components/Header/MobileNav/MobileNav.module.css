@@ -5,7 +5,7 @@
 }
 
 .mobileMenu button {
-  z-index: 200;
+  z-index: 400;
   position: relative;
   margin-top: 1rem;
   margin-right: 1rem;
