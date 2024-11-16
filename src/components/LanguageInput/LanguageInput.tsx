@@ -19,8 +19,9 @@ export default function LanguageInput({ locale }: { locale: Language }) {
     }
 
     startTransition(() => {
+      const query = page ? { query: { page } } : {};
       router.replace(
-        { pathname, query: { page } },
+        { pathname, ...query },
         { locale: language, scroll: false }
       );
     });
