@@ -10,4 +10,13 @@
   padding: 0 1.6rem 0.8rem 1.6rem;
   background-color: rgba(51, 51, 51, 0.8);
   min-height: var(--header-height);
+
+  @media (max-width: 768px) {
+    &:dir(ltr) {
+      padding-left: 0.8rem;
+    }
+    &:dir(rtl) {
+      padding-right: 0rem;
+    }
+  }
 }
