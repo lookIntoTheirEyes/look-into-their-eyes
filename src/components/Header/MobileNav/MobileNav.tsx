@@ -16,14 +16,16 @@ export default function MobileNav({
   return (
     <nav className={`${styles.mobileMenu} ${menuOpen ? styles.open : ""}`}>
       <button className={styles.hamburger} onClick={handleToggleMenu}>
-        ☰
+        <span className={styles.hamburgerLine}></span>
+        <span className={styles.hamburgerLine}></span>
+        <span className={styles.hamburgerLine}></span>
       </button>
 
-      {menuOpen && (
-        <aside>
+      {
+        <aside className={styles.menuContainer}>
           <ul className={styles.mobileNav}>{links}</ul>
         </aside>
-      )}
+      }
     </nav>
   );
 }

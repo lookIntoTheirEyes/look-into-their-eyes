@@ -5,44 +5,118 @@
 }
 
 .mobileMenu button {
-  z-index: 1001;
+  z-index: 200;
+  position: relative;
+  margin-top: 1rem;
+  margin-right: 1rem;
 }
 
 .hamburger {
-  font-size: 3.5rem;
+  width: 40px;
+  height: 40px;
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--white);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.hamburgerLine {
+  width: 30px;
+  height: 3px;
+  background-color: var(--white);
+  transition: all 0.3s ease-in-out;
+  transform-origin: center;
+}
+
+.open .hamburgerLine:nth-child(1) {
+  transform: translateY(13px) rotate(45deg);
+}
+
+.open .hamburgerLine:nth-child(2) {
+  opacity: 0;
+}
+
+.open .hamburgerLine:nth-child(3) {
+  transform: translateY(-13px) rotate(-45deg);
+}
+
+.menuContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 80%;
+  height: 100vh;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+  transform: translateX(-100%);
+}
+
+.open .menuContainer {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+:dir(rtl) .menuContainer {
+  left: auto;
+  right: 0;
+  transform: translateX(100%);
+}
+
+:dir(rtl) .open .menuContainer {
+  transform: translateX(0);
 }
 
 .mobileNav {
-  display: none;
+  display: flex;
   flex-direction: column;
-  position: absolute;
   background-color: rgba(51, 51, 51, 0.9);
-  width: 80%;
-  right: 0;
-  top: var(--header-height);
-
-  &:dir(ltr) {
-    right: auto;
-    left: 0;
-    align-items: baseline;
-  }
+  height: 100%;
+  width: 100%;
+  padding-top: calc(var(--header-height) + 1rem);
 }
 
 .mobileNav > li {
   width: 100%;
-  & > a {
-    display: block;
-    width: 100%;
-    padding: 1rem;
-    padding-bottom: 0;
-    border-bottom: var(--border-white);
-  }
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: all 0.3s ease-in-out;
 }
 
-.mobileMenu.open .mobileNav {
-  display: flex;
+:dir(rtl) .mobileNav > li {
+  transform: translateX(50px);
+}
+
+.open .mobileNav > li {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.open .mobileNav > li:nth-child(1) {
+  transition-delay: 0.1s;
+}
+.open .mobileNav > li:nth-child(2) {
+  transition-delay: 0.2s;
+}
+.open .mobileNav > li:nth-child(3) {
+  transition-delay: 0.3s;
+}
+.open .mobileNav > li:nth-child(4) {
+  transition-delay: 0.4s;
+}
+.open .mobileNav > li:nth-child(5) {
+  transition-delay: 0.5s;
+}
+
+.mobileNav > li > a {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  padding-bottom: 0;
+  border-bottom: var(--border-white);
 }
