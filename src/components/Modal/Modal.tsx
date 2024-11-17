@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
 import styles from "./Modal.module.css";
 import { useRouter, usePathname } from "@/i18n/routing";
 
@@ -54,9 +54,11 @@ const ModalClient = ({
   lang: locale,
   closeText,
 }: IProps) => {
-  const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
+  const [hasScrollbar, setHasScrollbar] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -67,9 +69,18 @@ const ModalClient = ({
     setTimeout(() => setIsVisible(false), 500);
   };
 
+  const checkScrollbar = () => {
+    const container = containerRef.current;
+    if (container) {
+      const isScrollable = container.scrollHeight > container.clientHeight;
+      setHasScrollbar(isScrollable);
+    }
+  };
+
   useEffect(() => {
     if (pathname.includes("details")) {
       setIsVisible(true);
+      checkScrollbar();
     }
   }, [pathname]);
 
@@ -109,13 +120,15 @@ const ModalClient = ({
           >
             <button
               onClick={handleClose}
-              className={styles.closeButton}
+              className={`${styles.closeButton} ${
+                hasScrollbar ? styles.scrollbar : ""
+              }`}
               aria-label='Close Modal'
             >
               X
             </button>
 
-            <div className={styles.modalContent}>
+            <div ref={containerRef} className={styles.modalContent}>
               <h2 className={styles.title}>{title}</h2>
               <div className={styles.pageImages}>
                 {imageUrls.map((imageUrl, i) => (
