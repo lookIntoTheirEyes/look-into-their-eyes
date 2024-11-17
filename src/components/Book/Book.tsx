@@ -3,7 +3,6 @@
 import PageFlip from "react-pageflip";
 import { useBookNavigation } from "@/hooks/useNavigation";
 import styles from "./Book.module.css";
-
 import Controls from "@/components/Book/Controls/Controls";
 import { BookActions } from "@/lib/utils/utils";
 import {
