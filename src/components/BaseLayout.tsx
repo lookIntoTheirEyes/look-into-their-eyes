@@ -36,7 +36,13 @@ export default async function BaseLayout({ children, locale }: IProps) {
         <NextIntlClientProvider messages={messages}>
           <Header
             locale={locale}
-            links={{ story: t("story"), home: t("home"), about: t("about") }}
+            links={{
+              story: t("story"),
+              home: t("home"),
+              about: t("about"),
+              families: t("families"),
+              visitors: t("visitors"),
+            }}
           />
           {children}
           <Footer />

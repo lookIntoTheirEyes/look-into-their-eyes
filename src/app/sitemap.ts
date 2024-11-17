@@ -10,6 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     getEntry("/privacy"),
     getEntry("/terms"),
     getEntry("/accessibility"),
+    getEntry("/families"),
+    getEntry("/visitors-book"),
   ];
 }
 

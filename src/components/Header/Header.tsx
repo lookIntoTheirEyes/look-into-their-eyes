@@ -11,7 +11,13 @@ import MobileNav from "./MobileNav/MobileNav";
 import DesktopNav from "./DesktopNav/DesktopNav";
 
 interface HeaderProps {
-  links: { story: string; home: string; about: string };
+  links: {
+    story: string;
+    home: string;
+    about: string;
+    visitors: string;
+    families: string;
+  };
   locale: Language;
 }
 
@@ -26,6 +32,8 @@ export default function Header({
   const links = [
     getRoute({ pathname: "/" }, home),
     getRoute({ pathname: "/story", query: { page: 1 } }, story),
+    // getRoute({ pathname: "/families" }, families),
+    // getRoute({ pathname: "/visitors-book" }, visitors),
     getRoute({ pathname: "/about" }, about),
   ].map(({ href, name }) => (
     <li

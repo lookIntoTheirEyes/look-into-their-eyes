@@ -1,11 +1,7 @@
-import Header from "@/components/Header/Header";
 import "../globals.css";
-import { ILanguageProps, Language } from "../../lib/model/language";
-import Footer from "@/components/Footer/Footer";
-import Widgets from "@/components/Widgets/Widgets";
-import { getTranslations, getMessages } from "next-intl/server";
-import { NextIntlClientProvider } from "next-intl";
-import { Analytics } from "@vercel/analytics/react";
+import { ILanguageProps } from "../../lib/model/language";
+import { getTranslations } from "next-intl/server";
+import BaseLayout from "@/components/BaseLayout";
 
 interface IProps extends ILanguageProps {
   children: React.ReactNode;
@@ -25,29 +21,8 @@ export async function generateMetadata() {
 
 export default async function RootLayout(props: IProps) {
   const params = await props.params;
-
   const { locale } = params;
-
   const { children } = props;
-  const messages = await getMessages();
 
-  const t = await getTranslations("Links");
-
-  return (
-    <html lang={locale} dir={locale === Language.en ? "ltr" : "rtl"}>
-      <body>
-        <NextIntlClientProvider messages={messages}>
-          <Header
-            locale={locale}
-            links={{ story: t("story"), home: t("home"), about: t("about") }}
-          />
-          {children}
-          <Footer />
-
-          <Widgets lang={locale} />
-          <Analytics />
-        </NextIntlClientProvider>
-      </body>
-    </html>
-  );
+  return <BaseLayout locale={locale}>{children}</BaseLayout>;
 }
