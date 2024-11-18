@@ -6,7 +6,7 @@ import styles from "./Header.module.css";
 import LanguageInput from "../LanguageInput/LanguageInput";
 import NavLink from "../NavLink/NavLink";
 import { Language } from "@/lib/model/language";
-import { getImageUrl, getRoute } from "@/lib/utils/utils";
+import { getRoute } from "@/lib/utils/utils";
 import MobileNav from "./MobileNav/MobileNav";
 import DesktopNav from "./DesktopNav/DesktopNav";
 import Image from "next/image";
