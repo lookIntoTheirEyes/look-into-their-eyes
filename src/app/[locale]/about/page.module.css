@@ -3,6 +3,10 @@
   flex-direction: column;
   align-items: center;
 
+  &:dir(rtl) {
+    margin-top: 2.3rem;
+  }
+
   .nameContainer {
     display: flex;
     align-items: center;
@@ -15,7 +19,7 @@
     & > h2,
     & > span {
       font-size: 3rem;
-      color: var(--white);
+      color: var(--page-text-color);
     }
 
     &:dir(rtl) {
@@ -26,6 +30,7 @@
 
 .header {
   font-size: 6rem;
+  color: var(--red);
 }
 
 .imageContainer {
@@ -42,7 +47,7 @@
 }
 
 .socialIcons a {
-  color: var(--yellow);
+  color: var(--red);
   margin: 0 1.6rem;
   transition: color 0.3s ease;
   font-size: 3.5rem;

@@ -41,7 +41,7 @@ const ModalPage = async (props: IProps) => {
     } = await getHero(pageNum, locale);
 
     return (
-      <PageContainer isStory>
+      <PageContainer>
         <ModalClient
           closeText={t("closeText")}
           lang={locale}

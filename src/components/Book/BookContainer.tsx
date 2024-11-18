@@ -38,7 +38,7 @@ const BookContainer: React.FC<IBookProps> = ({
   const previous = t("actions.previous");
 
   return (
-    <PageContainer isStory>
+    <PageContainer>
       <>
         {children}
         <Book

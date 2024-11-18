@@ -114,20 +114,22 @@
   transition-delay: 0.5s;
 }
 
-.mobileNav > li > a {
-  display: block;
-  width: 100%;
-  padding-top: 0.5rem;
-  padding-bottom: 0;
-  border-bottom: var(--border-white);
-  &:first-child {
+.mobileNav > li {
+  &:first-child > a {
     padding-top: 0;
   }
-  &:dir(rtl) {
-    font-size: 2rem;
-    padding-right: 1rem;
-  }
-  &:dir(ltr) {
-    padding-left: 1rem;
+  & > a {
+    display: block;
+    width: 100%;
+    padding-top: 0.5rem;
+    padding-bottom: 0;
+    border-bottom: var(--border-white);
+    &:dir(rtl) {
+      font-size: 2rem;
+      padding-right: 1rem;
+    }
+    &:dir(ltr) {
+      padding-left: 1rem;
+    }
   }
 }
