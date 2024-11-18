@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import styles from "./PageCover.module.css";
-import { CoverPage } from "@/lib/utils/heroesService";
+import { CoverPage } from "@/lib/model/book";
 
 interface PageCoverProps {
   details: CoverPage;
