@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Page as HeroPage } from "@/lib/utils/heroesService";
+import { Page as HeroPage } from "@/lib/model/book";
 import Page from "@/components/Book/Page/Page";
 import TableOfContents from "./TableOfContents";
 
