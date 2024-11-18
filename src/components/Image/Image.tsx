@@ -1,6 +1,6 @@
 "use client";
 
-import { imageLoader } from "@/lib/utils/heroesService";
+import { imageLoader } from "@/lib/utils/utils";
 import Image from "next/image";
 
 const LocalImage = ({

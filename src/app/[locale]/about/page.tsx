@@ -4,7 +4,7 @@ import styles from "./page.module.css";
 import PageContainer from "@/components/PageContainer/PageContainer";
 import SocialIcon from "@/components/SocialIcon/SocialIcon";
 import Image from "@/components/Image/Image";
-import { getImageUrl } from "@/lib/utils/heroesService";
+import { getImageUrl } from "@/lib/utils/utils";
 
 export default function About() {
   const t = useTranslations("About");

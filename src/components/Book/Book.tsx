@@ -4,7 +4,7 @@ import PageFlip from "react-pageflip";
 import { useBookNavigation } from "@/hooks/useNavigation";
 import styles from "./Book.module.css";
 import { BookActions } from "@/lib/utils/utils";
-import { Page } from "@/lib/utils/heroesService";
+import { Page } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
 import DummyPage from "@/components/Book/DummyPage";
 import TableOfContentsContainer from "@/components/Book/TableOfContents/TableOfContentsContainer";

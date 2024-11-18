@@ -1,16 +1,15 @@
-import PageContainer from "@/components/PageContainer/PageContainer";
+import UsersBook from "@/components/UsersBook/UsersBook";
 import { ILanguageProps, Language } from "@/lib/model/language";
+import { getTranslations } from "next-intl/server";
 
 const Visitors: React.FC<ILanguageProps> = async (props) => {
-  const params = await props.params;
+  const { locale } = await props.params;
+  const rtl = locale === Language.he;
 
-  const { locale } = params;
+  const t = await getTranslations("Book");
+  const title = t("visitors.front.title");
 
-  return (
-    <PageContainer center>
-      <h1>{locale === Language.en ? "Visitors Book" : "ספר מבקרים"}</h1>
-    </PageContainer>
-  );
+  return <UsersBook title={title} rtl={rtl} />;
 };
 
 Visitors.displayName = "Families";

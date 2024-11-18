@@ -1,58 +1,11 @@
-import { ImageLoaderProps } from "next/image";
 import { Language } from "../model/language";
+import heroesData from "@/books/heroes.json";
+import { Page } from "../model/book";
+import { getImageUrl } from "./utils";
 
 const BOOK_NO_CONTENT_PAGES = 2;
 
-const heroes: Hero[] = [
-  {
-    id: 1,
-    imageUrls: [
-      "v1731313087/456207074_3815139565409372_4521394713267543061_n_euu2qs.jpg",
-      "v1731240476/Screen-Shot-2023-10-25-at-1.59.37-PM-e1698231614287-640x400_smp4xr.png",
-    ],
-    en: {
-      name: "Inbar Haiman",
-      description: "We miss her",
-      longDescription:
-        "There isn't a lot we can say that will explain how much we miss her",
-    },
-    he: {
-      name: "ענבר היימן",
-      description: "אנחנו מתגעגעים אליה מאוד",
-      longDescription: "אין דרך אפילו לתאר עד כמה עצום הגעגוע",
-    },
-  },
-  {
-    id: 2,
-    imageUrls: ["v1731753758/IMG_1150_jldnwd.jpg"],
-    en: {
-      name: "Matan Angrest",
-      description: "We miss him",
-      longDescription:
-        "There isn't a lot we can say that will explain how much we miss him",
-    },
-    he: {
-      name: "מתן אנגרסט",
-      description: "אנחנו מתגעגעים אליו מאוד",
-      longDescription: "אין דרך אפילו לתאר עד כמה עצום הגעגוע",
-    },
-  },
-  {
-    id: 3,
-    imageUrls: ["v1731581087/IMG_6007_cia4fy.jpg"],
-    en: {
-      name: "Shani Nicole Louk",
-      description: "We miss her",
-      longDescription:
-        "There isn't a lot we can say that will explain how much we miss her",
-    },
-    he: {
-      name: "שני ניקול לוק",
-      description: "אנחנו מתגעגעים אליה מאוד",
-      longDescription: "אין דרך אפילו לתאר עד כמה עצום הגעגוע",
-    },
-  },
-];
+const heroes = heroesData as Hero[];
 
 export function getAllHeroes() {
   return heroes;
@@ -85,7 +38,7 @@ export async function getHero(page: string, lang: Language) {
   const hero = heroDetails?.[lang];
 
   if (!hero) {
-    throw Error("hero not found");
+    throw new Error("hero not found");
   }
 
   const { name, description, longDescription } = hero;
@@ -100,7 +53,7 @@ export async function getHero(page: string, lang: Language) {
 }
 
 export function getAllPages(lang: Language): Page[] {
-  const heroes = getAllHeroes().map((hero) => {
+  const pages = heroes.map((hero) => {
     const { name: title, description, longDescription } = hero[lang];
     return {
       title,
@@ -110,56 +63,5 @@ export function getAllPages(lang: Language): Page[] {
     };
   });
 
-  return lang === Language.he ? heroes.reverse() : heroes;
-}
-
-export function getFrontPage(lang: Language): CoverPage {
-  return lang === Language.he
-    ? { title: "הסוף", description: "", longDescription: "" }
-    : {
-        title: "Between the 6th and the 7th of October",
-        author: "Benzi Brofman",
-        description: "",
-        longDescription: "",
-      };
-}
-
-export function getBackPage(lang: Language): CoverPage {
-  return lang === Language.he
-    ? {
-        title: "בין השישי לשביעי באוקטובר",
-        author: "בנצי ברופמן",
-        description: "",
-        longDescription: "",
-      }
-    : { title: "The end", description: "", longDescription: "" };
-}
-
-export interface Page {
-  title?: string;
-  description?: string;
-  longDescription?: string;
-  imageUrl?: string;
-  imageDescription?: string;
-}
-
-export interface CoverPage extends Page {
-  author?: string;
-}
-
-export function getImageUrl(url: string) {
-  const imageUrl = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-
-  return `https://res.cloudinary.com/${imageUrl}/image/upload/${url}`;
-}
-
-export function imageLoader({
-  src,
-  quality = 100,
-  width = 300,
-}: ImageLoaderProps) {
-  const urlStart = src.split("upload/")[0];
-  const urlEnd = src.split("upload/")[1];
-  const transformations = `w_${width},q_${quality}`;
-  return `${urlStart}upload/${transformations}/${urlEnd}`;
+  return lang === Language.he ? pages.reverse() : pages;
 }

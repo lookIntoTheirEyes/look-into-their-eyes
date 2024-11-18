@@ -1,4 +1,4 @@
-import { Page as BookPage } from "@/lib/utils/heroesService";
+import { Page as BookPage } from "@/lib/model/book";
 import PageContainer from "../PageContainer/PageContainer";
 import Book from "./Book";
 import { useTranslations } from "next-intl";
