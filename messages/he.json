@@ -36,7 +36,14 @@
     },
     "tableOfContents": "תוכן עניינים",
     "title": "פרק",
-    "closeText": "חזור"
+    "closeText": "חזור",
+    "front": {
+      "title": "בין השישי לשביעי באוקטובר",
+      "author": "בנצי ברופמן",
+      "description": "",
+      "longDescription": ""
+    },
+    "back": { "title": "הסוף", "description": "", "longDescription": "" }
   },
   "terms": {
     "title": "תנאים והגבלות",

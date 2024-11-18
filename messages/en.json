@@ -36,7 +36,14 @@
     },
     "tableOfContents": "Table of Contents",
     "title": "Chapter",
-    "closeText": "Back"
+    "closeText": "Back",
+    "front": {
+      "title": "Between the 6th and the 7th of October",
+      "author": "Benzi Brofman",
+      "description": "",
+      "longDescription": ""
+    },
+    "back": { "title": "The end", "description": "", "longDescription": "" }
   },
   "terms": {
     "title": "Terms and Conditions",

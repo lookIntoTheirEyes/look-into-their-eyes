@@ -68,8 +68,23 @@ const BookComponent: React.FC<IProps> = async (props) => {
     </Page>
   ));
 
-  const Front = <PageCover details={getFrontPage(locale)} />;
-  const Back = <PageCover details={getBackPage(locale)} />;
+  const frontDetails = {
+    title: t("front.title"),
+    author: t("front.author"),
+    description: t("front.description"),
+    longDescription: t("front.longDescription"),
+  };
+  const backDetails = {
+    title: t("back.title"),
+    description: t("back.description"),
+    longDescription: t("back.longDescription"),
+  };
+
+  const frontText = rtl ? backDetails : frontDetails;
+  const backText = rtl ? frontDetails : backDetails;
+
+  const Front = <PageCover details={frontText} />;
+  const Back = <PageCover details={backText} />;
 
   return (
     <BookContainer
