@@ -3,7 +3,7 @@
 import StyledButton from "@/components/StyledButton/StyledButton";
 import { Page } from "@/lib/utils/heroesService";
 import styles from "./PageContent.module.css";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 import Image from "../../../Image/Image";
 
 interface PageProps {
@@ -28,7 +28,10 @@ const PageContent: React.FC<PageProps> = ({
     imageDescription = "Sample Image",
   } = details;
   const handleClick = () => {
-    router.push(`/story/details?page=${pageNum}`, { scroll: false });
+    router.push(
+      { pathname: "/story/details", query: { page: pageNum } },
+      { scroll: false }
+    );
   };
 
   return (
