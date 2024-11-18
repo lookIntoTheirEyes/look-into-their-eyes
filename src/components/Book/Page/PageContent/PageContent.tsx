@@ -1,10 +1,11 @@
 "use client";
 
 import StyledButton from "@/components/StyledButton/StyledButton";
-import { Page } from "@/lib/utils/heroesService";
+
 import styles from "./PageContent.module.css";
 import { useRouter } from "@/i18n/routing";
 import Image from "../../../Image/Image";
+import { Page } from "@/lib/model/book";
 
 interface PageProps {
   pageNum: number;
@@ -21,12 +22,7 @@ const PageContent: React.FC<PageProps> = ({
 }) => {
   const router = useRouter();
 
-  const {
-    title,
-    imageUrl,
-    description,
-    imageDescription = "Sample Image",
-  } = details;
+  const { title, imageUrl, description, imageDescription = title } = details;
   const handleClick = () => {
     router.push(
       { pathname: "/story/details", query: { page: pageNum } },
