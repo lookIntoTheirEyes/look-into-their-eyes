@@ -32,12 +32,12 @@
     "actions": {
       "previous": "הקודם",
       "next": "הבא",
-      "pageCta": "המשך לקרוא"
+      "pageCta": "המשך לקרוא",
+      "closeText": "חזור"
     },
     "story": {
       "tableOfContents": "תוכן עניינים",
       "title": "פרק",
-      "closeText": "חזור",
       "front": {
         "title": "בין השישי לשביעי באוקטובר",
         "author": "בנצי ברופמן",
@@ -45,6 +45,16 @@
         "longDescription": ""
       },
       "back": { "title": "הסוף", "description": "", "longDescription": "" }
+    },
+    "families": {
+      "front": {
+        "title": "משפחות מספרות"
+      }
+    },
+    "visitors": {
+      "front": {
+        "title": "ספר מבקרים"
+      }
     }
   },
   "terms": {

@@ -2,14 +2,17 @@ import { Page as BookPage } from "@/lib/utils/heroesService";
 import PageContainer from "../PageContainer/PageContainer";
 import Book from "./Book";
 import { useTranslations } from "next-intl";
+import { ReactNode } from "react";
 
 interface IBookProps {
   rtl: boolean;
   tableOfContentsTitle?: string;
   Pages: JSX.Element[];
-  Front: JSX.Element;
-  Back: JSX.Element;
+  Front?: JSX.Element;
+  Back?: JSX.Element;
   pagesContent: BookPage[];
+  noContentAmount: number;
+  children?: ReactNode;
 }
 
 const BookContainer: React.FC<IBookProps> = ({
@@ -19,6 +22,8 @@ const BookContainer: React.FC<IBookProps> = ({
   pagesContent,
   Front,
   Back,
+  noContentAmount,
+  children,
 }) => {
   const t = useTranslations("Book");
 
@@ -34,19 +39,23 @@ const BookContainer: React.FC<IBookProps> = ({
 
   return (
     <PageContainer isStory>
-      <Book
-        book={{
-          Front,
-          Back,
-          Pages,
-          toc,
-        }}
-        rtl={rtl}
-        actions={{
-          next,
-          previous,
-        }}
-      />
+      <>
+        {children}
+        <Book
+          book={{
+            Front,
+            Back,
+            Pages,
+            toc,
+          }}
+          rtl={rtl}
+          actions={{
+            next,
+            previous,
+          }}
+          noContentAmount={noContentAmount}
+        />
+      </>
     </PageContainer>
   );
 };

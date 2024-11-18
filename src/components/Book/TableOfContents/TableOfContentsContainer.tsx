@@ -1,9 +1,5 @@
 import { forwardRef } from "react";
-import {
-  Page as HeroPage,
-  NO_CONTENT_PAGES_TOC,
-  PAGES_FACTOR_TOC,
-} from "@/lib/utils/heroesService";
+import { Page as HeroPage } from "@/lib/utils/heroesService";
 import Page from "@/components/Book/Page/Page";
 import TableOfContents from "./TableOfContents";
 
@@ -15,16 +11,17 @@ export interface TableOfContentsPageProps {
   pagesAmount: number;
   goToPage: (pageNum: number) => void;
   rtl: boolean;
+  noContentAmount: number;
 }
 
 const TableOfContentsContainer = forwardRef<
   HTMLDivElement,
   TableOfContentsPageProps
->(({ rtl, toc, goToPage, pagesAmount }, ref) => {
+>(({ rtl, toc, goToPage, pagesAmount, noContentAmount }, ref) => {
   const getPageNum = (i: number) => {
     return rtl
-      ? pagesAmount - i - NO_CONTENT_PAGES_TOC + PAGES_FACTOR_TOC
-      : i + NO_CONTENT_PAGES_TOC;
+      ? pagesAmount - i - noContentAmount + noContentAmount - 1
+      : i + noContentAmount;
   };
   return (
     <Page rtl={rtl} pageNum={2} ref={ref}>

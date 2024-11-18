@@ -1,10 +1,7 @@
 import { ImageLoaderProps } from "next/image";
 import { Language } from "../model/language";
 
-export const NO_CONTENT_PAGES = 2;
-export const NO_CONTENT_PAGES_TOC = 3;
-export const PAGES_FACTOR = NO_CONTENT_PAGES;
-export const PAGES_FACTOR_TOC = NO_CONTENT_PAGES - 1;
+const BOOK_NO_CONTENT_PAGES = 2;
 
 const heroes: Hero[] = [
   {
@@ -79,7 +76,7 @@ interface HeroDetails {
 }
 
 export function getHeroId(page: number) {
-  return (+page - NO_CONTENT_PAGES + 1).toString();
+  return (+page - BOOK_NO_CONTENT_PAGES + 1).toString();
 }
 
 export async function getHero(page: string, lang: Language) {

@@ -3,52 +3,55 @@
 import PageFlip from "react-pageflip";
 import { useBookNavigation } from "@/hooks/useNavigation";
 import styles from "./Book.module.css";
-import Controls from "@/components/Book/Controls/Controls";
 import { BookActions } from "@/lib/utils/utils";
-import {
-  Page,
-  NO_CONTENT_PAGES,
-  PAGES_FACTOR,
-  NO_CONTENT_PAGES_TOC,
-} from "@/lib/utils/heroesService";
+import { Page } from "@/lib/utils/heroesService";
+import Controls from "@/components/Book/Controls/Controls";
 import DummyPage from "@/components/Book/DummyPage";
-import TableOfContentsContainer from "./TableOfContents/TableOfContentsContainer";
+import TableOfContentsContainer from "@/components/Book/TableOfContents/TableOfContentsContainer";
 
 interface BookProps extends BookActions {
   rtl: boolean;
   book: {
     Pages: JSX.Element[];
-    Front: JSX.Element;
-    Back: JSX.Element;
+    Front?: JSX.Element;
+    Back?: JSX.Element;
     toc?: {
       title: string;
       pages: Page[];
     };
   };
+  noContentAmount: number;
 }
 
 const Book: React.FC<BookProps> = ({
   rtl,
   book: { Pages, Front, Back, toc },
   actions,
+  noContentAmount,
 }) => {
-  const pagesAmount =
-    Pages.length + (toc ? NO_CONTENT_PAGES_TOC : NO_CONTENT_PAGES);
+  const pagesAmount = Pages.length + noContentAmount;
 
   const { currPage, pageFlipRef, flipPage, updatePage, goToPage } =
     useBookNavigation(pagesAmount, rtl);
 
   const renderToc = (isRender: boolean) => {
-    return toc && isRender ? (
+    return renderPage(
+      !!toc && isRender,
       <TableOfContentsContainer
+        noContentAmount={noContentAmount}
         rtl={rtl}
         goToPage={goToPage}
         pagesAmount={pagesAmount}
-        toc={toc}
+        toc={toc!}
       />
-    ) : (
-      <DummyPage />
     );
+  };
+
+  const renderPage = <T extends React.ReactNode>(
+    condition: boolean,
+    page: T
+  ): T | React.ReactNode => {
+    return condition ? page : <DummyPage />;
   };
 
   return (
@@ -59,7 +62,7 @@ const Book: React.FC<BookProps> = ({
         style={{}}
         startPage={
           rtl
-            ? currPage < PAGES_FACTOR
+            ? currPage < noContentAmount - 1
               ? pagesAmount - 1
               : pagesAmount - currPage
             : currPage - 1
@@ -96,11 +99,11 @@ const Book: React.FC<BookProps> = ({
           updatePage(pageNum || 1);
         }}
       >
-        {Front}
+        {renderPage(!!Front, Front)}
         {renderToc(!rtl)}
-        {Pages}
+        {renderPage(Pages.length > 0, Pages)}
         {renderToc(rtl)}
-        {Back}
+        {renderPage(!!Back, Back)}
       </PageFlip>
       <Controls
         currPage={currPage}

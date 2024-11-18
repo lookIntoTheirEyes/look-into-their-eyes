@@ -2,12 +2,7 @@ import { ILanguageProps, Language } from "@/lib/model/language";
 import { getTranslations } from "next-intl/server";
 import BookContainer from "@/components/Book/BookContainer";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
-import {
-  getAllPages,
-  getHero,
-  NO_CONTENT_PAGES_TOC,
-  PAGES_FACTOR_TOC,
-} from "@/lib/utils/heroesService";
+import { getAllPages, getHero } from "@/lib/utils/heroesService";
 import Page from "@/components/Book/Page/Page";
 import PageContent from "@/components/Book/Page/PageContent/PageContent";
 import PageCover from "@/components/Book/PageCover/PageCover";
@@ -49,11 +44,12 @@ const BookComponent: React.FC<IProps> = async (props) => {
 
   const bookPages = getAllPages(locale);
   const rtl = locale === Language.he;
+  const noContentPages = 3;
 
-  const pagesAmount = bookPages.length + NO_CONTENT_PAGES_TOC;
+  const pagesAmount = bookPages.length + noContentPages;
 
   const pageNum = (i: number) =>
-    (rtl ? pagesAmount - i - NO_CONTENT_PAGES_TOC : i + 1) + PAGES_FACTOR_TOC;
+    (rtl ? pagesAmount - i - noContentPages : i + 1) + noContentPages - 1;
 
   const Pages = structuredClone(bookPages).map((content, i) => (
     <Page rtl={rtl} key={content.title} pageNum={pageNum(i)}>
@@ -89,6 +85,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
       Front={Front}
       Back={Back}
       pagesContent={bookPages}
+      noContentAmount={noContentPages}
     />
   );
 };
