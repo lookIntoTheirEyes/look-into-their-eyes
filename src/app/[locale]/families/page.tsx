@@ -33,9 +33,7 @@ const Families: React.FC<ILanguageProps> = async (props) => {
         Front={Front}
         Back={Back}
         noContentAmount={1}
-      >
-        <h1>{title}</h1>
-      </BookContainer>
+      ></BookContainer>
     </>
   );
 };
