@@ -1,5 +1,11 @@
 .bthn {
   bottom: var(--footer-height) !important;
+  left: 1rem !important;
+
+  &:dir(rtl) {
+    left: auto !important;
+    right: 1rem !important;
+  }
 }
 
 @media (max-width: 768px) {
