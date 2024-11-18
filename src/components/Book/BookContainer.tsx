@@ -1,14 +1,11 @@
 import { Page as BookPage } from "@/lib/utils/heroesService";
 import PageContainer from "../PageContainer/PageContainer";
 import Book from "./Book";
+import { useTranslations } from "next-intl";
 
 interface IBookProps {
   rtl: boolean;
-  text: {
-    tableOfContentsTitle: string;
-    next: string;
-    previous: string;
-  };
+  tableOfContentsTitle?: string;
   Pages: JSX.Element[];
   Front: JSX.Element;
   Back: JSX.Element;
@@ -17,16 +14,23 @@ interface IBookProps {
 
 const BookContainer: React.FC<IBookProps> = ({
   rtl,
-  text: { tableOfContentsTitle, next, previous },
+  tableOfContentsTitle,
   Pages,
   pagesContent,
   Front,
   Back,
 }) => {
-  const toc = {
-    title: tableOfContentsTitle,
-    pages: pagesContent,
-  };
+  const t = useTranslations("Book");
+
+  const toc = tableOfContentsTitle
+    ? {
+        title: tableOfContentsTitle,
+        pages: pagesContent,
+      }
+    : undefined;
+
+  const next = t("actions.next");
+  const previous = t("actions.previous");
 
   return (
     <PageContainer isStory>

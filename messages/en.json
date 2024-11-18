@@ -28,22 +28,24 @@
     "intro": "Artist",
     "artist": "Benzi Brofman"
   },
-  "Story": {
+  "Book": {
     "actions": {
       "previous": "Previous",
       "next": "Next",
       "pageCta": "Read More"
     },
-    "tableOfContents": "Table of Contents",
-    "title": "Chapter",
-    "closeText": "Back",
-    "front": {
-      "title": "Between the 6th and the 7th of October",
-      "author": "Benzi Brofman",
-      "description": "",
-      "longDescription": ""
-    },
-    "back": { "title": "The end", "description": "", "longDescription": "" }
+    "story": {
+      "tableOfContents": "Table of Contents",
+      "title": "Chapter",
+      "closeText": "Back",
+      "front": {
+        "title": "Between the 6th and the 7th of October",
+        "author": "Benzi Brofman",
+        "description": "",
+        "longDescription": ""
+      },
+      "back": { "title": "The end", "description": "", "longDescription": "" }
+    }
   },
   "terms": {
     "title": "Terms and Conditions",

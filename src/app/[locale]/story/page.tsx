@@ -4,8 +4,6 @@ import BookContainer from "@/components/Book/BookContainer";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
 import {
   getAllPages,
-  getBackPage,
-  getFrontPage,
   getHero,
   NO_CONTENT_PAGES_TOC,
   PAGES_FACTOR_TOC,
@@ -47,7 +45,7 @@ export async function generateMetadata(props: IProps) {
 
 const BookComponent: React.FC<IProps> = async (props) => {
   const { locale } = await props.params;
-  const t = await getTranslations("Story");
+  const t = await getTranslations("Book");
 
   const bookPages = getAllPages(locale);
   const rtl = locale === Language.he;
@@ -63,37 +61,30 @@ const BookComponent: React.FC<IProps> = async (props) => {
         cta={t("actions.pageCta")}
         details={content}
         pageNum={pageNum(i)}
-        title={t("title")}
+        title={t("story.title")}
       />
     </Page>
   ));
 
   const frontDetails = {
-    title: t("front.title"),
-    author: t("front.author"),
-    description: t("front.description"),
-    longDescription: t("front.longDescription"),
+    title: t("story.front.title"),
+    author: t("story.front.author"),
+    description: t("story.front.description"),
+    longDescription: t("story.front.longDescription"),
   };
   const backDetails = {
-    title: t("back.title"),
-    description: t("back.description"),
-    longDescription: t("back.longDescription"),
+    title: t("story.back.title"),
+    description: t("story.back.description"),
+    longDescription: t("story.back.longDescription"),
   };
 
-  const frontText = rtl ? backDetails : frontDetails;
-  const backText = rtl ? frontDetails : backDetails;
-
-  const Front = <PageCover details={frontText} />;
-  const Back = <PageCover details={backText} />;
+  const Front = <PageCover details={rtl ? backDetails : frontDetails} />;
+  const Back = <PageCover details={rtl ? frontDetails : backDetails} />;
 
   return (
     <BookContainer
       rtl={rtl}
-      text={{
-        tableOfContentsTitle: t("tableOfContents"),
-        next: t("actions.next"),
-        previous: t("actions.previous"),
-      }}
+      tableOfContentsTitle={t("story.tableOfContents")}
       Pages={Pages}
       Front={Front}
       Back={Back}

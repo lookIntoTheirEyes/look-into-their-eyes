@@ -28,7 +28,7 @@ const HeroDetails = async (props: IProps) => {
   const searchParams = await props.searchParams;
   const pageNum = getPageNum(searchParams);
   const params = await props.params;
-  const t = await getTranslations("Story");
+  const t = await getTranslations("Book.story");
 
   const { locale } = params;
   try {
