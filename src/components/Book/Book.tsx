@@ -9,6 +9,7 @@ import {
   Page,
   NO_CONTENT_PAGES,
   PAGES_FACTOR,
+  NO_CONTENT_PAGES_TOC,
 } from "@/lib/utils/heroesService";
 import DummyPage from "@/components/Book/DummyPage";
 import TableOfContentsContainer from "./TableOfContents/TableOfContentsContainer";
@@ -31,7 +32,8 @@ const Book: React.FC<BookProps> = ({
   book: { Pages, Front, Back, toc },
   actions,
 }) => {
-  const pagesAmount = Pages.length + NO_CONTENT_PAGES;
+  const pagesAmount =
+    Pages.length + (toc ? NO_CONTENT_PAGES_TOC : NO_CONTENT_PAGES);
 
   const { currPage, pageFlipRef, flipPage, updatePage, goToPage } =
     useBookNavigation(pagesAmount, rtl);

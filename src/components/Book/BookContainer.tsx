@@ -4,7 +4,9 @@ import {
   getBackPage,
   getFrontPage,
   NO_CONTENT_PAGES,
+  NO_CONTENT_PAGES_TOC,
   PAGES_FACTOR,
+  PAGES_FACTOR_TOC,
 } from "@/lib/utils/heroesService";
 import PageCover from "./PageCover/PageCover";
 import Page from "./Page/Page";
@@ -28,7 +30,12 @@ const BookContainer: React.FC<IBookProps> = ({
   text: { tableOfContentsTitle, pageCta, pageTitle, next, previous },
 }) => {
   const bookPages = getAllPages(locale);
-  const pagesAmount = bookPages.length + NO_CONTENT_PAGES;
+  const noContentPages = tableOfContentsTitle
+    ? NO_CONTENT_PAGES_TOC
+    : NO_CONTENT_PAGES;
+  const pagesFactor = tableOfContentsTitle ? PAGES_FACTOR_TOC : PAGES_FACTOR;
+
+  const pagesAmount = bookPages.length + noContentPages;
 
   const rtl = locale === Language.he;
 
@@ -38,7 +45,7 @@ const BookContainer: React.FC<IBookProps> = ({
   };
 
   const pageNum = (i: number) =>
-    (rtl ? pagesAmount - i - NO_CONTENT_PAGES : i + 1) + PAGES_FACTOR;
+    (rtl ? pagesAmount - i - noContentPages : i + 1) + pagesFactor;
 
   const Front = <PageCover details={getFrontPage(locale)} />;
   const Back = <PageCover details={getBackPage(locale)} />;

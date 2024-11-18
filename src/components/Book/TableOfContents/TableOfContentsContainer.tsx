@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
 import {
-  NO_CONTENT_PAGES,
   Page as HeroPage,
-  PAGES_FACTOR,
+  NO_CONTENT_PAGES_TOC,
+  PAGES_FACTOR_TOC,
 } from "@/lib/utils/heroesService";
 import Page from "@/components/Book/Page/Page";
 import TableOfContents from "./TableOfContents";
@@ -23,8 +23,8 @@ const TableOfContentsContainer = forwardRef<
 >(({ rtl, toc, goToPage, pagesAmount }, ref) => {
   const getPageNum = (i: number) => {
     return rtl
-      ? pagesAmount - i - NO_CONTENT_PAGES + PAGES_FACTOR
-      : i + NO_CONTENT_PAGES;
+      ? pagesAmount - i - NO_CONTENT_PAGES_TOC + PAGES_FACTOR_TOC
+      : i + NO_CONTENT_PAGES_TOC;
   };
   return (
     <Page rtl={rtl} pageNum={2} ref={ref}>

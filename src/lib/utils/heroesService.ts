@@ -1,8 +1,10 @@
 import { ImageLoaderProps } from "next/image";
 import { Language } from "../model/language";
 
-export const NO_CONTENT_PAGES = 3;
-export const PAGES_FACTOR = NO_CONTENT_PAGES - 1;
+export const NO_CONTENT_PAGES = 2;
+export const NO_CONTENT_PAGES_TOC = 3;
+export const PAGES_FACTOR = NO_CONTENT_PAGES;
+export const PAGES_FACTOR_TOC = NO_CONTENT_PAGES - 1;
 
 const heroes: Hero[] = [
   {
