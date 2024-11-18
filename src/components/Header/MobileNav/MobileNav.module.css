@@ -79,6 +79,9 @@
   height: 100%;
   width: 100%;
   padding-top: calc(var(--header-height) + 1rem);
+  &:dir(rtl) {
+    font-family: "OHSavyonChenKipper", sans-serif;
+  }
 }
 
 .mobileNav > li {
@@ -90,6 +93,12 @@
 
 :dir(rtl) .mobileNav > li {
   transform: translateX(50px);
+  & > a {
+    font-size: 4rem;
+    line-height: 1;
+    padding-bottom: 1rem;
+    padding-top: 0rem;
+  }
 }
 
 .open .mobileNav > li {
