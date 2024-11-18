@@ -269,7 +269,7 @@
   },
   "Error": {
     "header": "Error page",
-    "description": "It seems like we encountered an unexpected error",
+    "description": "It seems like we've encountered an error",
     "link1": "Click ",
     "cta": "here",
     "link2": "to go back home"

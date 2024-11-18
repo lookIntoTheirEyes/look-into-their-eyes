@@ -5,19 +5,15 @@
   padding: 2.4rem;
   flex: 1;
 
-  @media (min-width: 680px) {
-    width: 75%;
+  @media only screen and (min-width: 1250px) {
+    width: 90%;
   }
 
-  @media only screen and (min-width: 1450px) {
-    width: 70%;
+  @media only screen and (min-width: 1400px) {
+    width: 80%;
   }
 
-  @media only screen and (min-width: 1450px) {
+  @media only screen and (min-width: 1600px) {
     width: 65%;
-  }
-
-  @media only screen and (min-width: 1670px) {
-    width: 57%;
   }
 }

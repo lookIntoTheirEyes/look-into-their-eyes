@@ -6,11 +6,13 @@ import { useTranslations } from "next-intl";
 export default function NotFoundPage() {
   const t = useTranslations("404");
 
+  throw new Error("");
+
   return (
-    <PageContainer center>
+    <PageContainer pad center>
       <>
         <h1 className={styles.header}>
-          <span>101</span> <span> {t("header")}</span>
+          <span className={styles.number}>101</span> <span> {t("header")}</span>
         </h1>
         <h2 className={styles.secondary}>{t("secondary-header")}</h2>
         <div className={styles.action}>

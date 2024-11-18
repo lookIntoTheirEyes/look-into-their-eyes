@@ -1,26 +1,42 @@
 .header {
   font-size: 7rem;
-  display: flex;
-  gap: 1rem;
   padding-top: 2rem;
   padding-bottom: 3rem;
+  color: var(--header-text);
+  line-height: 1;
+  text-align: left;
+  &:dir(rtl) {
+    text-align: right;
+  }
+  .number {
+    color: var(--red);
+  }
 }
 
 .secondary {
   font-size: 4rem;
   padding-bottom: 1.5rem;
+  line-height: 1;
+  color: var(--header-text);
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 }
 
 .action {
   display: flex;
   gap: 0.4rem;
   align-items: center;
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 
   & > * {
     font-size: 5rem;
 
     &:not(a) {
       font-size: 3rem;
+      color: var(--header-text);
     }
 
     &:dir(rtl) {

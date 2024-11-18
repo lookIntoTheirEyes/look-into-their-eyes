@@ -1,6 +1,5 @@
 "use client";
 
-import { imageLoader } from "@/lib/utils/utils";
 import Image from "next/image";
 
 const LocalImage = ({
@@ -8,7 +7,6 @@ const LocalImage = ({
   imageUrl,
   priority = false,
   borderRadius = "4px",
-  width = 300,
 }: {
   alt?: string;
   imageUrl: string;
@@ -24,7 +22,6 @@ const LocalImage = ({
       sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
       fill
       priority={priority}
-      loader={() => imageLoader({ src: imageUrl, quality: 100, width })}
     />
   );
 };

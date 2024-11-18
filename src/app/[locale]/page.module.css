@@ -1,5 +1,17 @@
 .header {
   font-size: 4rem;
   margin-top: 1rem;
-  color: var(--page-text-color);
+  color: var(--header-text);
+}
+
+.imageContainer {
+  position: relative;
+  width: 70%;
+  min-height: 40rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    min-height: 25rem;
+    width: 80%;
+  }
 }

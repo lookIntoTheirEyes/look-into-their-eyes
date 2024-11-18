@@ -32,7 +32,7 @@ export default function About() {
               "v1731753364/Photo_by_Clemens_Hirmke_1_unwdvq.jpg"
             )}
             alt={t("artist")}
-            borderRadius='1000px'
+            borderRadius='20px'
           />
         </div>
         <div className={styles.socialIcons}>{icons}</div>

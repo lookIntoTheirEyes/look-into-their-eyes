@@ -3,7 +3,7 @@ import heroesData from "@/books/heroes.json";
 import { Page } from "../model/book";
 import { getImageUrl } from "./utils";
 
-const BOOK_NO_CONTENT_PAGES = 2;
+const BOOK_NO_CONTENT_PAGES = 3;
 
 const heroes = heroesData as Hero[];
 

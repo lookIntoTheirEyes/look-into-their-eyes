@@ -1,10 +1,13 @@
 .header {
-  padding: 2rem 0;
   font-size: 6rem;
+  color: var(--header-text);
 }
 
 .text {
   font-size: 4rem;
+  color: var(--header-text);
+  line-height: 1;
+  text-align: center;
 }
 
 .action {
@@ -17,6 +20,7 @@
 
     &:not(a) {
       font-size: 3rem;
+      color: var(--header-text);
     }
 
     &:dir(rtl) {

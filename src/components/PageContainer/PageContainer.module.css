@@ -12,6 +12,10 @@
   background-size: cover;
   filter: grayscale(50%) contrast(1.2);
   text-align: justify;
+  &.padding {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 .container {

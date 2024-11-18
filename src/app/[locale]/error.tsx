@@ -18,7 +18,7 @@ export default function Error({ error }: Props) {
   }, [error]);
 
   return (
-    <PageContainer center>
+    <PageContainer pad center>
       <>
         <h1 className={styles.header}>{t("header")}</h1>
         <p className={styles.text}>{t("description")}</p>

@@ -1,10 +1,12 @@
 import BaseLayout from "@/components/BaseLayout";
 import NotFoundPage from "@/components/NotFoundPage/NotFoundPage";
 import { routing } from "@/i18n/routing";
+import { cookies } from "next/headers";
 
-export default function GlobalNotFound() {
+export default async function GlobalNotFound() {
+  const isMobile = (await cookies()).get("isMobile")?.value === "true";
   return (
-    <BaseLayout locale={routing.defaultLocale}>
+    <BaseLayout isMobile={isMobile} locale={routing.defaultLocale}>
       <NotFoundPage />
     </BaseLayout>
   );

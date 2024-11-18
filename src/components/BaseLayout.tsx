@@ -11,6 +11,7 @@ import { ReactNode } from "react";
 type IProps = {
   children: ReactNode;
   locale: Language;
+  isMobile: boolean;
 };
 
 export async function generateMetadata() {
@@ -25,7 +26,11 @@ export async function generateMetadata() {
   };
 }
 
-export default async function BaseLayout({ children, locale }: IProps) {
+export default async function BaseLayout({
+  children,
+  locale,
+  isMobile,
+}: IProps) {
   const messages = await getMessages();
 
   const t = await getTranslations("Links");
@@ -35,6 +40,7 @@ export default async function BaseLayout({ children, locale }: IProps) {
       <body>
         <NextIntlClientProvider messages={messages}>
           <Header
+            isMobile={isMobile}
             locale={locale}
             links={{
               story: t("story"),

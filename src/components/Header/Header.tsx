@@ -1,6 +1,6 @@
 "use client";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useState } from "react";
 import styles from "./Header.module.css";
 
 import LanguageInput from "../LanguageInput/LanguageInput";
@@ -23,15 +23,17 @@ interface HeaderProps {
   };
   logoText: string;
   locale: Language;
+  isMobile: boolean;
 }
 
 export default function Header({
   links: { home, about, story, families, visitors },
   locale,
   logoText,
+  isMobile,
 }: HeaderProps) {
   const { scrollY } = useScroll();
-  const [isMobile, setIsMobile] = useState(false);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
@@ -78,17 +80,6 @@ export default function Header({
     ["rgb(51, 51, 51)", "rgba(51, 51, 51, 0.8)"]
   );
 
-  useEffect(() => {
-    const checkMobile = () => {
-      const isMobileValue = getComputedStyle(document.body).getPropertyValue(
-        "--is-mobile"
-      );
-      setIsMobile(isMobileValue === "1");
-    };
-
-    checkMobile();
-  }, []);
-
   const handleToggleMenu = () => {
     setMenuOpen((prevState) => !prevState);
   };
@@ -98,7 +89,7 @@ export default function Header({
       style={{
         backgroundColor,
       }}
-      className={styles.header}
+      className={`${styles.header} ${isMobile ? styles.mobile : ""}`}
     >
       {isMobile ? (
         <MobileNav

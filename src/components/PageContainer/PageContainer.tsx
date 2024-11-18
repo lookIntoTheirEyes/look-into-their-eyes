@@ -4,7 +4,8 @@ const PageContainer: React.FC<{
   children: JSX.Element;
   center?: boolean;
   isLegal?: boolean;
-}> = ({ children, isLegal = false, center = false }) => {
+  pad?: boolean;
+}> = ({ children, isLegal = false, center = false, pad = false }) => {
   const view = !isLegal ? (
     children
   ) : (
@@ -13,7 +14,9 @@ const PageContainer: React.FC<{
     </div>
   );
 
-  const classNameMain = `${styles.main} ${isLegal ? styles.legal : ""}`;
+  const classNameMain = `${styles.main} ${isLegal ? styles.legal : ""} ${
+    pad ? styles.padding : ""
+  }`;
 
   return <main className={classNameMain}>{view}</main>;
 };

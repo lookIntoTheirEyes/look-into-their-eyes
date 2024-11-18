@@ -1,9 +1,8 @@
 "use client";
 
-import StyledButton from "@/components/StyledButton/StyledButton";
-
-import styles from "./PageContent.module.css";
 import { useRouter } from "@/i18n/routing";
+import styles from "./PageContent.module.css";
+import StyledButton from "@/components/StyledButton/StyledButton";
 import Image from "@/components/Image/Image";
 import { Page } from "@/lib/model/book";
 

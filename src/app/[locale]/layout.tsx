@@ -2,6 +2,7 @@ import "../globals.css";
 import { ILanguageProps } from "../../lib/model/language";
 import { getTranslations } from "next-intl/server";
 import BaseLayout from "@/components/BaseLayout";
+import { cookies } from "next/headers";
 
 interface IProps extends ILanguageProps {
   children: React.ReactNode;
@@ -23,6 +24,11 @@ export default async function RootLayout(props: IProps) {
   const params = await props.params;
   const { locale } = params;
   const { children } = props;
+  const isMobile = (await cookies()).get("isMobile")?.value === "true";
 
-  return <BaseLayout locale={locale}>{children}</BaseLayout>;
+  return (
+    <BaseLayout locale={locale} isMobile={isMobile}>
+      {children}
+    </BaseLayout>
+  );
 }
