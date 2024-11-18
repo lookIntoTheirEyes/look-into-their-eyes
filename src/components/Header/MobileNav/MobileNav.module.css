@@ -91,10 +91,6 @@
 
 :dir(rtl) .mobileNav > li {
   transform: translateX(50px);
-  & > a {
-    font-size: 4rem;
-    padding-bottom: 1rem;
-  }
 }
 
 .open .mobileNav > li {
@@ -121,7 +117,17 @@
 .mobileNav > li > a {
   display: block;
   width: 100%;
-  padding: 1rem;
+  padding-top: 0.5rem;
   padding-bottom: 0;
   border-bottom: var(--border-white);
+  &:first-child {
+    padding-top: 0;
+  }
+  &:dir(rtl) {
+    font-size: 2rem;
+    padding-right: 1rem;
+  }
+  &:dir(ltr) {
+    padding-left: 1rem;
+  }
 }
