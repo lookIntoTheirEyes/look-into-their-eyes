@@ -1,12 +1,11 @@
 .nav {
   display: flex;
-  font-size: 2rem;
-  margin-top: 1.5rem;
+  font-size: 1.8rem;
+  font-family: "Header-font", sans-serif;
+  align-items: center;
 
   &:dir(rtl) {
-    font-family: "OHSavyonChenKipper", sans-serif;
-    font-size: 3rem;
-    margin-top: 0;
+    font-size: 2rem;
   }
 }
 
@@ -33,15 +32,14 @@
 .nav > li:not(:last-child)::after {
   content: "";
   position: absolute;
-  top: 0rem;
+  top: 0.4rem;
   right: 0;
   width: 0.2rem;
-  height: 80%;
-  background-color: #ccc;
+  height: 60%;
+  background-color: var(--white);
 }
 
 .nav:dir(rtl) > li:not(:last-child)::after {
   right: auto;
   left: 0;
-  top: 0.8rem;
 }

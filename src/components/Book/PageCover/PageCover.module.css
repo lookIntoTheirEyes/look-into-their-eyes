@@ -2,27 +2,7 @@
   background-color: var(--page-background);
   font-size: 3.5rem;
   padding: 2rem;
-  line-height: 0.8;
-  &:dir(ltr) {
-    line-height: 1;
-  }
-
-  .title {
-    padding-bottom: 1rem;
-
-    &:dir(ltr) {
-      padding-top: 0.5rem;
-      padding-bottom: 2rem;
-    }
-  }
-
-  &:dir(rtl) {
-    padding: 0 2rem;
-
-    & > .title {
-      font-size: 3rem;
-    }
-  }
+  line-height: 1;
 }
 
 .author {

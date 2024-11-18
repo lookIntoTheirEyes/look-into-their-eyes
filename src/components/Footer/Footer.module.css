@@ -7,6 +7,7 @@
   width: 100%;
   justify-content: space-between;
   align-items: center;
+  min-height: var(--footer-height);
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -27,19 +28,25 @@
 .creator {
   display: flex;
   gap: 0.6rem;
-  align-items: center;
+  font-family: "Graffiti", sans-serif;
+
+  &:dir(rtl) {
+    font-family: "OHSavyonChenKipper", sans-serif;
+  }
+
   & > p {
     font-size: 2.2rem;
+    line-height: 1.4;
 
     &:dir(ltr) {
       font-size: 2rem;
     }
   }
+
   & a {
     color: var(--yellow);
     transition: color 0.3s ease;
     font-size: 2.4rem;
-    line-height: 0.6;
 
     &:hover {
       color: var(--social-hover);

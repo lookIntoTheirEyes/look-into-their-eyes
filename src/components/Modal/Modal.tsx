@@ -6,9 +6,9 @@ import { startTransition, useEffect, useRef, useState } from "react";
 import styles from "./Modal.module.css";
 import { useRouter, usePathname } from "@/i18n/routing";
 
-import Image from "../Image/Image";
+import Image from "@/components/Image/Image";
 import { Language } from "@/lib/model/language";
-import StyledButton from "../StyledButton/StyledButton";
+import StyledButton from "@/components/StyledButton/StyledButton";
 
 interface IProps {
   page?: number;

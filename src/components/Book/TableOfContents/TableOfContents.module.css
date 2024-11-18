@@ -49,19 +49,11 @@
   border: none;
   color: var(--page-text-color);
   font-size: 1.5rem;
-  line-height: 0.5;
   padding: 0.4rem 0;
   cursor: pointer;
   width: 100%;
   text-align: justify;
-  font-family: "Graffiti", sans-serif;
-  padding-top: 1.2rem;
-
-  &:dir(rtl) {
-    padding-top: 0;
-    font-size: 2.5rem;
-    font-family: "OHSavyonChenKipper", sans-serif;
-  }
+  font-family: "Header-font", sans-serif;
 }
 
 .tocTitle {
@@ -70,12 +62,7 @@
 }
 
 .pageNumber {
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   color: var(--page-text-color);
   white-space: nowrap;
-  line-height: 1;
-
-  &:dir(ltr) {
-    font-size: 1.5rem;
-  }
 }

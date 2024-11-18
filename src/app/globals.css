@@ -2,7 +2,7 @@
   --yellow: #f7c500;
   --red: #cb2424;
   --dark-red: #b21d1d;
-  --white: #fff;
+  --white: #f0f0f0;
   --black: #1a1a1a;
   --link: #0070f3;
   --light-grey: #f5f5f5;
@@ -33,6 +33,20 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Header-font";
+  src: url("/fonts/FbAtzofen-Medium.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Text-font";
+  src: url("/fonts/FbAtzofen-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 @import "./book.css";
 
 html,
@@ -44,14 +58,13 @@ body {
 }
 
 body {
-  font-family: "Graffiti", sans-serif;
-  background-color: #1a1a1a;
-  color: white;
+  font-family: "Text-font", sans-serif;
+  color: var(--white);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   --_access-icon-border-radius: 50%;
-  --_access-icon-border: 0.5px solid white;
+  --_access-icon-border: 0.5px solid var(--white);
   --_access-icon-bottom: var(--footer-height);
   --is-mobile: 0;
 }
@@ -60,9 +73,6 @@ html[dir="rtl"] {
   body {
     --_access-icon-left: 1rem;
     --_access-icon-right: auto;
-  }
-  footer {
-    font-family: "OHSavyonChenKipper", sans-serif;
   }
 }
 

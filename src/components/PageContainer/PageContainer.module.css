@@ -8,20 +8,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: url("/images/7.jpg") no-repeat center center fixed;
+  background: url("/images/background.png") no-repeat fixed;
   background-size: cover;
   filter: grayscale(50%) contrast(1.2);
   text-align: justify;
-
-  &.legal {
-    font-family: "Helvetica", sans-serif;
-  }
-
-  &:dir(rtl) {
-    &:not(.legal) {
-      font-family: "OHSavyonChenKipper", sans-serif;
-    }
-  }
 }
 
 .container {

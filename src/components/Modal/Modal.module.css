@@ -20,9 +20,7 @@
   overflow: auto;
   max-height: 100%;
   position: relative;
-  &:dir(rtl) {
-    font-family: "OHSavyonChenKipper", sans-serif;
-  }
+  font-family: "Header-font", sans-serif;
 
   @media (max-height: 400px) {
     top: calc(var(--header-height) - 3rem);
@@ -80,11 +78,6 @@
   color: var(--red);
   font-size: 3rem;
   justify-self: center;
-
-  &:dir(rtl) {
-    line-height: 0.8;
-    padding-bottom: 1rem;
-  }
 }
 
 .text {

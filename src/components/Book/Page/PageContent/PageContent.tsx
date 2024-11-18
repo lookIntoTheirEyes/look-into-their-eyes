@@ -4,7 +4,7 @@ import StyledButton from "@/components/StyledButton/StyledButton";
 
 import styles from "./PageContent.module.css";
 import { useRouter } from "@/i18n/routing";
-import Image from "../../../Image/Image";
+import Image from "@/components/Image/Image";
 import { Page } from "@/lib/model/book";
 
 interface PageProps {

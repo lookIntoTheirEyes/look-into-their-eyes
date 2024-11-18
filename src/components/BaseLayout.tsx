@@ -43,6 +43,7 @@ export default async function BaseLayout({ children, locale }: IProps) {
               families: t("families"),
               visitors: t("visitors"),
             }}
+            logoText={t("logoText")}
           />
           {children}
           <Footer />

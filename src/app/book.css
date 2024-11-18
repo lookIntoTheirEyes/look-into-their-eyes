@@ -28,12 +28,6 @@
   font-size: 2.4rem;
   padding-bottom: 1rem;
   color: var(--red);
-
-  &:dir(rtl) {
-    font-size: 2.8rem;
-    line-height: 0.8;
-    padding-bottom: 2.5rem;
-  }
 }
 
 .pageContent {

@@ -1,6 +1,6 @@
 .button {
   font-size: 2rem;
-  padding: 0.4rem 1.6rem;
+  padding: 0.8rem 1.6rem;
   border: none;
   border-radius: 0.4rem;
   background-color: var(--red);
@@ -8,15 +8,7 @@
   cursor: pointer;
   transition: background-color 0.3s;
   align-self: center;
-  font-family: "Graffiti", sans-serif;
-
-  &:dir(rtl) {
-    font-size: 3rem;
-    padding: 1.2rem;
-    padding-top: 0.4rem;
-    line-height: 0.5;
-    font-family: "OHSavyonChenKipper", sans-serif;
-  }
+  font-family: "Header-font", sans-serif;
 
   &:hover {
     background-color: #b21d1d;

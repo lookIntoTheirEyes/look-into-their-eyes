@@ -26,9 +26,6 @@
 
 .header {
   font-size: 6rem;
-  &:dir(rtl) {
-    padding-bottom: 2rem;
-  }
 }
 
 .imageContainer {

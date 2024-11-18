@@ -4,12 +4,18 @@ import styles from "./DesktopNav.module.css";
 
 interface HeaderProps {
   links: JSX.Element[];
+  children?: React.ReactNode;
 }
 
-export default function DesktopNav({ links }: HeaderProps) {
+const DesktopNav: React.FC<HeaderProps> = ({ links, children }) => {
   return (
     <nav>
-      <ul className={styles.nav}>{links}</ul>
+      <ul className={styles.nav}>
+        {children}
+        {links}
+      </ul>
     </nav>
   );
-}
+};
+
+export default DesktopNav;
