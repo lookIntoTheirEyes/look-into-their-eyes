@@ -7,8 +7,12 @@
   color: var(--light-grey);
   cursor: pointer;
   transition: background-color 0.3s;
-  align-self: center;
   font-family: "Header-font", sans-serif;
+  align-self: flex-end;
+
+  &.center {
+    align-self: center;
+  }
 
   &:hover {
     background-color: #b21d1d;

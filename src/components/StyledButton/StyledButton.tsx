@@ -5,16 +5,22 @@ interface IProps {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
   type?: "submit" | "reset" | "button";
+  center?: boolean;
 }
 
 const StyledButton: React.FC<IProps> = ({
   children,
   className = "",
   type = "button",
+  center = true,
   ...props
 }) => {
   return (
-    <button type={type} className={`${className} ${styles.button}`} {...props}>
+    <button
+      type={type}
+      className={`${className} ${styles.button} ${center ? styles.center : ""}`}
+      {...props}
+    >
       {children}
     </button>
   );

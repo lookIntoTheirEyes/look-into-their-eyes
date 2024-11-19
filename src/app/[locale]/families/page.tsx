@@ -8,8 +8,16 @@ const Families: React.FC<ILanguageProps> = async (props) => {
 
   const t = await getTranslations("Book");
   const title = t("families.front.title");
+  const newText = t("families.new");
 
-  return <UsersBook title={title} rtl={rtl} />;
+  return (
+    <UsersBook
+      newPath='/families/new'
+      newText={newText}
+      title={title}
+      rtl={rtl}
+    />
+  );
 };
 
 Families.displayName = "Families";

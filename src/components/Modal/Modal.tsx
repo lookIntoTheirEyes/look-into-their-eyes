@@ -66,11 +66,13 @@ const ModalClient = ({
   };
 
   useEffect(() => {
-    if (pathname.includes(curr.replace("/", ""))) {
-      setIsVisible(true);
-      checkScrollbar();
+    if (pathname !== curr) {
+      return;
     }
-  }, [pathname]);
+
+    setIsVisible(true);
+    checkScrollbar();
+  }, [pathname, curr]);
 
   const handleExitComplete = () => {
     if (!isClosing) return;

@@ -55,8 +55,9 @@
       "front": {
         "title": "Families Narrating"
       },
+      "new": "SHARE WITH US",
       "form": {
-        "formTitle": "share us",
+        "formTitle": "share with us",
         "name": "name",
         "title": "title",
         "comment": "what would you like to share?",
@@ -67,6 +68,7 @@
       "front": {
         "title": "Guest Book"
       },
+      "new": "COMMENT",
       "form": {
         "formTitle": "leave a comment",
         "name": "name",

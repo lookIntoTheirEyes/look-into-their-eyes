@@ -1,3 +1,5 @@
+"use client";
+
 import ModalClient from "../Modal/Modal";
 import { IModalProps } from "@/lib/model/book";
 import styles from "./CommentForm.module.css";
@@ -15,28 +17,25 @@ interface CommentFormProps extends Omit<IModalProps, "children"> {
   };
 }
 
-const CommentForm: React.FC<CommentFormProps> = async ({
+const CommentForm: React.FC<CommentFormProps> = ({
   lang,
   paths,
   text: { formTitle, name, title, comment, submit },
 }) => {
-  async function sendEmail(formData: FormData) {
-    "use server";
+  function sendEmail(ev: React.FormEvent<HTMLFormElement>) {
+    ev.preventDefault();
 
-    const comment = {
-      title: formData.get("title"),
-      instructions: formData.get("comment"),
-      creator: formData.get("name"),
-    };
+    // const formData = new FormData(ev.target as HTMLFormElement);
+    // const comment = Object.fromEntries(formData);
 
-    console.log(comment);
+    // console.log(comment);
     // redirect({ locale: lang, href: paths.next });
   }
 
   return (
     <ModalClient center paths={paths} lang={lang}>
       <h1 className={styles.formTitle}>{formTitle}</h1>
-      <form className={styles.form} action={sendEmail}>
+      <form className={styles.form} onSubmit={sendEmail}>
         <p>
           <label htmlFor='name'>{name}</label>
           <input type='text' id='name' name='name' required />
