@@ -1,4 +1,4 @@
-import BaseLayout from "@/components/BaseLayout";
+import BaseLayout from "@/components/BaseLayout/BaseLayout";
 import NotFoundPage from "@/components/NotFoundPage/NotFoundPage";
 import { routing } from "@/i18n/routing";
 import { cookies } from "next/headers";

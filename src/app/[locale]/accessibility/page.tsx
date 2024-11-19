@@ -1,10 +1,10 @@
 import AccessibilityStatement from "@/components/Accessibility/AccessibilityStatement/AccessibilityStatement";
-import PageContainer from "@/components/PageContainer/PageContainer";
+import LegalContainer from "@/components/LegalContainer/LegalContainer";
 
 export default function Accessibility() {
   return (
-    <PageContainer isLegal>
+    <LegalContainer>
       <AccessibilityStatement />
-    </PageContainer>
+    </LegalContainer>
   );
 }

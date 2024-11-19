@@ -1,10 +1,9 @@
 "use client";
 
-import PageContainer from "@/components/PageContainer/PageContainer";
-import styles from "./error.module.css";
-import NavLink from "@/components/NavLink/NavLink";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
+import NavLink from "@/components/NavLink/NavLink";
+import styles from "./error.module.css";
 
 type Props = {
   error: Error;
@@ -18,18 +17,16 @@ export default function Error({ error }: Props) {
   }, [error]);
 
   return (
-    <PageContainer pad center>
-      <>
-        <h1 className={styles.header}>{t("header")}</h1>
-        <p className={styles.text}>{t("description")}</p>
-        <div className={styles.action}>
-          <p>{t("link1")}</p>
-          <NavLink isColor href={{ pathname: "/" }}>
-            {t("cta")}
-          </NavLink>
-          <p>{t("link2")}</p>
-        </div>
-      </>
-    </PageContainer>
+    <div className={styles.container}>
+      <h1 className={styles.header}>{t("header")}</h1>
+      <p className={styles.text}>{t("description")}</p>
+      <div className={styles.action}>
+        <p>{t("link1")}</p>
+        <NavLink isColor href={{ pathname: "/" }}>
+          {t("cta")}
+        </NavLink>
+        <p>{t("link2")}</p>
+      </div>
+    </div>
   );
 }

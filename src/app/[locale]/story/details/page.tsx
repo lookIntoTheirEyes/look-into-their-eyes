@@ -1,10 +1,9 @@
-import { ILanguageProps } from "@/lib/model/language";
-import ModalClient from "@/components/Modal/Modal";
-import { getPageNum, SearchParams } from "@/lib/utils/utils";
-import PageContainer from "@/components/PageContainer/PageContainer";
-import { getHero } from "@/lib/utils/heroesService";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import ModalClient from "@/components/Modal/Modal";
+import { ILanguageProps } from "@/lib/model/language";
+import { getPageNum, SearchParams } from "@/lib/utils/utils";
+import { getHero } from "@/lib/utils/heroesService";
 
 interface IProps extends ILanguageProps {
   searchParams: Promise<SearchParams>;
@@ -41,7 +40,7 @@ const ModalPage = async (props: IProps) => {
     } = await getHero(pageNum, locale);
 
     return (
-      <PageContainer>
+      <>
         <ModalClient
           closeText={t("closeText")}
           lang={locale}
@@ -50,7 +49,7 @@ const ModalPage = async (props: IProps) => {
           description={longDescription}
           imageUrls={imageUrls}
         />
-      </PageContainer>
+      </>
     );
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {

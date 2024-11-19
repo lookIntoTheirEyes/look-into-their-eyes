@@ -1,10 +1,10 @@
-import PageContainer from "@/components/PageContainer/PageContainer";
+import LegalContainer from "@/components/LegalContainer/LegalContainer";
 import Terms from "@/components/TermsAndConditions/TermsAndConditions";
 
 export default function TermsPage() {
   return (
-    <PageContainer isLegal>
+    <LegalContainer>
       <Terms />
-    </PageContainer>
+    </LegalContainer>
   );
 }

@@ -1,5 +1,4 @@
 import { Page as BookPage } from "@/lib/model/book";
-import PageContainer from "../PageContainer/PageContainer";
 import Book from "./Book";
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
@@ -38,25 +37,23 @@ const BookContainer: React.FC<IBookProps> = ({
   const previous = t("actions.previous");
 
   return (
-    <PageContainer>
-      <>
-        {children}
-        <Book
-          book={{
-            Front,
-            Back,
-            Pages,
-            toc,
-          }}
-          rtl={rtl}
-          actions={{
-            next,
-            previous,
-          }}
-          noContentAmount={noContentAmount}
-        />
-      </>
-    </PageContainer>
+    <>
+      {children}
+      <Book
+        book={{
+          Front,
+          Back,
+          Pages,
+          toc,
+        }}
+        rtl={rtl}
+        actions={{
+          next,
+          previous,
+        }}
+        noContentAmount={noContentAmount}
+      />
+    </>
   );
 };
 

@@ -1,8 +1,7 @@
-import "../globals.css";
-import { ILanguageProps } from "../../lib/model/language";
 import { getTranslations } from "next-intl/server";
-import BaseLayout from "@/components/BaseLayout";
 import { cookies } from "next/headers";
+import BaseLayout from "@/components/BaseLayout/BaseLayout";
+import { ILanguageProps } from "@/lib/model/language";
 
 interface IProps extends ILanguageProps {
   children: React.ReactNode;

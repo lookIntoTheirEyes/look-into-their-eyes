@@ -1,12 +1,12 @@
-import Header from "@/components/Header/Header";
-import "../app/globals.css";
-import { Language } from "@/lib/model/language";
-import Footer from "@/components/Footer/Footer";
-import Widgets from "@/components/Widgets/Widgets";
 import { getTranslations, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
-import { Analytics } from "@vercel/analytics/react";
 import { ReactNode } from "react";
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
+import Widgets from "@/components/Widgets/Widgets";
+import { Analytics } from "@vercel/analytics/react";
+import { Language } from "@/lib/model/language";
+import styles from "./BaseLayout.module.css";
 
 type IProps = {
   children: ReactNode;
@@ -38,7 +38,7 @@ export default async function BaseLayout({
   return (
     <html lang={locale} dir={locale === Language.en ? "ltr" : "rtl"}>
       <body>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <Header
             isMobile={isMobile}
             locale={locale}
@@ -51,7 +51,7 @@ export default async function BaseLayout({
             }}
             logoText={t("logoText")}
           />
-          {children}
+          <main className={styles.main}>{children}</main>
           <Footer />
 
           <Widgets lang={locale} />

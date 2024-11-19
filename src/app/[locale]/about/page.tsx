@@ -1,10 +1,9 @@
 import { FaFacebook, FaInstagram } from "react-icons/fa";
 import { useTranslations } from "next-intl";
-import styles from "./page.module.css";
-import PageContainer from "@/components/PageContainer/PageContainer";
 import SocialIcon from "@/components/SocialIcon/SocialIcon";
 import Image from "@/components/Image/Image";
 import { getImageUrl } from "@/lib/utils/utils";
+import styles from "./page.module.css";
 
 export default function About() {
   const t = useTranslations("About");
@@ -19,7 +18,7 @@ export default function About() {
     <SocialIcon key={href} href={href} Icon={Icon} size={40} />
   ));
   return (
-    <PageContainer center>
+    <>
       <div className={styles.aboutContainer}>
         <div className={styles.nameContainer}>
           <h1 className={styles.header}>{t("intro")}</h1>
@@ -37,6 +36,6 @@ export default function About() {
         </div>
         <div className={styles.socialIcons}>{icons}</div>
       </div>
-    </PageContainer>
+    </>
   );
 }
