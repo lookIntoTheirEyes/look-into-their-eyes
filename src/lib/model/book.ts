@@ -25,4 +25,5 @@ export interface IModalProps {
   closeText?: string;
   center?: boolean;
   paths: { curr: Pathnames; next: Pathnames };
+  closeFunc?: () => void;
 }

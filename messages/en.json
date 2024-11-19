@@ -62,8 +62,7 @@
         "title": "title",
         "comment": "what would you like to share?",
         "submit": "Submit",
-        "loading": "Sharing",
-        "cancel": "Cancel"
+        "loading": "Sharing"
       }
     },
     "visitors": {
@@ -77,8 +76,7 @@
         "title": "title",
         "comment": "comment",
         "submit": "Submit",
-        "loading": "Submitting",
-        "cancel": "Cancel"
+        "loading": "Submitting"
       }
     }
   },

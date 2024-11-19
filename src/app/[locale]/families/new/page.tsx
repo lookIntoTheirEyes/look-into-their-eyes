@@ -20,7 +20,6 @@ const ModalPage = async (props: ILanguageProps) => {
     title: t("title"),
     comment: t("comment"),
     submit: t("submit"),
-    cancel: t("cancel"),
     loading: t("loading"),
   };
 

@@ -14,7 +14,6 @@ interface CommentFormProps extends Omit<IModalProps, "children"> {
     title: string;
     comment: string;
     submit: string;
-    cancel: string;
     loading: string;
   };
   type: CommentFormType;
@@ -23,7 +22,7 @@ interface CommentFormProps extends Omit<IModalProps, "children"> {
 const CommentForm: React.FC<CommentFormProps> = async ({
   lang,
   paths,
-  text: { formTitle, name, title, comment, submit, cancel, loading },
+  text: { formTitle, name, title, comment, submit, loading },
   type,
 }) => {
   async function sendEmail(formData: FormData) {
@@ -63,9 +62,7 @@ const CommentForm: React.FC<CommentFormProps> = async ({
           <textarea id='comment' name='comment' rows={10} required></textarea>
         </p>
 
-        <FormButton loading={loading} cancel={cancel} submit={submit}>
-          {}
-        </FormButton>
+        <FormButton loading={loading} submit={submit} />
       </form>
     </ModalClient>
   );

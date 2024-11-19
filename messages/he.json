@@ -62,8 +62,7 @@
         "title": "כותרת",
         "comment": "מה תרצו לשתף?",
         "submit": "שתף",
-        "loading": "שולח תגובה",
-        "cancel": "חזור"
+        "loading": "שולח תגובה"
       }
     },
     "visitors": {
@@ -77,8 +76,7 @@
         "title": "כותרת",
         "comment": "תגובה",
         "submit": "שתף",
-        "loading": "משתף",
-        "cancel": "חזור"
+        "loading": "משתף"
       }
     }
   },
