@@ -78,11 +78,11 @@ const Book: React.FC<BookProps> = ({
         drawShadow={false}
         flippingTime={700}
         startZIndex={30}
-        swipeDistance={1}
+        swipeDistance={30}
         usePortrait
         autoSize
         showCover
-        mobileScrollSupport
+        mobileScrollSupport={false}
         clickEventForward
         useMouseEvents
         showPageCorners
