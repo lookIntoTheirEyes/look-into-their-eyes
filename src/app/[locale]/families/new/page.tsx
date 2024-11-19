@@ -24,6 +24,7 @@ const ModalPage = async (props: ILanguageProps) => {
 
   return (
     <CommentForm
+      type='family'
       text={text}
       paths={{ curr: "/families/new", next: "/families" }}
       lang={locale}

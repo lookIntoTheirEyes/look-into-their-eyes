@@ -2,7 +2,7 @@ import ModalClient from "../Modal/Modal";
 import { IModalProps } from "@/lib/model/book";
 import styles from "./CommentForm.module.css";
 import StyledButton from "../StyledButton/StyledButton";
-import { CommentData } from "@/lib/model/language";
+import { CommentData, CommentFormType } from "@/lib/model/language";
 import { sendCommentEmail } from "./actions";
 
 // import { redirect } from "@/i18n/routing";
@@ -15,21 +15,24 @@ interface CommentFormProps extends Omit<IModalProps, "children"> {
     comment: string;
     submit: string;
   };
+  type: CommentFormType;
 }
 
 const CommentForm: React.FC<CommentFormProps> = async ({
   lang,
   paths,
   text: { formTitle, name, title, comment, submit },
+  type,
 }) => {
   async function sendEmail(formData: FormData) {
     "use server";
 
     const comment = {
       title: formData.get("title"),
-      instructions: formData.get("comment"),
-      creator: formData.get("name"),
-    } as unknown as CommentData;
+      comment: formData.get("comment"),
+      name: formData.get("name"),
+      type,
+    } as CommentData;
 
     try {
       await sendCommentEmail(comment);

@@ -1,37 +1,37 @@
 "use server";
 
 import { CommentData } from "@/lib/model/language";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+import { EmailTemplate } from "@/components/EmailTemplate";
+import { NextResponse } from "next/server";
 
-export async function sendCommentEmail(data: CommentData) {
-  console.log("CommentData", data);
-
+export async function sendCommentEmail(commentData: CommentData) {
+  const resend = new Resend(process.env.NEXT_PRIVATE_RESEND_API_KEY);
   try {
-    // Configure your email transporter
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
+    const email = "look.into.their.eyes.0710@gmail.com";
+
+    const { data, error } = await resend.emails.send({
+      from: "Acme <onboarding@resend.dev>",
+      to: [email],
+      subject: commentData.title,
+      react: EmailTemplate({
+        name: commentData.name,
+        title: commentData.title,
+        comment: commentData.comment,
+        type: commentData.type,
+      }) as React.ReactElement,
     });
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.RECIPIENT_EMAIL,
-      subject: `New Comment from ${data.name}`,
-      text: `
-        Name: ${data.name}
-        Title: ${data.title}
-        
-        Comment:
-        ${data.comment}
-      `,
-    });
+    if (error) {
+      return NextResponse.json({ error }, { status: 500 });
+    }
 
-    return { success: true };
+    return NextResponse.json({ data, message: "success" }, { status: 200 });
   } catch (error) {
-    console.error("Error sending email:", error);
-    return { success: false };
+    console.error("Error processing request:", error);
+    return NextResponse.json(
+      { error: "Failed to process request" },
+      { status: 500 }
+    );
   }
 }

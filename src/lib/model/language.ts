@@ -9,8 +9,11 @@ export interface ILanguageProps {
   params: Promise<{ locale: Language }>;
 }
 
+export type CommentFormType = "visitor" | "family";
+
 export interface CommentData {
   name: string;
   title: string;
   comment: string;
+  type: CommentFormType;
 }
