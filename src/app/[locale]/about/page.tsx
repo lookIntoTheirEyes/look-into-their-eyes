@@ -25,16 +25,24 @@ export default function About() {
           <span>-</span>
           <h2> {t("artist")}</h2>
         </div>
-        <div className={styles.imageContainer}>
-          <Image
-            imageUrl={getImageUrl(
-              "v1731753364/Photo_by_Clemens_Hirmke_1_unwdvq.jpg"
-            )}
-            alt={t("artist")}
-            borderRadius='20px'
-          />
+        <div className={styles.artistContainer}>
+          <div className={styles.imageContainer}>
+            <Image
+              imageUrl={getImageUrl(
+                "v1731753364/Photo_by_Clemens_Hirmke_1_unwdvq.jpg"
+              )}
+              alt={t("artist")}
+              borderRadius='20px'
+            />
+          </div>
+          <div className={styles.socialIcons}>{icons}</div>
         </div>
-        <div className={styles.socialIcons}>{icons}</div>
+        <div className={styles.text}>
+          <p>{t("paragraph_1")}</p>
+          <p>{t("paragraph_2")}</p>
+          <p>{t("paragraph_3")}</p>
+          <p>{t("paragraph_4")}</p>
+        </div>
       </div>
     </>
   );

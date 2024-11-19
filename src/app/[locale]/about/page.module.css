@@ -1,16 +1,33 @@
 .aboutContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-rows: 0.1fr 0.9fr;
+  grid-template-columns: 25rem 1fr;
+  width: 80%;
+  column-gap: 2rem;
+  padding-bottom: 2.3rem;
 
   &:dir(rtl) {
     margin-top: 2.3rem;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+
+  .artistContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .nameContainer {
     display: flex;
     align-items: center;
     gap: 1.6rem;
+    grid-column: 1 / -1;
+    grid-row: 1 / 2;
+    justify-self: center;
 
     & > * {
       font-weight: 500;
@@ -33,6 +50,16 @@
   color: var(--red);
 }
 
+.text {
+  color: var(--header-text);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  &:dir(ltr) > p {
+    font-size: 1.8rem;
+  }
+}
+
 .imageContainer {
   position: relative;
   min-height: 30rem;
@@ -40,7 +67,6 @@
 }
 
 .socialIcons {
-  margin-top: 2rem;
   display: flex;
   gap: 1.6rem;
   align-items: center;
