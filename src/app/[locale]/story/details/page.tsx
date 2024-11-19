@@ -1,6 +1,5 @@
-import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import ModalClient from "@/components/Modal/Modal";
+import StoryModal from "@/components/Book/Modal/Modal";
 import { ILanguageProps } from "@/lib/model/language";
 import { getPageNum, SearchParams } from "@/lib/utils/utils";
 import { getHero } from "@/lib/utils/heroesService";
@@ -32,29 +31,12 @@ const ModalPage = async (props: IProps) => {
   const t = await getTranslations("Book.actions");
 
   const { locale } = params;
-  try {
-    const {
-      name: title,
-      longDescription,
-      imageUrls,
-    } = await getHero(pageNum, locale);
 
-    return (
-      <>
-        <ModalClient
-          closeText={t("closeText")}
-          lang={locale}
-          page={+pageNum}
-          title={title}
-          description={longDescription}
-          imageUrls={imageUrls}
-        />
-      </>
-    );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
-    redirect("/story");
-  }
+  return (
+    <>
+      <StoryModal closeText={t("closeText")} lang={locale} pageNum={pageNum} />
+    </>
+  );
 };
 
 export default ModalPage;

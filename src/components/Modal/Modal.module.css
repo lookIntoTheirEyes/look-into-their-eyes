@@ -42,55 +42,27 @@
   @media (max-width: 768px) {
     gap: 0;
     padding: 0.5rem;
+
+    &.scrollbar {
+      padding: 1rem;
+    }
   }
-}
 
-.pageImages {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 1.6rem;
-  flex-wrap: wrap;
-}
-
-.imageBackground {
-  min-height: 25rem;
-  width: 33.2rem;
-  border-radius: 0.4rem;
-  background-color: var(--image-background);
-  padding: 1.6rem;
-}
-
-.pageImage {
-  justify-self: center;
-  position: relative;
-  width: 30rem;
-  min-height: 25rem;
-  border-radius: 0.4rem;
-
-  @media (max-width: 768px) {
-    width: calc(100% - 1.6rem);
-  }
-}
-
-.title {
-  align-self: center;
-  color: var(--red);
-  font-size: 3rem;
-  justify-self: center;
-}
-
-.text {
-  padding: 0 2rem;
-
-  @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
+  &.scrollbar {
+    .closeButton {
+      &:dir(ltr) {
+        right: 2rem;
+      }
+      &:dir(rtl) {
+        left: 2rem;
+      }
+    }
   }
 }
 
 .closeButton {
   position: absolute;
-  top: 3rem;
+  top: 2rem;
   left: 3rem;
   border: none;
   color: var(--red);
@@ -102,22 +74,13 @@
   background-color: transparent;
 
   @media (max-width: 768px) {
-    top: 1rem;
+    top: 1.5rem;
     left: 1rem;
-    &.scrollbar {
-      left: 2rem;
-    }
   }
 
   &:dir(ltr) {
     left: auto;
     right: 3rem;
-
-    @media (max-width: 768px) {
-      &.scrollbar {
-        right: 2rem;
-      }
-    }
   }
 }
 

@@ -1,24 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useSearchParams } from "next/navigation";
 import { startTransition, useEffect, useRef, useState } from "react";
-import styles from "./Modal.module.css";
+import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/routing";
-
-import Image from "@/components/Image/Image";
-import { Language } from "@/lib/model/language";
-import StyledButton from "@/components/StyledButton/StyledButton";
-
-interface IProps {
-  page?: number;
-  title: string;
-  imageUrls: string[];
-  hero?: string;
-  description?: string;
-  lang: Language;
-  closeText: string;
-}
+import StyledButton from "../StyledButton/StyledButton";
+import { IModalProps } from "@/lib/model/book";
+import styles from "./Modal.module.css";
 
 const modalVariants = {
   hidden: {
@@ -48,21 +36,17 @@ const backdropVariants = {
 };
 
 const ModalClient = ({
-  title,
-  description,
-  imageUrls,
-  lang: locale,
+  children,
+  paths: { curr, next },
   closeText,
-}: IProps) => {
+}: IModalProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
   const [hasScrollbar, setHasScrollbar] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const page = searchParams.get("page");
+  const page = useSearchParams().get("page");
 
   const handleClose = () => {
     setIsClosing(true);
@@ -78,7 +62,7 @@ const ModalClient = ({
   };
 
   useEffect(() => {
-    if (pathname.includes("details")) {
+    if (pathname.includes(curr.replace("/", ""))) {
       setIsVisible(true);
       checkScrollbar();
     }
@@ -88,10 +72,7 @@ const ModalClient = ({
     if (!isClosing) return;
 
     startTransition(() => {
-      router.push(
-        { pathname: "/story", query: { page } },
-        { locale, scroll: false }
-      );
+      router.push({ pathname: `${next}`, query: { page } }, { scroll: false });
     });
   };
 
@@ -118,37 +99,30 @@ const ModalClient = ({
             onClick={(e) => e.stopPropagation()}
             className={styles.modal}
           >
-            <button
-              onClick={handleClose}
-              className={`${styles.closeButton} ${
+            <div
+              ref={containerRef}
+              className={`${styles.modalContent} ${
                 hasScrollbar ? styles.scrollbar : ""
               }`}
-              aria-label='Close Modal'
             >
-              X
-            </button>
-
-            <div ref={containerRef} className={styles.modalContent}>
-              <h2 className={styles.title}>{title}</h2>
-              <div className={styles.pageImages}>
-                {imageUrls.map((imageUrl, i) => (
-                  <div key={imageUrl + i} className={styles.imageBackground}>
-                    <div className={styles.pageImage}>
-                      <Image imageUrl={imageUrl} alt={title} priority />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className={styles.text}>{description}</p>
+              <button
+                onClick={handleClose}
+                className={styles.closeButton}
+                aria-label='Close Modal'
+              >
+                X
+              </button>
+              {children}
+              {closeText && (
+                <StyledButton
+                  onClick={handleClose}
+                  className={styles.closeButtonBottom}
+                  aria-label='Close Modal'
+                >
+                  {closeText}
+                </StyledButton>
+              )}
             </div>
-
-            <StyledButton
-              onClick={handleClose}
-              className={styles.closeButtonBottom}
-              aria-label='Close Modal'
-            >
-              {closeText}
-            </StyledButton>
           </motion.div>
         </motion.div>
       )}
