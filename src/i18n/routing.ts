@@ -10,8 +10,8 @@ const pathnames = {
   "/accessibility": "/accessibility",
   "/privacy": "/privacy",
   "/terms": "/terms",
-  "/visitors-book": "/visitors-book",
-  "/visitors-book/new": "/visitors-book/new",
+  "/visitors": "/visitors",
+  "/visitors/new": "/visitors/new",
   "/families": "/families",
   "/families/new": "/families/new",
 } as const;

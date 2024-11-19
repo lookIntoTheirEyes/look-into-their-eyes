@@ -76,7 +76,8 @@ const ModalClient = ({
     if (!isClosing) return;
 
     startTransition(() => {
-      router.push({ pathname: `${next}`, query: { page } }, { scroll: false });
+      const query = page ? { page } : {};
+      router.push({ pathname: `${next}`, query }, { scroll: false });
     });
   };
 

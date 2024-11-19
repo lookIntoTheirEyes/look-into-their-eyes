@@ -12,7 +12,7 @@ import CommentForm from "@/components/CommentForm/CommentForm";
 
 const ModalPage = async (props: ILanguageProps) => {
   const { locale } = await props.params;
-  const t = await getTranslations("Book.families.form");
+  const t = await getTranslations("Book.visitors.form");
 
   const text = {
     formTitle: t("formTitle"),

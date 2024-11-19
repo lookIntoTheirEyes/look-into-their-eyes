@@ -41,7 +41,7 @@ export default function Header({
     getRoute({ pathname: "/" }, home),
     getRoute({ pathname: "/story", query: { page: 1 } }, story),
     getRoute({ pathname: "/families" }, families),
-    getRoute({ pathname: "/visitors-book" }, visitors),
+    getRoute({ pathname: "/visitors" }, visitors),
     getRoute({ pathname: "/about" }, about),
   ].map(({ href, name }) => (
     <li
