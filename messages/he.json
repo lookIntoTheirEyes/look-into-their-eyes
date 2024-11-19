@@ -54,11 +54,25 @@
     "families": {
       "front": {
         "title": "משפחות מספרות"
+      },
+      "form": {
+        "formTitle": "שתפו אותנו",
+        "name": "שם",
+        "title": "כותרת",
+        "comment": "מה תרצו לשתף?",
+        "submit": "שתף"
       }
     },
     "visitors": {
       "front": {
         "title": "ספר מבקרים"
+      },
+      "form": {
+        "formTitle": "שתפו אותנו",
+        "name": "שם",
+        "title": "כותרת",
+        "comment": "תגובה",
+        "submit": "שתף"
       }
     }
   },

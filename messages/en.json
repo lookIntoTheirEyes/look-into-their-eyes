@@ -54,11 +54,25 @@
     "families": {
       "front": {
         "title": "Families Narrating"
+      },
+      "form": {
+        "formTitle": "share us",
+        "name": "name",
+        "title": "title",
+        "comment": "what would you like to share?",
+        "submit": "Submit"
       }
     },
     "visitors": {
       "front": {
         "title": "Guest Book"
+      },
+      "form": {
+        "formTitle": "leave a comment",
+        "name": "name",
+        "title": "title",
+        "comment": "comment",
+        "submit": "Submit"
       }
     }
   },

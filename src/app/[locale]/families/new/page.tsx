@@ -1,5 +1,6 @@
 import { ILanguageProps } from "@/lib/model/language";
 import CommentForm from "@/components/CommentForm/CommentForm";
+// import { getTranslations } from "next-intl/server";
 
 // export async function generateMetadata(props: IProps) {
 
@@ -10,16 +11,8 @@ import CommentForm from "@/components/CommentForm/CommentForm";
 // }
 
 const ModalPage = async (props: ILanguageProps) => {
-  const params = await props.params;
-  // const t = await getTranslations("Book.actions");
+  const { locale } = await props.params;
 
-  const { locale } = params;
-
-  return (
-    <CommentForm
-      lang={locale}
-      paths={{ curr: "/families", next: "/families" }}
-    />
-  );
+  return <CommentForm lang={locale} />;
 };
 export default ModalPage;

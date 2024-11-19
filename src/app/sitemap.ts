@@ -1,18 +1,9 @@
 import { MetadataRoute } from "next";
 import { host } from "@/config";
-import { Locale, getPathname, routing } from "@/i18n/routing";
+import { Locale, getPathname, pages, routing } from "@/i18n/routing";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    getEntry("/"),
-    getEntry("/about"),
-    getEntry("/story"),
-    getEntry("/privacy"),
-    getEntry("/terms"),
-    getEntry("/accessibility"),
-    getEntry("/families"),
-    getEntry("/visitors-book"),
-  ];
+  return pages.map((page) => getEntry(page));
 }
 
 type Href = Parameters<typeof getPathname>[0]["href"];
