@@ -22,7 +22,8 @@ const PageContent: React.FC<PageProps> = ({
   const router = useRouter();
 
   const { title, imageUrl, description, imageDescription = title } = details;
-  const handleClick = () => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
     router.push(
       { pathname: "/story/details", query: { page: pageNum } },
       { scroll: false }

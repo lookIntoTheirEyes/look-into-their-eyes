@@ -14,12 +14,17 @@ export default function Controls({
   pageCount,
   flipPage,
 }: ControlsProps) {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    flipPage("previous");
+  };
+
   return (
     <div className={styles.controls}>
       {
         <StyledButton
           className={currPage === 1 ? styles.disabled : ""}
-          onClick={() => flipPage("previous")}
+          onClick={handleClick}
         >
           {previous}
         </StyledButton>

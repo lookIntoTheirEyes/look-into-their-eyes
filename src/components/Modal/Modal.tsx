@@ -39,6 +39,7 @@ const ModalClient = ({
   children,
   paths: { curr, next },
   closeText,
+  center,
 }: IModalProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
@@ -48,7 +49,10 @@ const ModalClient = ({
   const pathname = usePathname();
   const page = useSearchParams().get("page");
 
-  const handleClose = () => {
+  const handleClose = (
+    event: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
+  ) => {
+    event.preventDefault();
     setIsClosing(true);
     setTimeout(() => setIsVisible(false), 500);
   };
@@ -103,7 +107,7 @@ const ModalClient = ({
               ref={containerRef}
               className={`${styles.modalContent} ${
                 hasScrollbar ? styles.scrollbar : ""
-              }`}
+              } ${center ? styles.center : ""}`}
             >
               <button
                 onClick={handleClose}

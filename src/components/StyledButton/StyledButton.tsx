@@ -2,22 +2,19 @@ import styles from "./StyledButton.module.css";
 
 interface IProps {
   children: React.ReactNode;
-  onClick: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
+  type?: "submit" | "reset" | "button";
 }
 
 const StyledButton: React.FC<IProps> = ({
   children,
-  onClick,
   className = "",
+  type = "button",
+  ...props
 }) => {
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    onClick();
-  };
-
   return (
-    <button className={`${className} ${styles.button}`} onClick={handleClick}>
+    <button type={type} className={`${className} ${styles.button}`} {...props}>
       {children}
     </button>
   );

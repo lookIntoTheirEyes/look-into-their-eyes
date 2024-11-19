@@ -23,5 +23,6 @@ export interface IModalProps {
   children: React.ReactNode;
   lang: Language;
   closeText?: string;
+  center?: boolean;
   paths: { curr: Pathnames; next: Pathnames };
 }
