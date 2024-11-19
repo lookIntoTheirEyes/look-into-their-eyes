@@ -9,6 +9,7 @@
 }
 
 .modal {
+  top: -4rem;
   background-color: var(--page-background);
   width: 70vw;
   height: 70vh;
