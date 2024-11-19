@@ -1,9 +1,9 @@
 import ModalClient from "../Modal/Modal";
 import { IModalProps } from "@/lib/model/book";
 import styles from "./CommentForm.module.css";
-import StyledButton from "../StyledButton/StyledButton";
 import { CommentData, CommentFormType } from "@/lib/model/language";
 import { sendCommentEmail } from "./actions";
+import FormButton from "./CommentFormButton";
 
 // import { redirect } from "@/i18n/routing";
 
@@ -14,6 +14,8 @@ interface CommentFormProps extends Omit<IModalProps, "children"> {
     title: string;
     comment: string;
     submit: string;
+    cancel: string;
+    loading: string;
   };
   type: CommentFormType;
 }
@@ -21,7 +23,7 @@ interface CommentFormProps extends Omit<IModalProps, "children"> {
 const CommentForm: React.FC<CommentFormProps> = async ({
   lang,
   paths,
-  text: { formTitle, name, title, comment, submit },
+  text: { formTitle, name, title, comment, submit, cancel, loading },
   type,
 }) => {
   async function sendEmail(formData: FormData) {
@@ -61,7 +63,9 @@ const CommentForm: React.FC<CommentFormProps> = async ({
           <textarea id='comment' name='comment' rows={10} required></textarea>
         </p>
 
-        <StyledButton type='submit'>{submit}</StyledButton>
+        <FormButton loading={loading} cancel={cancel} submit={submit}>
+          {}
+        </FormButton>
       </form>
     </ModalClient>
   );
