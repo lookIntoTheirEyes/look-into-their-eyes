@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 interface PageFlipMethods {
   flipNext: () => void;
   flipPrev: () => void;
+  destroy: () => void;
   flip: (pageNum: number) => void;
 }
 
@@ -44,8 +45,6 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
   );
 
   const flipPage = (direction: "next" | "previous") => {
-    const pageFlip = pageFlipRef.current?.pageFlip();
-
     const flipDirection = isRtl
       ? direction === "next"
         ? "flipPrev"
@@ -54,7 +53,7 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
       ? "flipNext"
       : "flipPrev";
 
-    pageFlip?.[flipDirection]();
+    pageFlipRef.current?.pageFlip()[flipDirection]();
   };
 
   const updatePage = (pageNum: number) => {
@@ -64,9 +63,8 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
 
   const goToPage = (pageNum: number) => {
     const adjustedPageNum = (isRtl ? pagesAmount - pageNum + 1 : pageNum) - 1;
-    const pageFlip = pageFlipRef.current?.pageFlip();
 
-    pageFlip?.flip(adjustedPageNum);
+    pageFlipRef.current?.pageFlip().flip(adjustedPageNum);
   };
 
   useEffect(() => {
@@ -75,6 +73,12 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
       updateUrlWithSearchParams(page);
     }
   }, [page, queryParamPage, updateUrlWithSearchParams, isRtl]);
+
+  useEffect(() => {
+    return () => {
+      pageFlipRef.current?.pageFlip().destroy();
+    };
+  }, [isRtl]);
 
   return {
     currPage,
