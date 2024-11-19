@@ -7,7 +7,7 @@ export default function Home() {
   const t = useTranslations("HomePage");
 
   return (
-    <>
+    <div className={styles.container}>
       <h1 className={styles.header}>{t("title")}</h1>
       <div className={styles.imageContainer}>
         <Image
@@ -17,6 +17,6 @@ export default function Home() {
           alt={"image"}
         />
       </div>
-    </>
+    </div>
   );
 }
