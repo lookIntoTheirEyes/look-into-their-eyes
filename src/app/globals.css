@@ -2,6 +2,7 @@
   --yellow: #f7c500;
   --red: #cb2424;
   --dark-red: #b21d1d;
+  --contrast-red: #ff4d4d;
   --white: #f0f0f0;
   --black: #1a1a1a;
   --header-text: #393a3a;
@@ -124,7 +125,7 @@ h1,
 h2,
 h3 {
   font-weight: 500;
-  color: var(--yellow);
+  color: var(--red);
 }
 
 *::-webkit-scrollbar {

@@ -15,7 +15,7 @@
 }
 
 .link {
-  color: var(--yellow);
+  color: var(--contrast-red);
   &:hover {
     text-decoration: underline;
   }

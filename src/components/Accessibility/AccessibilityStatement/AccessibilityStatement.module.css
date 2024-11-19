@@ -15,14 +15,14 @@
 }
 
 .link {
-  color: var(--yellow);
+  color: var(--contrast-red);
   &:hover {
     text-decoration: underline;
   }
 }
 
 .contactHeader {
-  color: var(--yellow);
+  color: var(--contrast-red);
   margin-top: 2rem;
   font-weight: bold;
 }

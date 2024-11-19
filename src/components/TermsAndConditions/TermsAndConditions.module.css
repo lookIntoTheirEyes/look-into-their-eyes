@@ -2,11 +2,13 @@
   font-size: 3em;
   font-weight: bold;
   margin-bottom: 1.6rem;
+  color: var(--contrast-red);
 }
 
 .subTitle {
   font-weight: bold;
   font-size: 2.2rem;
+  color: var(--contrast-red);
 }
 
 .paragraph {
@@ -15,7 +17,7 @@
 }
 
 .link {
-  color: var(--yellow);
+  color: var(--contrast-red);
   &:hover {
     text-decoration: underline;
   }
