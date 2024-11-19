@@ -82,7 +82,7 @@ const Book: React.FC<BookProps> = ({
         usePortrait
         autoSize
         showCover
-        mobileScrollSupport={false}
+        mobileScrollSupport
         clickEventForward
         useMouseEvents
         showPageCorners
