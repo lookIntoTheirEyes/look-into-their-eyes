@@ -28,6 +28,7 @@
   }
 
   @media (max-width: 768px) {
+    top: 0;
     width: 90vw;
   }
 }
