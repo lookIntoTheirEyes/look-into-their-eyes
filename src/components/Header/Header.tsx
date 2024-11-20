@@ -74,11 +74,7 @@ export default function Header({
     </div>
   );
 
-  const backgroundColor = useTransform(
-    scrollY,
-    [0, 60],
-    ["rgb(51, 51, 51)", "rgba(51, 51, 51, 0.8)"]
-  );
+  const opacity = useTransform(scrollY, [0, 60], [1, 0.8]);
 
   const handleToggleMenu = () => {
     setMenuOpen((prevState) => !prevState);
@@ -87,7 +83,7 @@ export default function Header({
   return (
     <motion.header
       style={{
-        backgroundColor,
+        opacity,
       }}
       className={`${styles.header} ${isMobile ? styles.mobile : ""}`}
     >

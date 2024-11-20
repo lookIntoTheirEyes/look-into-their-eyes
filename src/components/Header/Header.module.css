@@ -8,6 +8,7 @@
   z-index: 300;
   color: var(--white);
   min-height: var(--header-height);
+  background-color: var(--image-background);
 
   padding-left: 2rem;
   padding-right: 1rem;
