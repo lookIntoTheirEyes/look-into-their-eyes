@@ -96,7 +96,7 @@ const ModalClient = ({
           onClick={handleClose}
           className={styles.backdrop}
         >
-          <motion.div
+          <motion.dialog
             key='modal'
             variants={modalVariants}
             initial='hidden'
@@ -105,6 +105,7 @@ const ModalClient = ({
             transition={{ duration: 0.5 }}
             onClick={(e) => e.stopPropagation()}
             className={styles.modal}
+            open
           >
             <div
               ref={containerRef}
@@ -130,7 +131,7 @@ const ModalClient = ({
                 </StyledButton>
               )}
             </div>
-          </motion.div>
+          </motion.dialog>
         </motion.div>
       )}
     </AnimatePresence>
