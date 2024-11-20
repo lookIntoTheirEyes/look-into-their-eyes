@@ -8,7 +8,6 @@ import { Page } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
 import DummyPage from "@/components/Book/DummyPage";
 import TableOfContentsContainer from "@/components/Book/TableOfContents/TableOfContentsContainer";
-import { useEffect } from "react";
 
 interface BookProps extends BookActions {
   rtl: boolean;
@@ -54,12 +53,6 @@ const Book: React.FC<BookProps> = ({
   ): T | React.ReactNode => {
     return condition ? page : <DummyPage />;
   };
-
-  useEffect(() => {
-    return () => {
-      pageFlipRef.current?.pageFlip().destroy();
-    };
-  }, [rtl]);
 
   return (
     <div className={styles.storyContainer}>

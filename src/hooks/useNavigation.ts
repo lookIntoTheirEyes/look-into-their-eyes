@@ -74,6 +74,14 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
     }
   }, [page, queryParamPage, updateUrlWithSearchParams, isRtl]);
 
+  useEffect(() => {
+    const pageFlipInstance = pageFlipRef.current?.pageFlip();
+
+    return () => {
+      pageFlipInstance?.destroy();
+    };
+  }, [pageFlipRef, isRtl]);
+
   return {
     currPage,
     pageFlipRef,
