@@ -14,9 +14,9 @@ export const EmailTemplate: React.FC<CommentData> = ({
       : "A visitor added a comment";
   return (
     <div>
+      <p>{message}!!</p>
       <h1>This is from: {name}</h1>
-      <p>{email}</p>
-      <p>{message}</p>
+      <p>email: {email}</p>
       <p>title: {title}</p>
       <p>message: {comment}</p>
     </div>
