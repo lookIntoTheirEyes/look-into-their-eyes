@@ -6,6 +6,7 @@ export const EmailTemplate: React.FC<CommentData> = ({
   comment,
   title,
   type,
+  email,
 }) => {
   const message =
     type === "family"
@@ -14,6 +15,7 @@ export const EmailTemplate: React.FC<CommentData> = ({
   return (
     <div>
       <h1>This is from: {name}</h1>
+      <p>{email}</p>
       <p>{message}</p>
       <p>title: {title}</p>
       <p>message: {comment}</p>

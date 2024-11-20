@@ -15,6 +15,15 @@ export interface FormProps {
     submit: string;
     loading: string;
     close: string;
+    email: string;
+    modal: {
+      submitHeader: string;
+      success_1: string;
+      success_2: string;
+      success_3: string;
+      success_4: string;
+      success_5: string;
+    };
   };
   type: CommentFormType;
 }
@@ -26,7 +35,7 @@ interface IProps extends FormProps {
 export const CommentForm: React.FC<IProps> = ({
   type,
   setStatus,
-  text: { name, title, comment, submit, loading },
+  text: { name, title, comment, submit, loading, email },
 }) => {
   const { pending } = useFormStatus();
   const sendEmailWithType = sendEmail.bind(null, type);
@@ -55,6 +64,11 @@ export const CommentForm: React.FC<IProps> = ({
       <p>
         <label htmlFor='title'>{title}</label>
         <input type='text' id='title' name='title' required />
+      </p>
+
+      <p>
+        <label htmlFor='email'>{email}</label>
+        <input type='email' id='email' name='email' />
       </p>
 
       <p>

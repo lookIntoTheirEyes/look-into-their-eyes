@@ -15,5 +15,6 @@ export interface CommentData {
   name: string;
   title: string;
   comment: string;
+  email: string;
   type: CommentFormType;
 }

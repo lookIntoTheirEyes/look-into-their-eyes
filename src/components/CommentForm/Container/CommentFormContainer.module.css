@@ -4,3 +4,23 @@
   font-weight: bold;
   color: var(--header-text);
 }
+
+.confirmation {
+  display: flex;
+  flex-direction: column;
+  &:dir(ltr) > p {
+    font-size: 1.6rem;
+  }
+  .mail {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    &:dir(ltr) > p {
+      font-size: 1.6rem;
+    }
+    & > a {
+      font-size: 2rem;
+      color: var(--red);
+    }
+  }
+}

@@ -18,6 +18,7 @@ export async function sendCommentEmail(commentData: CommentData) {
         name: commentData.name,
         title: commentData.title,
         comment: commentData.comment,
+        email: commentData.email,
         type: commentData.type,
       }) as React.ReactElement,
     });
@@ -40,17 +41,14 @@ export async function sendEmail(type: CommentFormType, formData: FormData) {
   "use server";
 
   const comment = {
-    title: formData.get("title"),
-    comment: formData.get("comment"),
-    name: formData.get("name"),
+    title: formData.get("title") as string,
+    comment: formData.get("comment") as string,
+    name: formData.get("name") as string,
+    email: formData.get("email") as string,
     type,
-  } as CommentData;
+  };
 
-  try {
-    const data = await sendCommentEmail(comment);
-    return data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  await sendCommentEmail(comment);
+
+  return comment;
 }

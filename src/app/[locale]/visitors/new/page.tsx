@@ -14,7 +14,7 @@ const ModalPage = async (props: ILanguageProps) => {
   const { locale } = await props.params;
   const t = await getTranslations("Book");
 
-  const formText = "families.form.";
+  const formText = "visitors.form.";
 
   const text = {
     formTitle: t(`${formText}formTitle`),
@@ -23,7 +23,16 @@ const ModalPage = async (props: ILanguageProps) => {
     comment: t(`${formText}comment`),
     submit: t(`${formText}submit`),
     loading: t(`${formText}loading`),
+    email: t(`${formText}email`),
     close: t("actions.closeText"),
+    modal: {
+      submitHeader: t(`${formText}submitHeader`),
+      success_1: t(`${formText}success_1`),
+      success_2: t(`${formText}success_2`),
+      success_3: t(`${formText}success_3`),
+      success_4: t(`${formText}success_4`),
+      success_5: t(`${formText}success_5`),
+    },
   };
 
   return (

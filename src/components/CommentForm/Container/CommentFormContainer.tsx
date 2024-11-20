@@ -26,24 +26,34 @@ const CommentFormContainer: React.FC<CommentFormProps> = ({
   type,
 }) => {
   const [submitStatus, setSubmitStatus] = useState<FormState>(
-    FormState.NOT_SUBMITTED
+    FormState.SUCCESS
   );
   const path = usePathname();
 
   const isError = submitStatus === FormState.ERROR;
+  const {
+    submitHeader,
+    success_1,
+    success_2,
+    success_3,
+    success_4,
+    success_5,
+  } = text.modal;
 
   const submitView = (
-    <>
-      <p>Thank you for providing your {isError ? "error" : "comment"}</p>
-      <p>
-        We will review your comment/share and make sure it follows our guidlines
-        before we add it
-      </p>
-      <p>If you have any questions feel free to contact us at</p>
-      <a href='mailto:look.into.their.eyes.0710@gmail.com' rel='nofollow'>
-        look.into.their.eyes.0710@gmail.com
-      </a>
-    </>
+    <div className={styles.confirmation}>
+      <p>{submitHeader}</p>
+      <p>{success_1}</p>
+      <p>{success_2}</p>
+      <p>{success_3}</p>
+      <div className={styles.mail}>
+        <p>{success_4}</p>
+        <a href='mailto:look.into.their.eyes.0710@gmail.com' rel='nofollow'>
+          look.into.their.eyes.0710@gmail.com
+        </a>
+      </div>
+      <p>{success_5}</p>
+    </div>
   );
 
   useEffect(() => {
