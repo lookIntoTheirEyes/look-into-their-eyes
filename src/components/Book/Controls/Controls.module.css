@@ -6,10 +6,6 @@
   margin-top: 1.6rem;
 }
 
-button.disabled {
-  cursor: not-allowed;
-}
-
 .pageCount {
   display: flex;
   gap: 0.4rem;

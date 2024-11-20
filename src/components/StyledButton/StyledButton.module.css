@@ -6,7 +6,6 @@
   background-color: var(--red);
   color: var(--light-grey);
   cursor: pointer;
-  transition: background-color 0.3s;
   font-family: "Header-font", sans-serif;
   align-self: flex-end;
 
@@ -14,7 +13,7 @@
     align-self: center;
   }
 
-  &:hover {
-    background-color: #b21d1d;
+  &.disabled {
+    cursor: not-allowed;
   }
 }
