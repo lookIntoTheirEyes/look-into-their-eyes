@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { ILanguageProps } from "@/lib/model/language";
-import CommentForm from "@/components/CommentForm/CommentForm";
+import CommentForm from "@/components/CommentForm/Container/CommentFormContainer";
 
 // export async function generateMetadata(props: IProps) {
 

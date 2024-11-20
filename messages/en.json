@@ -76,7 +76,13 @@
         "title": "title",
         "comment": "comment",
         "submit": "Submit",
-        "loading": "Submitting"
+        "loading": "Submitting",
+        "success_1": "Your response has been successfully received by our system.",
+        "success_2": "Our team carefully reviews all responses before they are published on the website.",
+        "success_3": "Following a thorough review by our team, we will notify you of the results via email to the address provided.",
+        "success_4": "Thank you sincerely for your response, and may all the hostages will return home ASAP.",
+        "success_5": "If you have any questions, feel free to contact us at:",
+        "success_6": "With great appreciation, the \"Look Them in the Eyes\" team."
       }
     }
   },

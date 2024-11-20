@@ -1,6 +1,6 @@
 "use server";
 
-import { CommentData } from "@/lib/model/language";
+import { CommentData, CommentFormType } from "@/lib/model/language";
 import { Resend } from "resend";
 import { EmailTemplate } from "@/components/EmailTemplate";
 import { NextResponse } from "next/server";
@@ -33,5 +33,24 @@ export async function sendCommentEmail(commentData: CommentData) {
       { error: "Failed to process request" },
       { status: 500 }
     );
+  }
+}
+
+export async function sendEmail(type: CommentFormType, formData: FormData) {
+  "use server";
+
+  const comment = {
+    title: formData.get("title"),
+    comment: formData.get("comment"),
+    name: formData.get("name"),
+    type,
+  } as CommentData;
+
+  try {
+    const data = await sendCommentEmail(comment);
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 }
