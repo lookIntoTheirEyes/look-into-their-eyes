@@ -30,7 +30,7 @@ const CommentFormContainer: React.FC<CommentFormProps> = ({
   );
   const path = usePathname();
 
-  const isError = submitStatus === FormState.ERROR;
+  // const isError = submitStatus === FormState.ERROR;
   const {
     submitHeader,
     success_1,

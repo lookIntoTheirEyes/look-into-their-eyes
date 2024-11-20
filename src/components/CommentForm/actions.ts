@@ -1,6 +1,6 @@
 "use server";
 
-import { CommentData, CommentFormType } from "@/lib/model/language";
+import { CommentData } from "@/lib/model/language";
 import { Resend } from "resend";
 import { EmailTemplate } from "@/components/EmailTemplate";
 import { NextResponse } from "next/server";
