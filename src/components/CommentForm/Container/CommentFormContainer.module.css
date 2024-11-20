@@ -6,21 +6,28 @@
 }
 
 .confirmation {
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  padding: 2rem;
+  & > p {
+    text-align: right;
+    text-wrap-style: balance;
+  }
+
   &:dir(ltr) > p {
+    text-align: left;
     font-size: 1.6rem;
   }
   .mail {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    &:dir(ltr) > p {
+    display: inline;
+  }
+
+  & > a {
+    display: inline;
+    font-size: 2rem;
+    color: var(--red);
+
+    &:dir(ltr) {
       font-size: 1.6rem;
-    }
-    & > a {
-      font-size: 2rem;
-      color: var(--red);
     }
   }
 }

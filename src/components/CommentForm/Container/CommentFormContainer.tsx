@@ -26,7 +26,7 @@ const CommentFormContainer: React.FC<CommentFormProps> = ({
   type,
 }) => {
   const [submitStatus, setSubmitStatus] = useState<FormState>(
-    FormState.SUCCESS
+    FormState.NOT_SUBMITTED
   );
   const path = usePathname();
 
@@ -46,12 +46,11 @@ const CommentFormContainer: React.FC<CommentFormProps> = ({
       <p>{success_1}</p>
       <p>{success_2}</p>
       <p>{success_3}</p>
-      <div className={styles.mail}>
-        <p>{success_4}</p>
-        <a href='mailto:look.into.their.eyes.0710@gmail.com' rel='nofollow'>
-          look.into.their.eyes.0710@gmail.com
-        </a>
-      </div>
+      <p className={styles.mail}>{success_4}</p>
+      <a href='mailto:look.into.their.eyes.0710@gmail.com' rel='nofollow'>
+        look.into.their.eyes.0710@gmail.com
+      </a>
+
       <p>{success_5}</p>
     </div>
   );
