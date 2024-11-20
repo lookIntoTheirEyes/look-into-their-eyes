@@ -63,7 +63,13 @@
         "comment": "what would you like to share?",
         "submit": "Submit",
         "email": "E-mail",
-        "loading": "Sharing"
+        "loading": "Sharing",
+        "submitHeader": "Thank you for sharing with us.",
+        "success_1": "Our team carefully reviews everything you shared before publishing it on the website.",
+        "success_2": "Following a thorough review by our team, we will notify you of the results via email to the address provided.",
+        "success_3": "Thank you sincerely for sharing, and may all the hostages will return home ASAP.",
+        "success_4": "If you have any questions, feel free to contact us at:",
+        "success_5": "With great appreciation, the \"Look Them in the Eyes\" team."
       }
     },
     "visitors": {

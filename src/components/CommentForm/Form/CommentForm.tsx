@@ -38,16 +38,27 @@ export const CommentForm: React.FC<IProps> = ({
   text: { name, title, comment, submit, loading, email },
 }) => {
   const { pending } = useFormStatus();
-  const sendEmailWithType = sendEmail.bind(null, type);
 
   return (
     <form
       className={styles.form}
       onSubmit={async (ev) => {
         ev.preventDefault();
+
+        if (!ev.currentTarget.checkValidity()) {
+          return;
+        }
+
         const formData = new FormData(ev.currentTarget);
+        const comment = {
+          title: formData.get("title") as string,
+          comment: formData.get("comment") as string,
+          name: formData.get("name") as string,
+          email: formData.get("email") as string,
+          type,
+        };
         try {
-          await sendEmailWithType(formData);
+          await sendEmail(comment);
           setStatus(FormState.SUCCESS);
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {

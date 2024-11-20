@@ -37,16 +37,8 @@ export async function sendCommentEmail(commentData: CommentData) {
   }
 }
 
-export async function sendEmail(type: CommentFormType, formData: FormData) {
+export async function sendEmail(comment: CommentData) {
   "use server";
-
-  const comment = {
-    title: formData.get("title") as string,
-    comment: formData.get("comment") as string,
-    name: formData.get("name") as string,
-    email: formData.get("email") as string,
-    type,
-  };
 
   await sendCommentEmail(comment);
 
