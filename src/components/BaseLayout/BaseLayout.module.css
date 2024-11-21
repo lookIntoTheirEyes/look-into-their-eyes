@@ -10,5 +10,5 @@
   align-items: center;
   background: url("/images/background.png") no-repeat fixed;
   background-size: cover;
-  text-align: justify;
+  text-align: start;
 }

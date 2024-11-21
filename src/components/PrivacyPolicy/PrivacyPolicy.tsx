@@ -55,30 +55,38 @@ const PrivacyPolicy = () => {
       <h3 className={styles.subTitle}>
         {t("cookie_policy.essential_cookies.title")}
       </h3>
-      <p>{t("cookie_policy.essential_cookies.content")}</p>
+      <p className={styles.paragraph}>
+        {t("cookie_policy.essential_cookies.content")}
+      </p>
 
       <h3 className={styles.subTitle}>
         {t("cookie_policy.analytics_cookies.title")}
       </h3>
-      <p>{t("cookie_policy.analytics_cookies.content")}</p>
+      <p className={styles.paragraph}>
+        {t("cookie_policy.analytics_cookies.content")}
+      </p>
 
       <h3 className={styles.subTitle}>
         {t("cookie_policy.managing_cookies.title")}
       </h3>
-      <p>{t("cookie_policy.managing_cookies.content")}</p>
+      <p className={styles.paragraph}>
+        {t("cookie_policy.managing_cookies.content")}
+      </p>
 
       <h3 className={styles.subTitle}>{t("cookie_policy.opt_out_ga.title")}</h3>
-      <p>{t("cookie_policy.opt_out_ga.content")}</p>
+      <p className={styles.paragraph}>
+        {t("cookie_policy.opt_out_ga.content")}
+      </p>
 
       <h3 className={styles.subTitle}>{t("cookie_policy.contact.title")}</h3>
-      <p>
+      <p className={styles.paragraph}>
         {t("cookie_policy.contact.content")}{" "}
         <a href={`mailto:${EMAIL}`} className={styles.link}>
           {EMAIL}.
         </a>
       </p>
 
-      <p>{t("cookie_policy.consent")}</p>
+      <p className={styles.paragraph}>{t("cookie_policy.consent")}</p>
     </>
   );
 };
