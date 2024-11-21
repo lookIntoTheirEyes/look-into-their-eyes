@@ -54,7 +54,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
   const Pages = structuredClone(bookPages).map((content, i) => (
     <Page rtl={rtl} key={content.title} pageNum={pageNum(i)}>
       <PageContent
-        cta={t("actions.pageCta")}
+        cta={t("common.pageCta")}
         details={content}
         pageNum={pageNum(i)}
         title={t("story.title")}

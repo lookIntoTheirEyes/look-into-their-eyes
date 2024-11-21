@@ -33,8 +33,8 @@ const BookContainer: React.FC<IBookProps> = ({
       }
     : undefined;
 
-  const next = t("actions.next");
-  const previous = t("actions.previous");
+  const next = t("common.next");
+  const previous = t("common.previous");
 
   return (
     <>

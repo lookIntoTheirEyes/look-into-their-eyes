@@ -1,10 +1,10 @@
 import { useTranslations } from "next-intl";
 import styles from "./TermsAndConditions.module.css";
 import Link from "next/link";
+import { EMAIL } from "@/lib/model/common";
 
 const TermsAndConditions = () => {
   const t = useTranslations("terms");
-  const email = "look.into.their.eyes.0710@gmail.com";
 
   return (
     <>
@@ -133,8 +133,8 @@ const TermsAndConditions = () => {
       <h2 className={styles.subTitle}>{t("sections.contact_us.title")}</h2>
       <p className={styles.paragraph}>
         {t("sections.contact_us.content")}
-        <a href={`mailto:${email}`} className={styles.link}>
-          {email}
+        <a href={`mailto:${EMAIL}`} className={styles.link}>
+          {EMAIL}.
         </a>
       </p>
 

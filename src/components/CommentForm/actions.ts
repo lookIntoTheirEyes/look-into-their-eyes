@@ -1,6 +1,6 @@
 "use server";
 
-import { CommentData } from "@/lib/model/language";
+import { CommentData, EMAIL } from "@/lib/model/common";
 import { Resend } from "resend";
 import { EmailTemplate } from "@/components/EmailTemplate";
 import { NextResponse } from "next/server";
@@ -8,11 +8,10 @@ import { NextResponse } from "next/server";
 export async function sendCommentEmail(commentData: CommentData) {
   try {
     const resend = new Resend(process.env.NEXT_PRIVATE_RESEND_API_KEY);
-    const email = "look.into.their.eyes.0710@gmail.com";
 
     const { data, error } = await resend.emails.send({
       from: "Acme <onboarding@resend.dev>",
-      to: [email],
+      to: [EMAIL],
       subject: commentData.title,
       react: EmailTemplate({
         name: commentData.name,

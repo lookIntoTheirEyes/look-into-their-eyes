@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import styles from "./AccessibilityStatement.module.css";
+import { EMAIL } from "@/lib/model/common";
 
 const AccessibilityStatement = () => {
   const t = useTranslations("accessibility");
@@ -51,13 +52,9 @@ const AccessibilityStatement = () => {
       <ul className={styles.list}>
         <li>{t("company_name")}</li>
         <li>
-          {t("email_label")}{" "}
-          <a
-            className={styles.link}
-            href='mailto:look.into.their.eyes.0710@gmail.com'
-            rel='nofollow'
-          >
-            look.into.their.eyes.0710@gmail.com
+          {t("email_label")}
+          <a className={styles.link} href={`mailto:${EMAIL}`} rel='nofollow'>
+            {EMAIL}
           </a>
         </li>
       </ul>

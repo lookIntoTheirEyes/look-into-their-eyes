@@ -1,10 +1,10 @@
 import { useFormStatus } from "react-dom";
 import { sendEmail } from "../actions";
 
-import styles from "./CommentForm.module.css";
-import { FormState } from "../Container/CommentFormContainer";
+import { CommentFormType } from "@/lib/model/common";
+import { FormState } from "@/components/CommentForm/Container/CommentFormContainer";
 import StyledButton from "@/components/StyledButton/StyledButton";
-import { CommentFormType } from "@/lib/model/language";
+import styles from "./CommentForm.module.css";
 
 export interface FormProps {
   text: {
@@ -21,8 +21,11 @@ export interface FormProps {
       success_1: string;
       success_2: string;
       success_3: string;
-      success_4: string;
-      success_5: string;
+      genericFormMessage_1: string;
+      genericFormMessage_2: string;
+      error_1: string;
+      error_2: string;
+      error_3: string;
     };
   };
   type: CommentFormType;

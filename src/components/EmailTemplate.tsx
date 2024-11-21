@@ -1,4 +1,4 @@
-import { CommentData } from "@/lib/model/language";
+import { CommentData } from "@/lib/model/common";
 import * as React from "react";
 
 export const EmailTemplate: React.FC<CommentData> = ({

@@ -1,9 +1,9 @@
 import { useTranslations } from "next-intl";
 import styles from "./PrivacyPolicy.module.css";
+import { EMAIL } from "@/lib/model/common";
 
 const PrivacyPolicy = () => {
   const t = useTranslations("privacy_policy");
-  const email = "look.into.their.eyes.0710@gmail.com";
 
   return (
     <>
@@ -44,8 +44,8 @@ const PrivacyPolicy = () => {
       <h2 className={styles.subTitle}>{t("section_11.title")}</h2>
       <p className={styles.paragraph}>
         {t("section_11.content")}{" "}
-        <a href={`mailto:${email}`} className={styles.link}>
-          {email + "."}
+        <a href={`mailto:${EMAIL}`} className={styles.link}>
+          {EMAIL}.
         </a>
       </p>
 
@@ -73,8 +73,8 @@ const PrivacyPolicy = () => {
       <h3 className={styles.subTitle}>{t("cookie_policy.contact.title")}</h3>
       <p>
         {t("cookie_policy.contact.content")}{" "}
-        <a href={`mailto:${email}`} className={styles.link}>
-          {email + "."}
+        <a href={`mailto:${EMAIL}`} className={styles.link}>
+          {EMAIL}.
         </a>
       </p>
 

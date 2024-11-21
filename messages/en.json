@@ -34,11 +34,15 @@
     "paragraph_4": "Alongside the project of support and commemoration paintings, Benzi gives lectures in Israel and Europe about the artistic journey that has been going on since October 7 and initiates activities to support the Jewish communities abroad."
   },
   "Book": {
-    "actions": {
+    "common": {
       "previous": "Previous",
       "next": "Next",
       "pageCta": "Read More",
-      "closeText": "Back"
+      "closeText": "Back",
+      "genericFormMessage_1": "Thank you sincerely for sharing, and may all the hostages will return home ASAP.",
+      "genericFormMessage_2": "With great appreciation, the \"Look Them in the Eyes\" team.",
+      "error_1": "It seems like we encountered an error.",
+      "error_2": "Please try again later."
     },
     "story": {
       "tableOfContents": "Table of Contents",
@@ -67,9 +71,7 @@
         "submitHeader": "Thank you for sharing with us.",
         "success_1": "Our team carefully reviews everything you shared before publishing it on the website.",
         "success_2": "Following a thorough review by our team, we will notify you of the results via email to the address provided.",
-        "success_3": "Thank you sincerely for sharing, and may all the hostages will return home ASAP.",
-        "success_4": "If you have any questions, feel free to contact us at:",
-        "success_5": "With great appreciation, the \"Look Them in the Eyes\" team."
+        "success_3": "If you have any questions, feel free to contact us at:"
       }
     },
     "visitors": {
@@ -88,9 +90,8 @@
         "submitHeader": "We have your comment.",
         "success_1": "Our team carefully reviews all comments before they are published on the website.",
         "success_2": "Following a thorough review by our team, we will notify you of the results via email to the address provided.",
-        "success_3": "Thank you sincerely for your response, and may all the hostages will return home ASAP.",
-        "success_4": "If you have any questions, feel free to contact us at:",
-        "success_5": "With great appreciation, the \"Look Them in the Eyes\" team."
+        "success_3": "If you have any questions, feel free to contact us at:",
+        "error_3": "You can also send us your message at "
       }
     }
   },
@@ -304,7 +305,7 @@
     "link2": "to go back home"
   },
   "Error": {
-    "header": "Error page",
+    "header": "Error",
     "description": "It seems like we've encountered an error",
     "link1": "Click ",
     "cta": "here",

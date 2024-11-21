@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import { IModalProps } from "@/lib/model/book";
+import { usePathname } from "@/i18n/routing";
+import { EMAIL, IModalProps } from "@/lib/model/common";
 import ModalClient from "@/components/Modal/Modal";
 import CommentForm, {
   FormProps,
 } from "@/components/CommentForm/Form/CommentForm";
 
 import styles from "./CommentFormContainer.module.css";
-import { usePathname } from "@/i18n/routing";
 
 export const FormState = {
   NOT_SUBMITTED: 1,
@@ -30,28 +30,30 @@ const CommentFormContainer: React.FC<CommentFormProps> = ({
   );
   const path = usePathname();
 
-  // const isError = submitStatus === FormState.ERROR;
+  const isError = submitStatus === FormState.ERROR;
   const {
     submitHeader,
     success_1,
     success_2,
     success_3,
-    success_4,
-    success_5,
+    genericFormMessage_1,
+    genericFormMessage_2,
+    error_1,
+    error_2,
+    error_3,
   } = text.modal;
 
   const submitView = (
     <div className={styles.confirmation}>
-      <p>{submitHeader}</p>
-      <p>{success_1}</p>
-      <p>{success_2}</p>
-      <p>{success_3}</p>
-      <p className={styles.mail}>{success_4}</p>
-      <a href='mailto:look.into.their.eyes.0710@gmail.com' rel='nofollow'>
-        look.into.their.eyes.0710@gmail.com
+      <p>{genericFormMessage_1}</p>
+      <p>{isError ? error_1 : submitHeader}</p>
+      {!isError && <p>{success_1}</p>}
+      <p>{isError ? error_2 : success_2}</p>
+      <p className={styles.mail}>{isError ? error_3 : success_3}</p>
+      <a href={`mailto:${EMAIL}`} rel='nofollow'>
+        {EMAIL}.
       </a>
-
-      <p>{success_5}</p>
+      <p>{genericFormMessage_2}</p>
     </div>
   );
 

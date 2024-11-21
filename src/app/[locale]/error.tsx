@@ -22,7 +22,7 @@ export default function Error({ error }: Props) {
       <p className={styles.text}>{t("description")}</p>
       <div className={styles.action}>
         <p>{t("link1")}</p>
-        <NavLink isColor href={{ pathname: "/" }}>
+        <NavLink className={styles.link} href={{ pathname: "/" }}>
           {t("cta")}
         </NavLink>
         <p>{t("link2")}</p>

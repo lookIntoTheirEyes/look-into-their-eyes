@@ -3,9 +3,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { startTransition, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { IModalProps } from "@/lib/model/common";
 import { useRouter, usePathname } from "@/i18n/routing";
-import StyledButton from "../StyledButton/StyledButton";
-import { IModalProps } from "@/lib/model/book";
+import StyledButton from "@/components/StyledButton/StyledButton";
 import styles from "./Modal.module.css";
 
 const ModalClient = ({

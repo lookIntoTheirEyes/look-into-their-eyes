@@ -24,14 +24,17 @@ const ModalPage = async (props: ILanguageProps) => {
     submit: t(`${formText}submit`),
     loading: t(`${formText}loading`),
     email: t(`${formText}email`),
-    close: t("actions.closeText"),
+    close: t("common.closeText"),
     modal: {
       submitHeader: t(`${formText}submitHeader`),
       success_1: t(`${formText}success_1`),
       success_2: t(`${formText}success_2`),
       success_3: t(`${formText}success_3`),
-      success_4: t(`${formText}success_4`),
-      success_5: t(`${formText}success_5`),
+      error_3: t(`${formText}error_3`),
+      genericFormMessage_1: t(`common.genericFormMessage_1`),
+      genericFormMessage_2: t(`common.genericFormMessage_2`),
+      error_1: t(`common.error_1`),
+      error_2: t(`common.error_2`),
     },
   };
 

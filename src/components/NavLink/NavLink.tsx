@@ -1,21 +1,19 @@
 "use client";
 
 import { useSelectedLayoutSegment } from "next/navigation";
-
 import { Link, Pathnames } from "@/i18n/routing";
 import styles from "./NavLink.module.css";
 
 interface NavLinkProps {
   href: { pathname: Pathnames; query?: Record<string, string | number> };
   children: React.ReactNode;
-
-  isColor?: boolean;
+  className?: string;
 }
 
 const NavLink: React.FC<NavLinkProps> = ({
   href,
   children,
-  isColor = false,
+  className = "",
 }) => {
   const selectedLayoutSegment = useSelectedLayoutSegment();
   const pathname = selectedLayoutSegment ? `/${selectedLayoutSegment}` : "/";
@@ -23,7 +21,7 @@ const NavLink: React.FC<NavLinkProps> = ({
 
   return (
     <Link
-      className={`${styles.link} ${isColor || isActive ? styles.active : ""}`}
+      className={`${styles.link} ${isActive ? styles.active : ""} ${className}`}
       href={href}
     >
       {children}

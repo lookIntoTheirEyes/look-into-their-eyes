@@ -51,3 +51,7 @@
     }
   }
 }
+
+.link {
+  color: var(--red);
+}
