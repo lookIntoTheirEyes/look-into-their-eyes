@@ -2,56 +2,72 @@ import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 import Book from "./Book";
 import { Page as BookPage } from "@/lib/model/book";
+import NewBookContainer from "./NewBook/NewBookContainer";
 
 interface IBookProps {
   rtl: boolean;
   tableOfContentsTitle?: string;
-  Pages: JSX.Element[];
-  Front?: JSX.Element;
-  Back?: JSX.Element;
+
   pagesContent: BookPage[];
-  noContentAmount: number;
+
   children?: ReactNode;
 }
 
 const BookContainer: React.FC<IBookProps> = ({
   rtl,
-  tableOfContentsTitle,
-  Pages,
   pagesContent,
-  Front,
-  Back,
-  noContentAmount,
   children,
 }) => {
   const t = useTranslations("Book");
+  t("story.tableOfContents");
 
-  const toc = tableOfContentsTitle
-    ? {
-        title: tableOfContentsTitle,
-        pages: pagesContent,
-      }
-    : undefined;
+  const toc = {
+    title: t("story.tableOfContents"),
+    pages: pagesContent,
+  };
+
+  // const toc = tableOfContentsTitle
+  //   ? {
+  //       title: tableOfContentsTitle,
+  //       pages: pagesContent,
+  //     }
+  //   : undefined;
 
   const next = t("common.next");
   const previous = t("common.previous");
 
+  const noContentPages = 3;
+
+  const pagesAmount = pagesContent.length + noContentPages;
+
+  const pageNum = (i: number) =>
+    (rtl ? pagesAmount - i - noContentPages : i + 1) + noContentPages - 1;
+
+  const frontDetails = {
+    title: t("story.front.title"),
+    author: t("story.front.author"),
+    description: t("story.front.description"),
+    longDescription: t("story.front.longDescription"),
+  };
+  const backDetails = {
+    title: t("story.back.title"),
+    description: t("story.back.description"),
+    longDescription: t("story.back.longDescription"),
+  };
+
   return (
     <>
       {children}
-      <Book
-        book={{
-          Front,
-          Back,
-          Pages,
-          toc,
-        }}
-        rtl={rtl}
-        actions={{
-          next,
-          previous,
-        }}
-        noContentAmount={noContentAmount}
+      <NewBookContainer
+        storyTitle={t("story.title")}
+        pageCta={t("common.pageCta")}
+        pageNum={pageNum}
+        frontDetails={frontDetails}
+        backDetails={backDetails}
+        bookPages={pagesContent}
+        isRtl={rtl}
+        text={{ next, previous }}
+        toc={toc}
       />
     </>
   );

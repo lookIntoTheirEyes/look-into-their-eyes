@@ -1,8 +1,9 @@
 .pageCover {
   background-color: var(--page-background);
   font-size: 3.5rem;
-  padding: 2rem;
   line-height: 1;
+  flex: 1;
+  height: 100%;
 }
 
 .author {

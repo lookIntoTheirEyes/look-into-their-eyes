@@ -1,0 +1,61 @@
+.bookContainer {
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  text-align: start;
+  padding: 2.4rem;
+
+  @media only screen and (min-width: 1250px) {
+    width: 90%;
+  }
+
+  @media only screen and (min-width: 1400px) {
+    width: 80%;
+  }
+
+  @media only screen and (min-width: 1600px) {
+    width: 65%;
+  }
+}
+
+.book {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1s;
+  margin-top: 2rem;
+}
+
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  &.right:not(.onePage) {
+    left: 50%;
+  }
+  &.onePage {
+    width: 100%;
+  }
+  transform-origin: center center;
+  transition: transform 0.5s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.blankPage {
+  background-color: white;
+  width: 50%;
+  height: 100%;
+  /* Optionally add any custom styles to the blank page, such as a border or shadow */
+}
+
+.front,
+.back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  padding: 1rem;
+}

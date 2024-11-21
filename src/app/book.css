@@ -1,17 +1,11 @@
 .bookPage {
-  position: absolute;
+  height: 100%;
   width: 100%;
+  flex: 1;
   transform-origin: center;
   background-color: var(--page-background);
   border-radius: 0.4rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.8rem 2rem;
-
-  @media (max-width: 1024px) {
-    padding: 0.8rem;
-  }
+  padding: 0.5rem 2rem;
 
   &.left {
     box-shadow: inset -7px 0 30px -7px rgba(0, 0, 0, 0.4),

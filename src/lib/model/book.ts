@@ -17,3 +17,10 @@ export interface IStoryModalProps
   pageNum: string;
   closeText: string;
 }
+
+export const Orientation = {
+  PORTRAIT: 1,
+  LANDSCAPE: 2,
+} as const;
+
+export type Orientation = (typeof Orientation)[keyof typeof Orientation];
