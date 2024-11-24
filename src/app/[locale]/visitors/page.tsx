@@ -10,12 +10,17 @@ const Visitors: React.FC<ILanguageProps> = async (props) => {
   const title = t("visitors.front.title");
   const newText = t("visitors.new");
 
+  const noCommentsText = `${t("common.no_comments_1")} ${t(
+    "visitors.form.no_comments_2"
+  )} ${t("common.no_comments_3")}`;
+
   return (
     <UsersBook
       newPath='/visitors/new'
       newText={newText}
       title={title}
       rtl={rtl}
+      noCommentsText={noCommentsText}
     />
   );
 };

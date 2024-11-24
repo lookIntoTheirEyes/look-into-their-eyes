@@ -8,11 +8,18 @@ import styles from "./UsersBook.module.css";
 interface IProps {
   title: string;
   newText: string;
+  noCommentsText: string;
   newPath: Pathnames;
   rtl: boolean;
 }
 
-const UsersBook: React.FC<IProps> = ({ title, rtl, newText, newPath }) => {
+const UsersBook: React.FC<IProps> = ({
+  title,
+  rtl,
+  newText,
+  newPath,
+  noCommentsText,
+}) => {
   const frontDetails = {
     title,
   };
@@ -32,10 +39,9 @@ const UsersBook: React.FC<IProps> = ({ title, rtl, newText, newPath }) => {
   );
 
   if (!pagesContent.length) {
-    const msg = newPath === "/visitors/new" ? "commented" : "shared";
     return (
       <div className={styles.noComment}>
-        <h1>No one has {msg} yet, click here button to be the first one! </h1>
+        <h1>{noCommentsText}</h1>
         {newButton}
       </div>
     );

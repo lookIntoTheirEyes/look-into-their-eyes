@@ -10,12 +10,17 @@ const Families: React.FC<ILanguageProps> = async (props) => {
   const title = t("families.front.title");
   const newText = t("families.new");
 
+  const noCommentsText = `${t("common.no_comments_1")} ${t(
+    "families.form.no_comments_2"
+  )} ${t("common.no_comments_3")}`;
+
   return (
     <UsersBook
       newPath='/families/new'
       newText={newText}
       title={title}
       rtl={rtl}
+      noCommentsText={noCommentsText}
     />
   );
 };
