@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
-import Book from "./Book";
+
 import { Page as BookPage } from "@/lib/model/book";
 import NewBookContainer from "./NewBook/NewBookContainer";
 
@@ -25,13 +25,6 @@ const BookContainer: React.FC<IBookProps> = ({
     title: t("story.tableOfContents"),
     pages: pagesContent,
   };
-
-  // const toc = tableOfContentsTitle
-  //   ? {
-  //       title: tableOfContentsTitle,
-  //       pages: pagesContent,
-  //     }
-  //   : undefined;
 
   const next = t("common.next");
   const previous = t("common.previous");
