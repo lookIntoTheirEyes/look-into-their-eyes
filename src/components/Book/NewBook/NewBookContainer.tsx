@@ -31,7 +31,7 @@ export default async function NewBookContainer({
 }) {
   const Pages = bookPages.map((content, i) => {
     const pageContent = (
-      <Page rtl={isRtl} key={content.title} pageNum={pageNum(i)}>
+      <Page rtl={isRtl} pageNum={pageNum(i)}>
         <PageContent
           cta={pageCta}
           details={content}

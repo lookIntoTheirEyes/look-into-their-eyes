@@ -24,7 +24,6 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
   const {
     currentPage,
     bookStyle,
-    pagesWithToc,
     totalPages,
     dragX,
     handleNextPage,
@@ -33,36 +32,35 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
     handleDragEnd,
     swipeHandlers,
     bookContainerRef,
-    bookRef,
     setCurrentPage,
     isSinglePage,
   } = useBookLogic({ pagesContent, isRtl, toc });
 
-  const renderPageContent = (pageIndex: number) => {
-    if (toc && pageIndex === 1) {
-      return (
-        <TableOfContentsContainer
-          noContentAmount={2}
-          rtl={isRtl}
-          goToPage={(pageNum: number) => setCurrentPage(pageNum)}
-          pagesAmount={totalPages}
-          toc={toc}
-        />
-      );
-    }
-
-    const pageContent = pagesWithToc[pageIndex];
-    if (React.isValidElement(pageContent) || typeof pageContent === "string") {
-      return pageContent;
-    }
-
-    return null;
-  };
-
-  console.log("isSinglePage", isSinglePage(), currentPage, totalPages);
+  const tocContainer = toc && (
+    <TableOfContentsContainer
+      key='toc'
+      noContentAmount={2}
+      rtl={isRtl}
+      goToPage={(pageNum: number) =>
+        setCurrentPage(pageNum % 2 === 0 ? pageNum - 1 : pageNum)
+      }
+      pagesAmount={totalPages}
+      toc={toc}
+    />
+  );
+  const pages = toc
+    ? [
+        pagesContent[0],
+        tocContainer as React.ReactNode,
+        ...pagesContent.slice(1),
+      ]
+    : pagesContent;
 
   const renderPages = () => {
-    if (isSinglePage() || currentPage === 0 || currentPage === totalPages - 1) {
+    const isOnePageMode =
+      isSinglePage() || currentPage === 0 || currentPage === totalPages - 1;
+
+    if (isOnePageMode) {
       return (
         <motion.div
           className={`${styles.page} ${isSinglePage() ? styles.onePage : ""}`}
@@ -71,22 +69,31 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
           animate={{ opacity: 1, rotateY: 0 }}
           exit={{ opacity: 0, rotateY: 90 }}
         >
-          {renderPageContent(currentPage)}
+          {pages[currentPage]}
         </motion.div>
       );
     }
 
     return (
       <>
-        <motion.div className={styles.page} key={`page-${currentPage}`}>
-          {renderPageContent(currentPage)}
+        <motion.div
+          initial={{ opacity: 0, rotateY: -90 }}
+          animate={{ opacity: 1, rotateY: 0 }}
+          exit={{ opacity: 0, rotateY: 90 }}
+          className={styles.page}
+          key={`page-${currentPage}`}
+        >
+          {pages[currentPage]}
         </motion.div>
         {currentPage + 1 < totalPages && (
           <motion.div
+            initial={{ opacity: 0, rotateY: -90 }}
+            animate={{ opacity: 1, rotateY: 0 }}
+            exit={{ opacity: 0, rotateY: 90 }}
             className={`${styles.page} ${styles.right}`}
             key={`page-${currentPage + 1}`}
           >
-            {renderPageContent(currentPage + 1)}
+            {pages[currentPage + 1]}
           </motion.div>
         )}
       </>

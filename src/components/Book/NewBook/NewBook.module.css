@@ -42,13 +42,6 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
-.blankPage {
-  background-color: white;
-  width: 50%;
-  height: 100%;
-  /* Optionally add any custom styles to the blank page, such as a border or shadow */
-}
-
 .front,
 .back {
   position: absolute;
@@ -56,6 +49,5 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #fff;
   padding: 1rem;
 }

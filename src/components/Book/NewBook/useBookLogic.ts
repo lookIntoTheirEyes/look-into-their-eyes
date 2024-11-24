@@ -13,6 +13,7 @@ export interface BookLogicParams {
 
 export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
   const [currentPage, setCurrentPage] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const [bookStyle, setBookStyle] = useState<{
     height: number;
     width: number;
@@ -24,15 +25,10 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
   });
   const [dragX, setDragX] = useState(0);
 
-  const bookRef = useRef<HTMLDivElement>(null);
   const bookContainerRef = useRef<HTMLDivElement>(null);
 
-  const totalPages = pagesContent.length + (toc ? 1 : 0); // Add TOC if provided
+  const totalPages = pagesContent.length + (toc ? 1 : 0);
   const dragThreshold = 100;
-
-  const pagesWithToc = toc
-    ? [pagesContent[0], toc, ...pagesContent.slice(1)]
-    : pagesContent;
 
   const handleResize = useCallback((entries: ResizeObserverEntry[]) => {
     const entry = entries[0];
@@ -129,7 +125,6 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
   return {
     currentPage,
     bookStyle,
-    pagesWithToc,
     totalPages,
     dragX,
     handleNextPage,
@@ -138,8 +133,10 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
     handleDragEnd,
     swipeHandlers,
     bookContainerRef,
-    bookRef,
+
     isSinglePage,
     setCurrentPage,
+    setIsDragging,
+    isDragging,
   };
 }
