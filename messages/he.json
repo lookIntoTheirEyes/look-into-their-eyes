@@ -10,7 +10,7 @@
   },
   "LocaleSwitcher": {
     "label": "החלף שפה",
-    "locale": "{locale, select, he {עברית he} en {אנגלית 🇺🇸} other {Unknown}}"
+    "locale": "{locale, select, he {עברית il} en {אנגלית 🇺🇸} other {Unknown}}"
   },
   "HomePage": {
     "title": "ברוכים הבאים לסיפור שלנו"

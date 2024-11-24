@@ -10,7 +10,7 @@
   },
   "LocaleSwitcher": {
     "label": "Change language",
-    "locale": "{locale, select, he {he HEBREW} en {🇺🇸 ENGLISH} other {Unknown}}"
+    "locale": "{locale, select, he {il HEBREW} en {🇺🇸 ENGLISH} other {Unknown}}"
   },
   "HomePage": {
     "title": "Welcome to our story"
