@@ -16,6 +16,7 @@
 
 .pageText {
   font-size: 1.5rem;
+  line-height: 1.1;
   margin-bottom: 2rem;
   color: var(--page-text-color);
   text-align: start;

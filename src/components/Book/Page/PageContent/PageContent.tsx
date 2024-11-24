@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "@/i18n/routing";
-import styles from "./PageContent.module.css";
+import { Page } from "@/lib/model/book";
+import TextAnimationContainer from "@/components/TextAnimationContainer/TextAnimationContainer";
 import StyledButton from "@/components/StyledButton/StyledButton";
 import Image from "@/components/Image/Image";
-import { Page } from "@/lib/model/book";
+import styles from "./PageContent.module.css";
 
 interface PageProps {
   pageNum: number;
@@ -46,7 +47,11 @@ const PageContent: React.FC<PageProps> = ({
               </div>
             </div>
           )}
-          {description && <p className={styles.pageText}>{description}</p>}
+          {description && (
+            <div className={styles.pageText}>
+              <TextAnimationContainer text={description} />
+            </div>
+          )}
           <StyledButton onClick={handleClick} className={styles.button}>
             {cta}
           </StyledButton>
