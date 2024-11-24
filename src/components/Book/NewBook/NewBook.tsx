@@ -56,45 +56,58 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
       ]
     : pagesContent;
 
+  const getPage = (child: React.ReactNode, className: string, key: string) => (
+    <motion.div
+      className={`${styles.page} ${className} `}
+      key={key}
+      initial={{ opacity: 0, rotateY: -90 }}
+      animate={{ opacity: 1, rotateY: 0 }}
+      exit={{ opacity: 0, rotateY: 90 }}
+    >
+      {child}
+    </motion.div>
+  );
+
   const renderPages = () => {
-    const isOnePageMode =
-      isSinglePage() || currentPage === 0 || currentPage === totalPages - 1;
+    const isLastPage = currentPage === totalPages - 1;
+
+    const isOnePageMode = isSinglePage();
+    const isOnePage = currentPage === 0 || isLastPage;
 
     if (isOnePageMode) {
+      return getPage(pages[currentPage], styles.onePage, `page-${currentPage}`);
+    }
+
+    if (isOnePage) {
+      const belowPage = currentPage === 0 ? currentPage + 2 : currentPage - 2;
       return (
-        <motion.div
-          className={`${styles.page} ${isSinglePage() ? styles.onePage : ""}`}
-          key={`page-${currentPage}`}
-          initial={{ opacity: 0, rotateY: -90 }}
-          animate={{ opacity: 1, rotateY: 0 }}
-          exit={{ opacity: 0, rotateY: 90 }}
-        >
-          {pages[currentPage]}
-        </motion.div>
+        <>
+          {getPage(
+            pages[currentPage],
+            isLastPage || !isRtl ? styles.right : "",
+            `page-${currentPage}`
+          )}
+
+          {getPage(
+            pages[belowPage],
+            `${isLastPage || !isRtl ? styles.right : ""} ${styles.back}`,
+            `page-${belowPage}`
+          )}
+        </>
       );
     }
 
     return (
       <>
-        <motion.div
-          initial={{ opacity: 0, rotateY: -90 }}
-          animate={{ opacity: 1, rotateY: 0 }}
-          exit={{ opacity: 0, rotateY: 90 }}
-          className={styles.page}
-          key={`page-${currentPage}`}
-        >
-          {pages[currentPage]}
-        </motion.div>
-        {currentPage + 1 < totalPages && (
-          <motion.div
-            initial={{ opacity: 0, rotateY: -90 }}
-            animate={{ opacity: 1, rotateY: 0 }}
-            exit={{ opacity: 0, rotateY: 90 }}
-            className={`${styles.page} ${styles.right}`}
-            key={`page-${currentPage + 1}`}
-          >
-            {pages[currentPage + 1]}
-          </motion.div>
+        {getPage(
+          pages[currentPage],
+          isRtl ? styles.right : "",
+          `page-${currentPage}`
+        )}
+        {getPage(
+          pages[currentPage + 1],
+          isRtl ? "" : styles.right,
+          `page-${currentPage + 1}`
         )}
       </>
     );

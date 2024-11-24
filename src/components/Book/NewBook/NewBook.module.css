@@ -51,3 +51,7 @@
   height: 100%;
   padding: 1rem;
 }
+
+.back {
+  display: none;
+}
