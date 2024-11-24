@@ -49,7 +49,7 @@
 
 .text {
   padding: 0 2rem;
-  line-height: 1.4;
+  line-height: 1.1;
   font-size: 1.8rem;
 
   @media (max-width: 768px) {
