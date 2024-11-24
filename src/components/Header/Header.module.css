@@ -9,16 +9,11 @@
   color: var(--white);
   min-height: var(--header-height);
   background-color: var(--image-background);
-
-  padding-left: 2rem;
-  padding-right: 1rem;
-
-  &:dir(ltr) {
-    padding-left: 1rem;
-    padding-right: 2rem;
-  }
+  padding: 0 1rem;
 
   .mobile {
+    display: flex;
+    justify-content: center;
     padding: 0 1rem;
   }
 
@@ -36,19 +31,14 @@
       margin-left: 3rem;
     }
   }
-  &.mobile > .logoContainer {
-    &:dir(ltr) {
-      margin-right: 0;
-      margin-left: 3rem;
-    }
 
-    &:dir(rtl) {
-      margin-left: 0;
-      margin-right: 6rem;
-
-      @media (max-width: 768px) {
-        margin-right: 4rem;
-      }
+  &.mobile {
+    .logoContainer {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      margin: 0;
     }
   }
 }

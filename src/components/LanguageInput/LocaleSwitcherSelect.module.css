@@ -1,0 +1,41 @@
+.container {
+  position: relative;
+  cursor: pointer;
+  border: none;
+  font-size: 2rem;
+  padding-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  color: var(--white);
+  font-family: "Header-font", sans-serif;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+}
+
+.select {
+  background-color: transparent;
+  color: var(--white);
+  border: none;
+  outline: none;
+  line-height: 1;
+  font-size: 2rem;
+  border-radius: 1.6rem;
+  &:focus {
+    outline: none;
+    border: none;
+  }
+}
+
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

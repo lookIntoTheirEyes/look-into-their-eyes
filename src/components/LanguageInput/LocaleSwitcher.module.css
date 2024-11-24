@@ -1,0 +1,5 @@
+.option {
+  background-color: var(--image-background);
+  border: none;
+  outline: none;
+}

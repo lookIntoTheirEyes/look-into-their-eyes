@@ -41,7 +41,6 @@ export default async function BaseLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Header
             isMobile={isMobile}
-            locale={locale}
             links={{
               story: t("story"),
               home: t("home"),
