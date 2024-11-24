@@ -42,8 +42,9 @@ export default function Header({
     getRoute({ pathname: "/about" }, about),
   ].map(({ href, name }) => (
     <li
-      onClick={() => {
+      onClick={(ev: React.MouseEvent<HTMLLIElement>) => {
         if (isMobile) {
+          ev.stopPropagation();
           handleToggleMenu();
         }
       }}
