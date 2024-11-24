@@ -4,6 +4,7 @@ import SocialIcon from "@/components/SocialIcon/SocialIcon";
 import Image from "@/components/Image/Image";
 import { getImageUrl } from "@/lib/utils/utils";
 import styles from "./page.module.css";
+import TextAnimationContainer from "@/components/TextAnimationContainer/TextAnimationContainer";
 
 export default function About() {
   const t = useTranslations("About");
@@ -38,12 +39,12 @@ export default function About() {
         </div>
         <div className={styles.socialIcons}>{icons}</div>
       </div>
-
       <div className={styles.text}>
-        <p>{t("paragraph_1")} </p>
-        <p> {t("paragraph_2")} </p>
-        <p> {t("paragraph_3")} </p>
-        <p> {t("paragraph_4")} </p>
+        <TextAnimationContainer
+          text={`${t("paragraph_1")} ${t("paragraph_2")} ${t(
+            "paragraph_3"
+          )} ${t("paragraph_4")}`}
+        />
       </div>
     </div>
   );

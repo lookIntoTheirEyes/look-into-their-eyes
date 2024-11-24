@@ -63,7 +63,6 @@
 
 .text {
   color: var(--header-text);
-  text-wrap-style: pretty;
   &:dir(ltr) > p {
     font-size: 1.8rem;
   }
