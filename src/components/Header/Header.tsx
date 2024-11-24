@@ -9,7 +9,7 @@ import DesktopNav from "./DesktopNav/DesktopNav";
 import Image from "next/image";
 import logoImg from "/public/images/logo.png";
 import { useRouter } from "@/i18n/routing";
-import LocaleSwitcher from "../LanguageInput/LocaleSwitcher";
+import LocaleSwitcher from "../LocaleSwitcher/LocaleSwitcher";
 
 interface HeaderProps {
   links: {
