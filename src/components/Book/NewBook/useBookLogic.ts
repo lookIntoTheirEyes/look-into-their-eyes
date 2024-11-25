@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
 import { Orientation, Page } from "@/lib/model/book";
 import { PanInfo, TapInfo } from "framer-motion";
+import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "@/i18n/routing";
 
 type PageMouseLocation =
   | "leftPageLeft"
@@ -21,8 +23,7 @@ export interface BookLogicParams {
 }
 
 export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [draggingPage, setDraggingPage] = useState(null as DraggingPage);
+  const [draggingPage, setDraggingPage] = useState<DraggingPage>(null);
   const [bookStyle, setBookStyle] = useState<{
     height: number;
     width: number;
@@ -42,197 +43,252 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
   });
   const [dragX, setDragX] = useState(0);
 
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const queryParamPage = +searchParams.get("page")!;
+
   const bookContainerRef = useRef<HTMLDivElement>(null);
 
   const totalPages = pagesContent.length + (toc ? 1 : 0);
   const dragThreshold = bookStyle.width / 4;
 
-  const handleResize = useCallback((entries: ResizeObserverEntry[]) => {
-    const entry = entries[0];
-    if (entry.target === bookContainerRef.current) {
-      const rect = bookContainerRef.current?.getBoundingClientRect();
-      const { contentRect } = entry;
-      const { width, height } = contentRect;
-      const top = rect.top + contentRect.top;
-      const bottom = top + height;
-      const left = rect.left + contentRect.left;
-      const right = left + width;
+  const pageNum =
+    (queryParamPage <= 0 || queryParamPage > totalPages ? 1 : queryParamPage) -
+    1;
 
-      calculateBookStyle({
-        ...contentRect,
-        ...{ width, height, bottom, top, left, right },
-      });
-    }
-  }, []);
+  const [currentPage, setCurrentPage] = useState(
+    pageNum && pageNum % 2 === 0 ? pageNum - 1 : pageNum
+  );
 
-  const calculateBookStyle = ({
-    width: containerWidth,
-    height: containerHeight,
-    top,
-    left,
-    bottom,
-    right,
-  }: DOMRectReadOnly) => {
-    const aspectRatio = 1.4; // Ideal book aspect ratio
-    const isMobile = containerWidth <= 600;
+  const updateUrlWithSearchParams = useCallback(
+    (pageNum: number) => {
+      router.push(
+        { pathname, query: { page: pageNum.toString() } },
+        { scroll: false }
+      );
+    },
+    [pathname, router]
+  );
 
-    let height = 0,
-      width = 0;
-
-    if (isMobile) {
-      height = containerWidth * aspectRatio;
-    } else {
-      height = containerWidth / aspectRatio;
-
-      if (height > containerHeight) {
-        height = containerHeight;
-        width = height * aspectRatio;
-      }
-    }
-
-    setBookStyle({
-      width: width || containerWidth,
-      height,
+  const calculateBookStyle = useCallback(
+    ({
+      width: containerWidth,
+      height: containerHeight,
       top,
       left,
       bottom,
       right,
-      mode: isMobile ? Orientation.PORTRAIT : Orientation.LANDSCAPE,
-    });
-  };
+    }: DOMRectReadOnly) => {
+      const aspectRatio = 1.4; // Ideal book aspect ratio
+      const isMobile = containerWidth <= 600;
 
-  const handleNextPage = () => {
+      let height = 0,
+        width = 0;
+
+      if (isMobile) {
+        height = containerWidth * aspectRatio;
+      } else {
+        height = containerWidth / aspectRatio;
+
+        if (height > containerHeight) {
+          height = containerHeight;
+          width = height * aspectRatio;
+        }
+      }
+
+      setBookStyle({
+        width: width || containerWidth,
+        height,
+        top,
+        left,
+        bottom,
+        right,
+        mode: isMobile ? Orientation.PORTRAIT : Orientation.LANDSCAPE,
+      });
+    },
+    []
+  );
+
+  const handleResize = useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      const entry = entries[0];
+      if (entry.target === bookContainerRef.current) {
+        const rect = bookContainerRef.current?.getBoundingClientRect();
+        const { contentRect } = entry;
+        const { width, height } = contentRect;
+        const top = rect.top + contentRect.top;
+        const bottom = top + height;
+        const left = rect.left + contentRect.left;
+        const right = left + width;
+
+        calculateBookStyle({
+          ...contentRect,
+          ...{ width, height, bottom, top, left, right },
+        });
+      }
+    },
+    [calculateBookStyle]
+  );
+
+  const isSinglePage = useCallback(
+    () => bookStyle.mode === Orientation.PORTRAIT,
+    [bookStyle.mode]
+  );
+
+  const updatePage = useCallback(
+    (pageNum: number) => {
+      setCurrentPage((prev) => prev + pageNum);
+      updateUrlWithSearchParams(currentPage + pageNum + 1);
+    },
+    [currentPage, updateUrlWithSearchParams]
+  );
+
+  const handleNextPage = useCallback(() => {
     if (!isSinglePage() && currentPage % 2 === 1 && currentPage) {
-      if (currentPage + 1 < totalPages) setCurrentPage((prev) => prev + 2);
+      if (currentPage + 1 < totalPages) updatePage(2);
     } else {
-      if (currentPage < totalPages - 1) setCurrentPage((prev) => prev + 1);
+      if (currentPage < totalPages - 1) updatePage(1);
     }
-  };
+  }, [isSinglePage, currentPage, totalPages, updatePage]);
 
-  const handlePrevPage = () => {
+  const handlePrevPage = useCallback(() => {
     if (
       !isSinglePage() &&
       currentPage % 2 === 1 &&
       currentPage !== 1 &&
       currentPage !== totalPages
     ) {
-      setCurrentPage((prev) => prev - 2);
+      updatePage(-2);
     } else {
-      setCurrentPage((prev) => prev - 1);
+      updatePage(-1);
     }
-  };
+  }, [isSinglePage, currentPage, totalPages, updatePage]);
 
-  const handleDrag = (_: MouseEvent, info: PanInfo) => {
-    if (draggingPage) {
-      return;
-    }
+  const getIsLeftPage = useCallback(
+    (x: number) => {
+      const pageWidth = bookStyle.width / 2;
+      return x >= bookStyle.left && x <= bookStyle.left + pageWidth;
+    },
+    [bookStyle.width, bookStyle.left]
+  );
 
-    setDraggingPage(getIsLeftPage(info.point.x) ? "left" : "right");
-  };
+  const getXClickLocation = useCallback(
+    (x: number): PageMouseLocation => {
+      const isLeftPage = getIsLeftPage(x);
+      if (isLeftPage) {
+        return x <= bookStyle.left + dragThreshold
+          ? "leftPageLeft"
+          : "leftPageRight";
+      }
 
-  const getIsLeftPage = (x: number) => {
-    const pageWidth = bookStyle.width / 2;
-    return x >= bookStyle.left && x <= bookStyle.left + pageWidth;
-  };
+      return bookStyle.right - x <= dragThreshold
+        ? "rightPageRight"
+        : "rightPageLeft";
+    },
+    [getIsLeftPage, bookStyle.left, bookStyle.right, dragThreshold]
+  );
 
-  const getXClickLocation = (x: number): PageMouseLocation => {
-    const isLeftPage = getIsLeftPage(x);
-    if (isLeftPage) {
-      return x <= bookStyle.left + dragThreshold
-        ? "leftPageLeft"
-        : "leftPageRight";
-    }
+  const setFlipOnDrag = useCallback(
+    (clickLocation: PageMouseLocation) => {
+      const isLeftDragging = draggingPage === "left";
 
-    return bookStyle.right - x <= dragThreshold
-      ? "rightPageRight"
-      : "rightPageLeft";
-  };
+      if (isRtl) {
+        if (isLeftDragging) {
+          if (clickLocation !== "leftPageLeft") {
+            handleNextPage();
+          }
+        } else {
+          if (clickLocation !== "rightPageRight") {
+            handlePrevPage();
+          }
+        }
+      } else {
+        if (isLeftDragging) {
+          if (clickLocation !== "leftPageLeft") {
+            handlePrevPage();
+          }
+        } else {
+          if (clickLocation !== "rightPageRight") {
+            handleNextPage();
+          }
+        }
+      }
+    },
+    [draggingPage, handleNextPage, handlePrevPage, isRtl]
+  );
 
-  const handleFlipPageOnMouseGesture = (x: number, isDrag = false) => {
-    const clickLocation = getXClickLocation(x);
+  const setFlipOnClick = useCallback(
+    (clickLocation: PageMouseLocation) => {
+      if (
+        clickLocation === "leftPageRight" ||
+        clickLocation === "rightPageLeft"
+      ) {
+        return;
+      }
 
-    if (!isDrag) {
-      setFlipOnClick(clickLocation);
-    } else {
-      setFlipOnDrag(clickLocation);
-    }
-  };
-
-  const setFlipOnDrag = (clickLocation: PageMouseLocation) => {
-    const isLeftDragging = draggingPage === "left";
-
-    if (isRtl) {
-      if (isLeftDragging) {
-        if (clickLocation !== "leftPageLeft") {
+      if (isRtl) {
+        if (clickLocation === "leftPageLeft") {
           handleNextPage();
         } else {
-          // need to go back to current location
+          handlePrevPage();
         }
-        return;
       } else {
-        if (clickLocation !== "rightPageRight") {
+        if (clickLocation === "leftPageLeft") {
           handlePrevPage();
         } else {
-          // need to go back to current location
-        }
-        return;
-      }
-    } else {
-      if (isLeftDragging) {
-        if (clickLocation !== "leftPageLeft") {
-          handlePrevPage();
-        } else {
-          // need to go back to current location
-        }
-        return;
-      } else {
-        if (clickLocation !== "rightPageRight") {
           handleNextPage();
-        } else {
-          // need to go back to current location
         }
+      }
+    },
+    [handleNextPage, handlePrevPage, isRtl]
+  );
+
+  const handleFlipPageOnMouseGesture = useCallback(
+    (x: number, isDrag = false) => {
+      const clickLocation = getXClickLocation(x);
+
+      if (!isDrag) {
+        setFlipOnClick(clickLocation);
+      } else {
+        setFlipOnDrag(clickLocation);
+      }
+    },
+    [getXClickLocation, setFlipOnClick, setFlipOnDrag]
+  );
+
+  const onTap = useCallback(
+    (event: MouseEvent, { point: { x } }: TapInfo) => {
+      const target = event.target as HTMLElement;
+
+      if (draggingPage || target.tagName === "BUTTON") {
         return;
       }
-    }
-  };
 
-  const setFlipOnClick = (clickLocation: PageMouseLocation) => {
-    if (
-      clickLocation === "leftPageRight" ||
-      clickLocation === "rightPageLeft"
-    ) {
-      return;
-    }
+      handleFlipPageOnMouseGesture(x);
+    },
+    [draggingPage, handleFlipPageOnMouseGesture]
+  );
 
-    if (isRtl) {
-      if (clickLocation === "leftPageLeft") {
-        handleNextPage();
-      } else {
-        handlePrevPage();
+  const handleDrag = useCallback(
+    (_: MouseEvent, info: PanInfo) => {
+      if (draggingPage) {
+        return;
       }
-    } else {
-      if (clickLocation === "leftPageLeft") {
-        handlePrevPage();
-      } else {
-        handleNextPage();
-      }
-    }
-  };
 
-  const onTap = (event: MouseEvent, { point: { x } }: TapInfo) => {
-    const target = event.target as HTMLElement;
+      setDraggingPage(getIsLeftPage(info.point.x) ? "left" : "right");
+    },
+    [draggingPage, getIsLeftPage]
+  );
 
-    if (draggingPage || target.tagName === "BUTTON") {
-      return;
-    }
-
-    handleFlipPageOnMouseGesture(x);
-  };
-
-  const handleDragEnd = (_: Event, info: PanInfo) => {
-    handleFlipPageOnMouseGesture(info.point.x, true);
-    setDraggingPage(null);
-  };
+  const handleDragEnd = useCallback(
+    (_: Event, info: PanInfo) => {
+      handleFlipPageOnMouseGesture(info.point.x, true);
+      setDraggingPage(null);
+    },
+    [handleFlipPageOnMouseGesture]
+  );
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: handleNextPage,
@@ -242,20 +298,19 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
   });
 
   useEffect(() => {
+    const container = bookContainerRef.current; // Capture the current value of the ref
     const resizeObserver = new ResizeObserver(handleResize);
 
-    if (bookContainerRef.current) {
-      resizeObserver.observe(bookContainerRef.current);
+    if (container) {
+      resizeObserver.observe(container);
     }
 
     return () => {
-      if (bookContainerRef.current) {
-        resizeObserver.unobserve(bookContainerRef.current);
+      if (container) {
+        resizeObserver.unobserve(container); // Use the captured container reference
       }
     };
   }, [handleResize]);
-
-  const isSinglePage = () => bookStyle.mode === Orientation.PORTRAIT;
 
   return {
     currentPage,
@@ -270,6 +325,6 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
     bookContainerRef,
     onTap,
     isSinglePage,
-    setCurrentPage,
+    updatePage: setCurrentPage,
   };
 }
