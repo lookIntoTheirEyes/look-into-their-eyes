@@ -68,35 +68,7 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
     </motion.div>
   );
 
-  const renderPages = () => {
-    const isLastPage = currentPage === totalPages - 1;
-
-    const isOnePageMode = isSinglePage();
-    const isOnePage = currentPage === 0 || isLastPage;
-
-    if (isOnePageMode) {
-      return getPage(pages[currentPage], styles.onePage, `page-${currentPage}`);
-    }
-
-    if (isOnePage) {
-      const belowPage = currentPage === 0 ? currentPage + 2 : currentPage - 2;
-      return (
-        <>
-          {getPage(
-            pages[currentPage],
-            isLastPage || !isRtl ? styles.right : "",
-            `page-${currentPage}`
-          )}
-
-          {getPage(
-            pages[belowPage],
-            `${isLastPage || !isRtl ? styles.right : ""} ${styles.back}`,
-            `page-${belowPage}`
-          )}
-        </>
-      );
-    }
-
+  const getPagesWithBelow = (isLastPage = false, isFirstPage = false) => {
     return (
       <>
         {getPage(
@@ -104,13 +76,56 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
           isRtl ? styles.right : "",
           `page-${currentPage}`
         )}
-        {getPage(
-          pages[currentPage + 1],
-          isRtl ? "" : styles.right,
-          `page-${currentPage + 1}`
-        )}
+        {!isFirstPage &&
+          getPage(
+            pages[currentPage - 1],
+            `${isRtl ? "" : styles.right} ${styles.backOfFront}`,
+            `page-${currentPage - 1}`
+          )}
+
+        {!isFirstPage &&
+          getPage(
+            pages[currentPage - 2],
+            `${isRtl ? "" : styles.right} ${styles.back}`,
+            `page-${currentPage - 2}`
+          )}
+        {!isLastPage &&
+          getPage(
+            pages[currentPage + 1],
+            `${isRtl ? "" : styles.right} ${
+              isFirstPage ? styles.backOfFront : ""
+            }`,
+            `page-${currentPage + 1}`
+          )}
+        {!isLastPage &&
+          getPage(
+            pages[currentPage + 2],
+            `${!isRtl ? "" : styles.right} ${styles.back}`,
+            `page-${currentPage + 2}`
+          )}
+
+        {!isLastPage &&
+          !isFirstPage &&
+          getPage(
+            pages[currentPage + 3],
+            `${isRtl ? "" : styles.right} ${styles.back}`,
+            `page-${currentPage + 3}`
+          )}
       </>
     );
+  };
+
+  const renderPages = () => {
+    const isLastPage = currentPage === totalPages - 1;
+    const isFirstPage = currentPage === 0;
+
+    const isOnePageMode = isSinglePage();
+
+    if (isOnePageMode) {
+      return getPage(pages[currentPage], styles.onePage, `page-${currentPage}`);
+    }
+
+    return getPagesWithBelow(isLastPage, isFirstPage);
   };
 
   return (
