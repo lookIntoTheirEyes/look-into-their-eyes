@@ -73,7 +73,7 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
       <>
         {getPage(
           pages[currentPage],
-          isRtl ? styles.right : "",
+          !isFirstPage && isRtl ? styles.right : "",
           `page-${currentPage}`
         )}
         {!isFirstPage &&
