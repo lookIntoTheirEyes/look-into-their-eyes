@@ -325,6 +325,6 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
     bookContainerRef,
     onTap,
     isSinglePage,
-    updatePage: setCurrentPage,
+    setCurrentPage: updatePage,
   };
 }
