@@ -8,7 +8,6 @@ export interface TableOfContentsPageProps {
     title: string;
     pages: HeroPage[];
   };
-  pagesAmount: number;
   goToPage: (pageNum: number) => void;
   rtl: boolean;
   noContentAmount: number;
@@ -17,11 +16,9 @@ export interface TableOfContentsPageProps {
 const TableOfContentsContainer = forwardRef<
   HTMLDivElement,
   TableOfContentsPageProps
->(({ rtl, toc, goToPage, pagesAmount, noContentAmount }, ref) => {
+>(({ rtl, toc, goToPage, noContentAmount }, ref) => {
   const getPageNum = (i: number) => {
-    return rtl
-      ? pagesAmount - i - noContentAmount + noContentAmount - 1
-      : i + noContentAmount;
+    return i + noContentAmount;
   };
   return (
     <Page rtl={rtl} pageNum={2} ref={ref}>

@@ -31,10 +31,7 @@ const BookContainer: React.FC<IBookProps> = ({
 
   const noContentPages = 3;
 
-  const pagesAmount = pagesContent.length + noContentPages;
-
-  const pageNum = (i: number) =>
-    (rtl ? pagesAmount - i - noContentPages : i + 1) + noContentPages - 1;
+  const pageNum = (i: number) => i + noContentPages;
 
   const frontDetails = {
     title: t("story.front.title"),

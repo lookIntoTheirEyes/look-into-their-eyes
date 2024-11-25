@@ -30,6 +30,7 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
     handlePrevPage,
     handleDrag,
     handleDragEnd,
+    onTap,
     swipeHandlers,
     bookContainerRef,
     setCurrentPage,
@@ -41,10 +42,9 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
       key='toc'
       noContentAmount={2}
       rtl={isRtl}
-      goToPage={(pageNum: number) =>
-        setCurrentPage(pageNum % 2 === 0 ? pageNum - 1 : pageNum)
-      }
-      pagesAmount={totalPages}
+      goToPage={(pageNum: number) => {
+        return setCurrentPage(pageNum % 2 === 0 ? pageNum - 1 : pageNum);
+      }}
       toc={toc}
     />
   );
@@ -58,6 +58,9 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
 
   const getPage = (child: React.ReactNode, className: string, key: string) => (
     <motion.div
+      onPan={handleDrag}
+      onPanEnd={handleDragEnd}
+      onTap={onTap}
       className={`${styles.page} ${className} `}
       key={key}
       initial={{ opacity: 0, rotateY: -90 }}
@@ -73,7 +76,7 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
       <>
         {getPage(
           pages[currentPage],
-          !isFirstPage && isRtl ? styles.right : "",
+          isRtl ? styles.right : isFirstPage ? styles.right : "",
           `page-${currentPage}`
         )}
         {!isFirstPage &&
