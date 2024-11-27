@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue } from "framer-motion";
 import { useRef, useState } from "react";
 import { useGesture } from "@use-gesture/react";
 import Helper from "./Helper";
@@ -8,11 +8,13 @@ import { FlipCorner, FlipDirection, PageMouseLocation } from "./model";
 interface DraggingParams {
   corner: FlipCorner | null;
   direction: FlipDirection | null;
+  page: { x: number; y: number };
 }
 
 const initialDraggingParams: DraggingParams = {
   corner: null,
   direction: null,
+  page: { x: 0, y: 0 },
 };
 
 interface Props {
@@ -23,6 +25,7 @@ interface Props {
   isRtl: boolean;
   isFirstPage: boolean;
   isLastPage: boolean;
+  scrollPosition: number;
   handleNextPage: () => void;
   handlePrevPage: () => void;
 }
@@ -36,8 +39,14 @@ const AnimatedPage: React.FC<Props> = ({
   handlePrevPage,
   isLastPage,
   isFirstPage,
+  scrollPosition,
 }) => {
   const [draggingParams, setDraggingParams] = useState(initialDraggingParams);
+
+  const [page, setPage] = useState({ x: 0, y: 0 });
+
+  const x = useMotionValue(page.x);
+  const y = useMotionValue(page.y);
 
   const ref = useRef<HTMLDivElement>(null);
   const dragThreshold = bookStyle.width / 4;
@@ -106,6 +115,7 @@ const AnimatedPage: React.FC<Props> = ({
           return;
         }
         handleDrag(state.direction);
+        // const y = state.xy[1] + scrollPosition
       },
 
       onDragEnd: ({ event }) => {
@@ -192,7 +202,6 @@ function dragEndHelper({
   dragThreshold,
 }: {
   x: number;
-
   bookStyle: BookStyle;
   isRtl: boolean;
   handleNextPage: () => void;

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBookLogic } from "./useBookLogic";
 import Controls from "../Controls/Controls";
@@ -23,6 +23,7 @@ interface BookProps {
 }
 
 const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
+  const [scrollPosition, setScrollPosition] = useState(0);
   const { bookContainerRef, bookStyle, isSinglePage } = useBookStyle();
 
   const {
@@ -53,40 +54,45 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
     : pagesContent;
 
   const getPage = (child: React.ReactNode, className: string, key: string) => (
-    <motion.div
-      className={`${styles.page} ${className} `}
-      key={key}
-      // initial={{ opacity: 0, rotateY: -90 }}
-      // animate={{ opacity: 1, rotateY: 0 }}
-      // exit={{ opacity: 0, rotateY: 90 }}
-    >
+    <motion.div className={`${styles.page} ${className} `} key={key}>
       {child}
     </motion.div>
+  );
+
+  const getAnimatedPage = (
+    child: React.ReactNode,
+    className: string,
+    key: string
+  ) => (
+    <AnimatedPage
+      key={key}
+      bookStyle={bookStyle}
+      handleNextPage={handleNextPage}
+      handlePrevPage={handlePrevPage}
+      isRtl={isRtl}
+      isFirstPage={false}
+      isLastPage={false}
+      scrollPosition={scrollPosition}
+      className={`${styles.page} ${className} `}
+    >
+      {child}
+    </AnimatedPage>
   );
 
   const getPagesWithBelow = (isLastPage = false, isFirstPage = false) => {
     return (
       <>
-        <AnimatedPage
-          key={`page-${currentPage}`}
-          handleNextPage={handleNextPage}
-          handlePrevPage={handlePrevPage}
-          isRtl={isRtl}
-          isFirstPage={isFirstPage}
-          isLastPage={isLastPage}
-          bookStyle={bookStyle}
-          className={`${styles.page} ${
-            isRtl
-              ? isFirstPage
-                ? ""
-                : styles.right
-              : isFirstPage
-              ? styles.right
-              : ""
-          }`}
-        >
-          {pages[currentPage]}
-        </AnimatedPage>
+        {getAnimatedPage(
+          pages[currentPage],
+          isRtl
+            ? isFirstPage
+              ? ""
+              : styles.right
+            : isFirstPage
+            ? styles.right
+            : "",
+          `page-${currentPage}`
+        )}
 
         {!isFirstPage &&
           getPage(
@@ -101,22 +107,14 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
             `${isRtl ? "" : styles.right} ${styles.back}`,
             `page-${currentPage - 2}`
           )}
-        {!isLastPage && (
-          <AnimatedPage
-            key={`page-${currentPage + 1}`}
-            bookStyle={bookStyle}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            isRtl={isRtl}
-            isFirstPage={isFirstPage}
-            isLastPage={isLastPage}
-            className={`${styles.page} ${isRtl ? "" : styles.right} ${
+        {!isLastPage &&
+          getAnimatedPage(
+            pages[currentPage + 1],
+            `${isRtl ? "" : styles.right} ${
               isFirstPage ? styles.backOfFront : ""
-            }`}
-          >
-            {pages[currentPage + 1]}
-          </AnimatedPage>
-        )}
+            }`,
+            `page-${currentPage + 1}`
+          )}
         {!isLastPage &&
           getPage(
             pages[currentPage + 2],
@@ -135,12 +133,27 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
     );
   };
 
+  const handleScroll = () => {
+    setScrollPosition(() => window.scrollY);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const renderPages = () => {
     const isLastPage = currentPage === totalPages - 1;
     const isFirstPage = currentPage === 0;
 
     if (isSinglePage) {
-      return getPage(pages[currentPage], styles.onePage, `page-${currentPage}`);
+      return getAnimatedPage(
+        pages[currentPage],
+        styles.onePage,
+        `page-${currentPage}`
+      );
     }
 
     return getPagesWithBelow(isLastPage, isFirstPage);
