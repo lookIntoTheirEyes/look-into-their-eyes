@@ -6,6 +6,7 @@ import Controls from "../Controls/Controls";
 import { Page } from "@/lib/model/book";
 import styles from "./NewBook.module.css";
 import TableOfContentsContainer from "../TableOfContents/TableOfContentsContainer";
+import { useBookStyle } from "./useBookStyle";
 
 interface BookProps {
   pagesContent: React.ReactNode[];
@@ -21,10 +22,10 @@ interface BookProps {
 }
 
 const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
+  const { bookContainerRef, bookStyle, isSinglePage } = useBookStyle();
+
   const {
     currentPage,
-    bookStyle,
-    totalPages,
     dragX,
     handleNextPage,
     handlePrevPage,
@@ -32,10 +33,9 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
     handleDragEnd,
     onTap,
     swipeHandlers,
-    bookContainerRef,
     setCurrentPage,
-    isSinglePage,
-  } = useBookLogic({ pagesContent, isRtl, toc });
+    totalPages,
+  } = useBookLogic({ pagesContent, isRtl, toc, isSinglePage, bookStyle });
 
   const tocContainer = toc && (
     <TableOfContentsContainer
@@ -70,6 +70,7 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
       {child}
     </motion.div>
   );
+  console.log("new render", currentPage);
 
   const getPagesWithBelow = (isLastPage = false, isFirstPage = false) => {
     return (
@@ -128,9 +129,7 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
     const isLastPage = currentPage === totalPages - 1;
     const isFirstPage = currentPage === 0;
 
-    const isOnePageMode = isSinglePage();
-
-    if (isOnePageMode) {
+    if (isSinglePage) {
       return getPage(pages[currentPage], styles.onePage, `page-${currentPage}`);
     }
 

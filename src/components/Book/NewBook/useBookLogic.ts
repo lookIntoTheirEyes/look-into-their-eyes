@@ -1,15 +1,21 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
-import { Orientation, Page } from "@/lib/model/book";
+import { Page } from "@/lib/model/book";
 import { PanInfo, TapInfo } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/routing";
+import { BookStyle } from "./useBookStyle";
 
 type PageMouseLocation =
   | "leftPageLeft"
   | "leftPageRight"
   | "rightPageLeft"
   | "rightPageRight";
+
+interface DraggingParams {
+  page: DraggingPage;
+  corner: "top" | "bottom";
+}
 
 type DraggingPage = "left" | "right" | null;
 
@@ -20,27 +26,20 @@ export interface BookLogicParams {
     title: string;
     pages: Page[];
   };
+  isSinglePage: boolean;
+  bookStyle: BookStyle;
 }
 
-export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
+export function useBookLogic({
+  pagesContent,
+  isRtl,
+  toc,
+  bookStyle,
+  isSinglePage,
+}: BookLogicParams) {
+  const totalPages = pagesContent.length + (toc ? 1 : 0);
   const [draggingPage, setDraggingPage] = useState<DraggingPage>(null);
-  const [bookStyle, setBookStyle] = useState<{
-    height: number;
-    width: number;
-    top: number;
-    bottom: number;
-    left: number;
-    right: number;
-    mode: Orientation;
-  }>({
-    height: 0,
-    width: 0,
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    mode: Orientation.LANDSCAPE,
-  });
+
   const [dragX, setDragX] = useState(0);
 
   const searchParams = useSearchParams();
@@ -49,9 +48,6 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
 
   const queryParamPage = +searchParams.get("page")!;
 
-  const bookContainerRef = useRef<HTMLDivElement>(null);
-
-  const totalPages = pagesContent.length + (toc ? 1 : 0);
   const dragThreshold = bookStyle.width / 4;
 
   const pageNum =
@@ -72,71 +68,6 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
     [pathname, router]
   );
 
-  const calculateBookStyle = useCallback(
-    ({
-      width: containerWidth,
-      height: containerHeight,
-      top,
-      left,
-      bottom,
-      right,
-    }: DOMRectReadOnly) => {
-      const aspectRatio = 1.4; // Ideal book aspect ratio
-      const isMobile = containerWidth <= 600;
-
-      let height = 0,
-        width = 0;
-
-      if (isMobile) {
-        height = containerWidth * aspectRatio;
-      } else {
-        height = containerWidth / aspectRatio;
-
-        if (height > containerHeight) {
-          height = containerHeight;
-          width = height * aspectRatio;
-        }
-      }
-
-      setBookStyle({
-        width: width || containerWidth,
-        height,
-        top,
-        left,
-        bottom,
-        right,
-        mode: isMobile ? Orientation.PORTRAIT : Orientation.LANDSCAPE,
-      });
-    },
-    []
-  );
-
-  const handleResize = useCallback(
-    (entries: ResizeObserverEntry[]) => {
-      const entry = entries[0];
-      if (entry.target === bookContainerRef.current) {
-        const rect = bookContainerRef.current?.getBoundingClientRect();
-        const { contentRect } = entry;
-        const { width, height } = contentRect;
-        const top = rect.top + contentRect.top;
-        const bottom = top + height;
-        const left = rect.left + contentRect.left;
-        const right = left + width;
-
-        calculateBookStyle({
-          ...contentRect,
-          ...{ width, height, bottom, top, left, right },
-        });
-      }
-    },
-    [calculateBookStyle]
-  );
-
-  const isSinglePage = useCallback(
-    () => bookStyle.mode === Orientation.PORTRAIT,
-    [bookStyle.mode]
-  );
-
   const updatePage = useCallback(
     (pageNum: number) => {
       setCurrentPage((prev) => prev + pageNum);
@@ -146,7 +77,7 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
   );
 
   const handleNextPage = useCallback(() => {
-    if (!isSinglePage() && currentPage % 2 === 1 && currentPage) {
+    if (!isSinglePage && currentPage % 2 === 1 && currentPage) {
       if (currentPage + 1 < totalPages) updatePage(2);
     } else {
       if (currentPage < totalPages - 1) updatePage(1);
@@ -155,7 +86,7 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
 
   const handlePrevPage = useCallback(() => {
     if (
-      !isSinglePage() &&
+      !isSinglePage &&
       currentPage % 2 === 1 &&
       currentPage !== 1 &&
       currentPage !== totalPages
@@ -297,34 +228,16 @@ export function useBookLogic({ pagesContent, isRtl, toc }: BookLogicParams) {
     trackTouch: true,
   });
 
-  useEffect(() => {
-    const container = bookContainerRef.current; // Capture the current value of the ref
-    const resizeObserver = new ResizeObserver(handleResize);
-
-    if (container) {
-      resizeObserver.observe(container);
-    }
-
-    return () => {
-      if (container) {
-        resizeObserver.unobserve(container); // Use the captured container reference
-      }
-    };
-  }, [handleResize]);
-
   return {
-    currentPage,
-    bookStyle,
     totalPages,
+    currentPage,
+    setCurrentPage: updatePage,
     dragX,
     handleNextPage,
     handlePrevPage,
     handleDrag,
     handleDragEnd,
     swipeHandlers,
-    bookContainerRef,
     onTap,
-    isSinglePage,
-    setCurrentPage: updatePage,
   };
 }
