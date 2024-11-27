@@ -40,7 +40,7 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
       noContentAmount={2}
       rtl={isRtl}
       goToPage={(pageNum: number) => {
-        return setCurrentPage(pageNum % 2 === 0 ? pageNum - 1 : pageNum);
+        return setCurrentPage((pageNum % 2 === 0 ? pageNum - 1 : pageNum) - 1);
       }}
       toc={toc}
     />

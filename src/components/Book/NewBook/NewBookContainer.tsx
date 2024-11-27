@@ -35,7 +35,7 @@ export default async function NewBookContainer({
         <PageContent
           cta={pageCta}
           details={content}
-          pageNum={pageNum(i)}
+          pageNum={pageNum(i - 1)}
           title={storyTitle}
         />
       </Page>
