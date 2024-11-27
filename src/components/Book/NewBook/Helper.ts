@@ -279,6 +279,11 @@ function getDirectionByPoint(
   return isRtl ? FlipDirection.BACK : FlipDirection.FORWARD;
 }
 
+export const isLeftPage = (x: number, bookStyle: BookStyle) => {
+  const pageWidth = bookStyle.width / 2;
+  return x >= bookStyle.left && x <= bookStyle.left + pageWidth;
+};
+
 const helper = {
   handleNull,
   GetCordsFromTwoPoint,
@@ -291,6 +296,7 @@ const helper = {
   GetAngleBetweenTwoLine,
   LimitPointToCircle,
   getDirectionByPoint,
+  isLeftPage,
 };
 
 export default helper;

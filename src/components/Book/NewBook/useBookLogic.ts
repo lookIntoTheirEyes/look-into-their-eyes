@@ -4,7 +4,6 @@ import { PanInfo, TapInfo } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { BookStyle } from "./useBookStyle";
-import { isLeftPage as isLeftPageFunc } from "./utils";
 import Helper from "./Helper";
 import { FlipCorner, FlipDirection } from "./model";
 
@@ -15,15 +14,11 @@ type PageMouseLocation =
   | "rightPageRight";
 
 interface DraggingParams {
-  page: DraggingPage;
   corner: FlipCorner | null;
   direction: FlipDirection | null;
 }
 
-type DraggingPage = "left" | "right" | null;
-
 const initialDraggingParams: DraggingParams = {
-  page: null,
   corner: null,
   direction: null,
 };
@@ -102,8 +97,7 @@ export function useBookLogic({
   }, [isSinglePage, currentPage, totalPages, updatePage]);
 
   const getXClickLocation = useCallback(
-    (x: number): PageMouseLocation => {
-      const isLeftPage = isLeftPageFunc(x, bookStyle);
+    (x: number, isLeftPage: boolean): PageMouseLocation => {
       if (isLeftPage) {
         return x <= bookStyle.left + dragThreshold
           ? "leftPageLeft"
@@ -118,9 +112,7 @@ export function useBookLogic({
   );
 
   const setFlipOnDrag = useCallback(
-    (clickLocation: PageMouseLocation) => {
-      const isLeftDragging = draggingParams.page === "left";
-
+    (clickLocation: PageMouseLocation, isLeftDragging: boolean) => {
       if (isRtl) {
         if (isLeftDragging) {
           if (clickLocation !== "leftPageLeft") {
@@ -143,7 +135,7 @@ export function useBookLogic({
         }
       }
     },
-    [draggingParams.page, handleNextPage, handlePrevPage, isRtl]
+    [handleNextPage, handlePrevPage, isRtl]
   );
 
   const setFlipOnClick = useCallback(
@@ -174,32 +166,33 @@ export function useBookLogic({
 
   const handleFlipPageOnMouseGesture = useCallback(
     (x: number, isDrag?: boolean) => {
-      const clickLocation = getXClickLocation(x);
+      const isLeftPage = Helper.isLeftPage(x, bookStyle);
+      const clickLocation = getXClickLocation(x, isLeftPage);
       if (!isDrag) {
         setFlipOnClick(clickLocation);
       } else {
-        setFlipOnDrag(clickLocation);
+        setFlipOnDrag(clickLocation, isLeftPage);
       }
     },
-    [getXClickLocation, setFlipOnClick, setFlipOnDrag]
+    [bookStyle, getXClickLocation, setFlipOnClick, setFlipOnDrag]
   );
 
   const onTap = useCallback(
     (event: MouseEvent, { point: { x } }: TapInfo) => {
       const target = event.target as HTMLElement;
 
-      if (draggingParams.page || target.tagName === "BUTTON") {
+      if (draggingParams.direction || target.tagName === "BUTTON") {
         return;
       }
 
       handleFlipPageOnMouseGesture(x);
     },
-    [draggingParams.page, handleFlipPageOnMouseGesture]
+    [draggingParams.direction, handleFlipPageOnMouseGesture]
   );
 
   const handleDrag = useCallback(
     (_: MouseEvent, { point: { x, y } }: PanInfo) => {
-      if (draggingParams.page) {
+      if (draggingParams.direction) {
         return;
       }
 
@@ -209,12 +202,11 @@ export function useBookLogic({
         y >= bookStyle.height / 2 ? FlipCorner.BOTTOM : FlipCorner.TOP;
 
       setDraggingParams({
-        page: isLeftPageFunc(x, bookStyle) ? "left" : "right",
         corner: flipCorner,
         direction,
       });
     },
-    [bookStyle, draggingParams.page, isRtl]
+    [bookStyle, draggingParams.direction, isRtl]
   );
 
   const handleDragEnd = useCallback(
