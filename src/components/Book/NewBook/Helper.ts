@@ -1,11 +1,4 @@
-import { Orientation } from "@/lib/model/book";
-import {
-  FlipDirection,
-  PageMouseLocation,
-  Point,
-  Rect,
-  Segment,
-} from "./model";
+import { PageMouseLocation, Point, Rect, Segment } from "./model";
 import { BookStyle } from "./useBookStyle";
 
 /**
@@ -265,26 +258,6 @@ function handleNull(point: Point) {
   return point;
 }
 
-function getDirectionByPoint(
-  touchPos: Point,
-  { left, top, width, height, mode }: BookStyle,
-  isRtl = false
-): FlipDirection {
-  const adjustedPos = handleNull(touchPos);
-
-  const rect = { left, top, width, height, pageWidth: width / 2 };
-
-  if (mode === Orientation.PORTRAIT) {
-    if (adjustedPos.x - rect.pageWidth <= rect.width / 5) {
-      return isRtl ? FlipDirection.FORWARD : FlipDirection.BACK;
-    }
-  } else if (adjustedPos.x < rect.width / 2) {
-    return isRtl ? FlipDirection.FORWARD : FlipDirection.BACK;
-  }
-
-  return isRtl ? FlipDirection.BACK : FlipDirection.FORWARD;
-}
-
 const isLeftPage = (x: number, bookStyle: BookStyle) => {
   const pageWidth = bookStyle.width / 2;
   return x >= bookStyle.left && x <= bookStyle.left + pageWidth;
@@ -318,7 +291,6 @@ const Helper = {
   GetRotatedPoint,
   GetAngleBetweenTwoLine,
   LimitPointToCircle,
-  getDirectionByPoint,
   isLeftPage,
   getXClickLocation,
 };

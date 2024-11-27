@@ -54,13 +54,21 @@ const AnimatedPage: React.FC<Props> = ({
   };
 
   const handleDragStart = (x: number, y: number) => {
-    const direction = Helper.getDirectionByPoint({ x, y }, bookStyle, isRtl);
-    const flipCorner: FlipCorner =
+    const corner: FlipCorner =
       y >= bookStyle.height / 2 ? FlipCorner.BOTTOM : FlipCorner.TOP;
-    setDraggingParams({
-      corner: flipCorner,
-      direction,
+    setDraggingParams((prev) => {
+      return { ...prev, ...{ corner } };
     });
+  };
+
+  const handleDrag = (directionArr: [number, number]) => {
+    if (!draggingParams.direction && directionArr[0]) {
+      const direction = getFlipDirection(directionArr[0], isRtl);
+
+      setDraggingParams((prev) => {
+        return { ...prev, ...{ direction } };
+      });
+    }
   };
 
   const handleDragEnd = (x: number) => {
@@ -70,7 +78,6 @@ const AnimatedPage: React.FC<Props> = ({
     ) {
       dragEndHelper({
         x,
-
         bookStyle,
         isRtl,
         handleNextPage,
@@ -98,6 +105,7 @@ const AnimatedPage: React.FC<Props> = ({
         if (!state.dragging) {
           return;
         }
+        handleDrag(state.direction);
       },
 
       onDragEnd: ({ event }) => {
@@ -177,7 +185,6 @@ function setFlipOnDrag(
 
 function dragEndHelper({
   x,
-
   bookStyle,
   isRtl,
   handleNextPage,
@@ -207,4 +214,12 @@ function dragEndHelper({
     handleNextPage,
     handlePrevPage
   );
+}
+
+function getFlipDirection(x: number, isRtl: boolean): FlipDirection {
+  if (isRtl) {
+    return x < 0 ? FlipDirection.BACK : FlipDirection.FORWARD;
+  } else {
+    return x > 0 ? FlipDirection.BACK : FlipDirection.FORWARD;
+  }
 }
