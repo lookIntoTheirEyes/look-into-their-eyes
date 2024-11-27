@@ -61,3 +61,9 @@ export interface PageRect {
  * Type representing a line segment contains two points: start and end
  */
 export type Segment = [Point, Point];
+
+export type PageMouseLocation =
+  | "leftPageLeft"
+  | "leftPageRight"
+  | "rightPageLeft"
+  | "rightPageRight";

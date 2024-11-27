@@ -1,5 +1,11 @@
 import { Orientation } from "@/lib/model/book";
-import { FlipDirection, Point, Rect, Segment } from "./model";
+import {
+  FlipDirection,
+  PageMouseLocation,
+  Point,
+  Rect,
+  Segment,
+} from "./model";
 import { BookStyle } from "./useBookStyle";
 
 /**
@@ -279,12 +285,29 @@ function getDirectionByPoint(
   return isRtl ? FlipDirection.BACK : FlipDirection.FORWARD;
 }
 
-export const isLeftPage = (x: number, bookStyle: BookStyle) => {
+const isLeftPage = (x: number, bookStyle: BookStyle) => {
   const pageWidth = bookStyle.width / 2;
   return x >= bookStyle.left && x <= bookStyle.left + pageWidth;
 };
 
-const helper = {
+const getXClickLocation = (
+  x: number,
+  isLeftPage: boolean,
+  dragThreshold: number,
+  bookStyle: BookStyle
+): PageMouseLocation => {
+  if (isLeftPage) {
+    return x <= bookStyle.left + dragThreshold
+      ? "leftPageLeft"
+      : "leftPageRight";
+  }
+
+  return bookStyle.left + bookStyle.width - x <= dragThreshold
+    ? "rightPageRight"
+    : "rightPageLeft";
+};
+
+const Helper = {
   handleNull,
   GetCordsFromTwoPoint,
   GetDistanceBetweenTwoPoint,
@@ -297,6 +320,7 @@ const helper = {
   LimitPointToCircle,
   getDirectionByPoint,
   isLeftPage,
+  getXClickLocation,
 };
 
-export default helper;
+export default Helper;

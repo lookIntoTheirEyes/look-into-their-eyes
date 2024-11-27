@@ -7,6 +7,7 @@ import { Page } from "@/lib/model/book";
 import styles from "./NewBook.module.css";
 import TableOfContentsContainer from "../TableOfContents/TableOfContentsContainer";
 import { useBookStyle } from "./useBookStyle";
+import AnimatedPage from "./AnimatedPage";
 
 interface BookProps {
   pagesContent: React.ReactNode[];
@@ -28,13 +29,9 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
     currentPage,
     handleNextPage,
     handlePrevPage,
-    handleDrag,
-    handleDragEnd,
-    onTap,
-
     setCurrentPage,
     totalPages,
-  } = useBookLogic({ pagesContent, isRtl, toc, isSinglePage, bookStyle });
+  } = useBookLogic({ pagesContent, toc, isSinglePage });
 
   const tocContainer = toc && (
     <TableOfContentsContainer
@@ -57,34 +54,40 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
 
   const getPage = (child: React.ReactNode, className: string, key: string) => (
     <motion.div
-      onPan={handleDrag}
-      onPanEnd={handleDragEnd}
-      onTap={onTap}
       className={`${styles.page} ${className} `}
       key={key}
-      initial={{ opacity: 0, rotateY: -90 }}
-      animate={{ opacity: 1, rotateY: 0 }}
-      exit={{ opacity: 0, rotateY: 90 }}
+      // initial={{ opacity: 0, rotateY: -90 }}
+      // animate={{ opacity: 1, rotateY: 0 }}
+      // exit={{ opacity: 0, rotateY: 90 }}
     >
       {child}
     </motion.div>
   );
-  // console.log("new render", currentPage);
 
   const getPagesWithBelow = (isLastPage = false, isFirstPage = false) => {
     return (
       <>
-        {getPage(
-          pages[currentPage],
-          isRtl
-            ? isFirstPage
-              ? ""
-              : styles.right
-            : isFirstPage
-            ? styles.right
-            : "",
-          `page-${currentPage}`
-        )}
+        <AnimatedPage
+          key={`page-${currentPage}`}
+          handleNextPage={handleNextPage}
+          handlePrevPage={handlePrevPage}
+          isRtl={isRtl}
+          isFirstPage={isFirstPage}
+          isLastPage={isLastPage}
+          bookStyle={bookStyle}
+          className={`${styles.page} ${
+            isRtl
+              ? isFirstPage
+                ? ""
+                : styles.right
+              : isFirstPage
+              ? styles.right
+              : ""
+          }`}
+        >
+          {pages[currentPage]}
+        </AnimatedPage>
+
         {!isFirstPage &&
           getPage(
             pages[currentPage - 1],
@@ -98,14 +101,22 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
             `${isRtl ? "" : styles.right} ${styles.back}`,
             `page-${currentPage - 2}`
           )}
-        {!isLastPage &&
-          getPage(
-            pages[currentPage + 1],
-            `${isRtl ? "" : styles.right} ${
+        {!isLastPage && (
+          <AnimatedPage
+            key={`page-${currentPage + 1}`}
+            bookStyle={bookStyle}
+            handleNextPage={handleNextPage}
+            handlePrevPage={handlePrevPage}
+            isRtl={isRtl}
+            isFirstPage={isFirstPage}
+            isLastPage={isLastPage}
+            className={`${styles.page} ${isRtl ? "" : styles.right} ${
               isFirstPage ? styles.backOfFront : ""
-            }`,
-            `page-${currentPage + 1}`
-          )}
+            }`}
+          >
+            {pages[currentPage + 1]}
+          </AnimatedPage>
+        )}
         {!isLastPage &&
           getPage(
             pages[currentPage + 2],

@@ -31,6 +31,7 @@
   left: 0;
   width: 50%;
   height: 100%;
+  touch-action: none;
 
   &.right:not(.onePage) {
     left: 50%;
