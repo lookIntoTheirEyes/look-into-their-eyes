@@ -5,9 +5,7 @@ export interface BookStyle {
   height: number;
   width: number;
   top: number;
-  bottom: number;
   left: number;
-  right: number;
   mode: Orientation;
 }
 
@@ -18,9 +16,7 @@ export function useBookStyle() {
     height: 0,
     width: 0,
     top: 0,
-    bottom: 0,
     left: 0,
-    right: 0,
     mode: Orientation.LANDSCAPE,
   });
 
@@ -30,8 +26,6 @@ export function useBookStyle() {
       height: containerHeight,
       top,
       left,
-      bottom,
-      right,
     }: DOMRectReadOnly) => {
       const aspectRatio = 1.4; // Ideal book aspect ratio
       const isMobile = containerWidth <= 600;
@@ -55,8 +49,6 @@ export function useBookStyle() {
         height,
         top,
         left,
-        bottom,
-        right,
         mode: isMobile ? Orientation.PORTRAIT : Orientation.LANDSCAPE,
       });
     },
@@ -71,13 +63,11 @@ export function useBookStyle() {
         const { contentRect } = entry;
         const { width, height } = contentRect;
         const top = rect.top + contentRect.top;
-        const bottom = top + height;
         const left = rect.left + contentRect.left;
-        const right = left + width;
 
         calculateBookStyle({
           ...contentRect,
-          ...{ width, height, bottom, top, left, right },
+          ...{ width, height, top, left },
         });
       }
     },

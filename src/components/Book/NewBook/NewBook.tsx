@@ -26,13 +26,12 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
 
   const {
     currentPage,
-    dragX,
     handleNextPage,
     handlePrevPage,
     handleDrag,
     handleDragEnd,
     onTap,
-    swipeHandlers,
+
     setCurrentPage,
     totalPages,
   } = useBookLogic({ pagesContent, isRtl, toc, isSinglePage, bookStyle });
@@ -70,7 +69,7 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
       {child}
     </motion.div>
   );
-  console.log("new render", currentPage);
+  // console.log("new render", currentPage);
 
   const getPagesWithBelow = (isLastPage = false, isFirstPage = false) => {
     return (
@@ -144,7 +143,6 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
           height: `${bookStyle.height}px`,
         }}
         className={styles.book}
-        ref={swipeHandlers.ref}
       >
         <AnimatePresence>{renderPages()}</AnimatePresence>
       </div>

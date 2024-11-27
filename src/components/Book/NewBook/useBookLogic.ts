@@ -1,10 +1,12 @@
 import { useState, useCallback } from "react";
-import { useSwipeable } from "react-swipeable";
 import { Page } from "@/lib/model/book";
 import { PanInfo, TapInfo } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { BookStyle } from "./useBookStyle";
+import { isLeftPage as isLeftPageFunc } from "./utils";
+import Helper from "./Helper";
+import { FlipCorner, FlipDirection } from "./model";
 
 type PageMouseLocation =
   | "leftPageLeft"
@@ -14,10 +16,17 @@ type PageMouseLocation =
 
 interface DraggingParams {
   page: DraggingPage;
-  corner: "top" | "bottom";
+  corner: FlipCorner | null;
+  direction: FlipDirection | null;
 }
 
 type DraggingPage = "left" | "right" | null;
+
+const initialDraggingParams: DraggingParams = {
+  page: null,
+  corner: null,
+  direction: null,
+};
 
 export interface BookLogicParams {
   pagesContent: React.ReactNode[];
@@ -37,19 +46,11 @@ export function useBookLogic({
   bookStyle,
   isSinglePage,
 }: BookLogicParams) {
-  const totalPages = pagesContent.length + (toc ? 1 : 0);
-  const [draggingPage, setDraggingPage] = useState<DraggingPage>(null);
-
-  const [dragX, setDragX] = useState(0);
-
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-
   const queryParamPage = +searchParams.get("page")!;
-
-  const dragThreshold = bookStyle.width / 4;
-
+  const totalPages = pagesContent.length + (toc ? 1 : 0);
   const pageNum =
     (queryParamPage <= 0 || queryParamPage > totalPages ? 1 : queryParamPage) -
     1;
@@ -57,6 +58,9 @@ export function useBookLogic({
   const [currentPage, setCurrentPage] = useState(
     pageNum && pageNum % 2 === 0 ? pageNum - 1 : pageNum
   );
+  const [draggingParams, setDraggingParams] = useState(initialDraggingParams);
+
+  const dragThreshold = bookStyle.width / 4;
 
   const updateUrlWithSearchParams = useCallback(
     (pageNum: number) => {
@@ -97,33 +101,25 @@ export function useBookLogic({
     }
   }, [isSinglePage, currentPage, totalPages, updatePage]);
 
-  const getIsLeftPage = useCallback(
-    (x: number) => {
-      const pageWidth = bookStyle.width / 2;
-      return x >= bookStyle.left && x <= bookStyle.left + pageWidth;
-    },
-    [bookStyle.width, bookStyle.left]
-  );
-
   const getXClickLocation = useCallback(
     (x: number): PageMouseLocation => {
-      const isLeftPage = getIsLeftPage(x);
+      const isLeftPage = isLeftPageFunc(x, bookStyle);
       if (isLeftPage) {
         return x <= bookStyle.left + dragThreshold
           ? "leftPageLeft"
           : "leftPageRight";
       }
 
-      return bookStyle.right - x <= dragThreshold
+      return bookStyle.left + bookStyle.width - x <= dragThreshold
         ? "rightPageRight"
         : "rightPageLeft";
     },
-    [getIsLeftPage, bookStyle.left, bookStyle.right, dragThreshold]
+    [bookStyle, dragThreshold]
   );
 
   const setFlipOnDrag = useCallback(
     (clickLocation: PageMouseLocation) => {
-      const isLeftDragging = draggingPage === "left";
+      const isLeftDragging = draggingParams.page === "left";
 
       if (isRtl) {
         if (isLeftDragging) {
@@ -147,7 +143,7 @@ export function useBookLogic({
         }
       }
     },
-    [draggingPage, handleNextPage, handlePrevPage, isRtl]
+    [draggingParams.page, handleNextPage, handlePrevPage, isRtl]
   );
 
   const setFlipOnClick = useCallback(
@@ -177,9 +173,8 @@ export function useBookLogic({
   );
 
   const handleFlipPageOnMouseGesture = useCallback(
-    (x: number, isDrag = false) => {
+    (x: number, isDrag?: boolean) => {
       const clickLocation = getXClickLocation(x);
-
       if (!isDrag) {
         setFlipOnClick(clickLocation);
       } else {
@@ -193,51 +188,64 @@ export function useBookLogic({
     (event: MouseEvent, { point: { x } }: TapInfo) => {
       const target = event.target as HTMLElement;
 
-      if (draggingPage || target.tagName === "BUTTON") {
+      if (draggingParams.page || target.tagName === "BUTTON") {
         return;
       }
 
       handleFlipPageOnMouseGesture(x);
     },
-    [draggingPage, handleFlipPageOnMouseGesture]
+    [draggingParams.page, handleFlipPageOnMouseGesture]
   );
 
   const handleDrag = useCallback(
-    (_: MouseEvent, info: PanInfo) => {
-      if (draggingPage) {
+    (_: MouseEvent, { point: { x, y } }: PanInfo) => {
+      if (draggingParams.page) {
         return;
       }
 
-      setDraggingPage(getIsLeftPage(info.point.x) ? "left" : "right");
+      const direction = Helper.getDirectionByPoint({ x, y }, bookStyle, isRtl);
+
+      const flipCorner: FlipCorner =
+        y >= bookStyle.height / 2 ? FlipCorner.BOTTOM : FlipCorner.TOP;
+
+      setDraggingParams({
+        page: isLeftPageFunc(x, bookStyle) ? "left" : "right",
+        corner: flipCorner,
+        direction,
+      });
     },
-    [draggingPage, getIsLeftPage]
+    [bookStyle, draggingParams.page, isRtl]
   );
 
   const handleDragEnd = useCallback(
     (_: Event, info: PanInfo) => {
-      handleFlipPageOnMouseGesture(info.point.x, true);
-      setDraggingPage(null);
-    },
-    [handleFlipPageOnMouseGesture]
-  );
+      const direction = draggingParams.direction;
 
-  const swipeHandlers = useSwipeable({
-    onSwipedLeft: handleNextPage,
-    onSwipedRight: handlePrevPage,
-    trackMouse: true,
-    trackTouch: true,
-  });
+      if (
+        (direction === FlipDirection.FORWARD && currentPage !== totalPages) ||
+        (direction === FlipDirection.BACK && currentPage)
+      ) {
+        handleFlipPageOnMouseGesture(info.point.x, true);
+      }
+
+      setDraggingParams(initialDraggingParams);
+    },
+    [
+      currentPage,
+      draggingParams.direction,
+      handleFlipPageOnMouseGesture,
+      totalPages,
+    ]
+  );
 
   return {
     totalPages,
     currentPage,
     setCurrentPage: updatePage,
-    dragX,
     handleNextPage,
     handlePrevPage,
     handleDrag,
     handleDragEnd,
-    swipeHandlers,
     onTap,
   };
 }
