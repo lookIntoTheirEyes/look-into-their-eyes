@@ -1,0 +1,47 @@
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  touch-action: none;
+
+  &.right:not(.onePage) {
+    left: 50%;
+  }
+
+  &.onePage {
+    width: 100%;
+  }
+}
+
+.front {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  left: 0;
+
+  &.onePage {
+    width: 100%;
+  }
+
+  &.right:not(.onePage) {
+    left: 50%;
+  }
+  & > .page {
+    width: 100%;
+    z-index: 5;
+
+    &.below {
+      z-index: 4;
+    }
+    &.back {
+      z-index: 3;
+    }
+
+    &.right:not(.onePage) {
+      left: 0;
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { motion, useMotionValue } from "framer-motion";
+import { animated, SpringValue, to } from "react-spring";
 import { useRef, useState } from "react";
 import { useGesture } from "@use-gesture/react";
 import Helper from "../Helper";
@@ -145,7 +146,7 @@ const AnimatedPage: React.FC<Props> = ({
       },
 
       onDragEnd: ({ event }) => {
-        console.log(event);
+        // console.log(event);
 
         handleDragEnd((event as PointerEvent).x);
       },
@@ -159,13 +160,13 @@ const AnimatedPage: React.FC<Props> = ({
   );
 
   return (
-    <motion.div
+    <animated.div
       //   style={{ rotateY: `${angle * 2}deg` }}
       ref={ref}
       className={`${className} animated`}
     >
       {children}
-    </motion.div>
+    </animated.div>
   );
 };
 export default AnimatedPage;
@@ -248,8 +249,8 @@ function dragEndHelper({
     dragThreshold,
     bookStyle
   );
-  console.log("clickLocation", clickLocation);
-  console.log("isLeftDragging", isLeftPage);
+  // console.log("clickLocation", clickLocation);
+  // console.log("isLeftDragging", isLeftPage);
 
   setFlipOnDrag(
     clickLocation,

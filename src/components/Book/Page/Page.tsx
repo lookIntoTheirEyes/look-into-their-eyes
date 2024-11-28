@@ -10,10 +10,8 @@ interface PageProps {
 
 const Page = forwardRef<HTMLDivElement, PageProps>(
   ({ pageNum, rtl, children }, ref) => {
-    const isRightPage = pageNum % 2 === 0 ? rtl : !rtl;
-
     return (
-      <div className={`bookPage ${isRightPage ? "right" : "left"}`} ref={ref}>
+      <div className='bookPage' ref={ref}>
         <div className='pageContent'>
           {children}
           <div className={styles.pageFooter}>{pageNum}</div>
