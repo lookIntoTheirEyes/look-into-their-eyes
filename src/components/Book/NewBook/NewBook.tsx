@@ -7,7 +7,7 @@ import { Page } from "@/lib/model/book";
 import styles from "./NewBook.module.css";
 import TableOfContentsContainer from "../TableOfContents/TableOfContentsContainer";
 import { useBookStyle } from "./useBookStyle";
-import AnimatedPage from "./AnimatedPage";
+import AnimatedPage from "./AnimatedPages/AnimatedPage";
 
 interface BookProps {
   pagesContent: React.ReactNode[];

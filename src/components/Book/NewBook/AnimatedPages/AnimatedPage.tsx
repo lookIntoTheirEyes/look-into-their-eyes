@@ -1,20 +1,20 @@
 import { motion, useMotionValue } from "framer-motion";
 import { useRef, useState } from "react";
 import { useGesture } from "@use-gesture/react";
-import Helper from "./Helper";
-import { BookStyle } from "./useBookStyle";
-import { FlipCorner, FlipDirection, PageMouseLocation } from "./model";
+import Helper from "../Helper";
+import { BookStyle } from "../useBookStyle";
+import { FlipCorner, FlipDirection, PageMouseLocation } from "../model";
 
 interface DraggingParams {
   corner: FlipCorner | null;
   direction: FlipDirection | null;
-  page: { x: number; y: number };
+  page: { x: number; y: number; isLeft: boolean };
 }
 
 const initialDraggingParams: DraggingParams = {
   corner: null,
   direction: null,
-  page: { x: 0, y: 0 },
+  page: { x: 0, y: 0, isLeft: false },
 };
 
 interface Props {
@@ -43,10 +43,10 @@ const AnimatedPage: React.FC<Props> = ({
 }) => {
   const [draggingParams, setDraggingParams] = useState(initialDraggingParams);
 
-  const [page, setPage] = useState({ x: 0, y: 0 });
+  const [{ angle }, setPage] = useState({ angle: 0 });
 
-  const x = useMotionValue(page.x);
-  const y = useMotionValue(page.y);
+  //   const x = useMotionValue(page.x);
+  //   const y = useMotionValue(page.y);
 
   const ref = useRef<HTMLDivElement>(null);
   const dragThreshold = bookStyle.width / 4;
@@ -65,18 +65,42 @@ const AnimatedPage: React.FC<Props> = ({
   const handleDragStart = (x: number, y: number) => {
     const corner: FlipCorner =
       y >= bookStyle.height / 2 ? FlipCorner.BOTTOM : FlipCorner.TOP;
+    const isLeftPage = Helper.isLeftPage(x, bookStyle);
     setDraggingParams((prev) => {
-      return { ...prev, ...{ corner } };
+      return {
+        ...prev,
+        ...{ corner, page: { ...prev.page, isLeft: isLeftPage } },
+      };
     });
   };
 
-  const handleDrag = (directionArr: [number, number]) => {
+  const handleDrag = (
+    directionArr: [number, number],
+    [x, y]: [x: number, y: number]
+  ) => {
     if (!draggingParams.direction && directionArr[0]) {
       const direction = getFlipDirection(directionArr[0], isRtl);
 
       setDraggingParams((prev) => {
         return { ...prev, ...{ direction } };
       });
+    }
+
+    // console.log("x", x);
+    // console.log("isLeftPage", isLeftPage);
+    // console.log("isback", draggingParams.direction === FlipDirection.BACK);
+
+    if (draggingParams.direction) {
+      //   const progress = FlipCalculation.getFlippingProgress(
+      //     x - bookStyle.width / 2,
+      //     bookStyle.width / 2
+      //   );
+      //   const angle = FlipCalculation.getAngle(
+      //     draggingParams.direction,
+      //     progress
+      //   );
+      //   console.log("angle", progress, angle);
+      //   setPage({ angle });
     }
   };
 
@@ -92,9 +116,11 @@ const AnimatedPage: React.FC<Props> = ({
         handleNextPage,
         handlePrevPage,
         dragThreshold,
+        isLeftPage: draggingParams.page.isLeft,
       });
     }
     setDraggingParams(initialDraggingParams);
+    setPage({ angle: 0 });
   };
 
   useGesture(
@@ -114,11 +140,13 @@ const AnimatedPage: React.FC<Props> = ({
         if (!state.dragging) {
           return;
         }
-        handleDrag(state.direction);
+        handleDrag(state.direction, state.xy);
         // const y = state.xy[1] + scrollPosition
       },
 
       onDragEnd: ({ event }) => {
+        console.log(event);
+
         handleDragEnd((event as PointerEvent).x);
       },
     },
@@ -131,7 +159,11 @@ const AnimatedPage: React.FC<Props> = ({
   );
 
   return (
-    <motion.div ref={ref} className={`${className} animated`}>
+    <motion.div
+      //   style={{ rotateY: `${angle * 2}deg` }}
+      ref={ref}
+      className={`${className} animated`}
+    >
       {children}
     </motion.div>
   );
@@ -200,6 +232,7 @@ function dragEndHelper({
   handleNextPage,
   handlePrevPage,
   dragThreshold,
+  isLeftPage,
 }: {
   x: number;
   bookStyle: BookStyle;
@@ -207,14 +240,16 @@ function dragEndHelper({
   handleNextPage: () => void;
   handlePrevPage: () => void;
   dragThreshold: number;
+  isLeftPage: boolean;
 }) {
-  const isLeftPage = Helper.isLeftPage(x, bookStyle);
   const clickLocation = Helper.getXClickLocation(
     x,
     isLeftPage,
     dragThreshold,
     bookStyle
   );
+  console.log("clickLocation", clickLocation);
+  console.log("isLeftDragging", isLeftPage);
 
   setFlipOnDrag(
     clickLocation,
