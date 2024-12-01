@@ -49,6 +49,8 @@ export function useBookLogic({
   );
 
   const handleNextPage = useCallback(() => {
+    console.log("handleNextPage");
+
     if (!isSinglePage && currentPage % 2 === 1 && currentPage) {
       if (currentPage + 1 < totalPages) updatePage(2);
     } else {
@@ -57,6 +59,7 @@ export function useBookLogic({
   }, [isSinglePage, currentPage, totalPages, updatePage]);
 
   const handlePrevPage = useCallback(() => {
+    console.log("handlePrevPage");
     if (
       !isSinglePage &&
       currentPage % 2 === 1 &&

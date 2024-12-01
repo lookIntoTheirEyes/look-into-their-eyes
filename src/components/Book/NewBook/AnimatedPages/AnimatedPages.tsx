@@ -1,11 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
 import { BookStyle } from "../useBookStyle";
-import AnimatedPage from "./AnimatedPage";
 import styles from "./AnimatedPages.module.css";
-import { AnimatePresence, motion } from "framer-motion";
-import { animated, SpringValue, to } from "react-spring";
-import { log } from "console";
+import Pages from "./Pages";
+
+interface PageParams {
+  className: string;
+  key: string;
+  view: React.ReactNode;
+}
+
+export interface PageData {
+  main: PageParams;
+  back: PageParams;
+  below?: PageParams;
+}
 
 interface AnimatedPagesProps {
   bookStyle: BookStyle;
@@ -28,6 +37,10 @@ const AnimatedPages: React.FC<AnimatedPagesProps> = ({
   isSinglePage,
   totalPages,
 }) => {
+  console.log("currentPage", currentPage);
+
+  const isLastPage = currentPage === totalPages - 1;
+  const isFirstPage = currentPage === 0;
   const [scrollPosition, setScrollPosition] = useState(0);
 
   const handleScroll = () => {
@@ -41,9 +54,13 @@ const AnimatedPages: React.FC<AnimatedPagesProps> = ({
     };
   }, []);
 
-  const getAnimatedPage = (pageNum: number) => {
-    const isFirstPage = pageNum === 0;
-    const isLastPage = pageNum === totalPages - 1;
+  const getPageData = (
+    pageNum: number
+  ): {
+    main: PageParams;
+    back: PageParams;
+    below?: PageParams;
+  } => {
     const isLeftPage = getIsLeftPage(pageNum, isRtl);
 
     const className = getAnimatedClassName(isSinglePage, isLeftPage);
@@ -61,76 +78,51 @@ const AnimatedPages: React.FC<AnimatedPagesProps> = ({
       true
     );
 
-    return (
-      <>
-        <animated.div className={`${styles.front}  ${className}`}>
-          <AnimatedPage
-            key={`page-${pageNum}`}
-            bookStyle={bookStyle}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            isRtl={isRtl}
-            isFirstPage={isFirstPage}
-            isLastPage={isLastPage}
-            scrollPosition={scrollPosition}
-            className={`${styles.page} ${className} `}
-          >
-            {pages[pageNum]}
-          </AnimatedPage>
-          {getBackPage(backPageNum, isLeftPage)}
-        </animated.div>
-        {belowPageNum > 0 &&
-          belowPageNum < totalPages - 1 &&
-          getBelowPage(belowPageNum, isLeftPage, isSinglePage)}
-      </>
-    );
+    const below =
+      belowPageNum > 0 && belowPageNum < totalPages - 1
+        ? {
+            className: `${styles.page} ${isLeftPage ? "" : styles.right} ${
+              styles.below
+            } ${isSinglePage ? styles.onePage : ""}`,
+            key: `page-${belowPageNum}`,
+            view: pages[belowPageNum],
+          }
+        : undefined;
+
+    return {
+      main: {
+        className: `${styles.page} ${className}`,
+        key: `page-${pageNum}`,
+        view: pages[pageNum],
+      },
+      back: {
+        className: `${styles.page}  ${isLeftPage ? "" : styles.right} ${
+          styles.back
+        }`,
+        key: `page-${backPageNum}`,
+        view: pages[backPageNum],
+      },
+      ...(below && { below }),
+    };
   };
 
-  const getPage = (child: React.ReactNode, className: string, key: string) => (
-    <motion.div className={`${styles.page} ${className} `} key={key}>
-      {child}
-    </motion.div>
+  const props = {
+    bookStyle,
+    handleNextPage,
+    handlePrevPage,
+    isRtl,
+    totalPages,
+    currentPage,
+  };
+
+  return (
+    <>
+      <Pages Pages={getPageData(currentPage)} {...props} />
+      {!isFirstPage && !isLastPage && (
+        <Pages Pages={getPageData(currentPage + 1)} {...props} />
+      )}
+    </>
   );
-
-  const getBackPage = (pageNum: number, isLeftPage: boolean) => {
-    return getPage(
-      pages[pageNum],
-      `${isLeftPage ? "" : styles.right} ${styles.back}`,
-      `page-${pageNum}`
-    );
-  };
-
-  const getBelowPage = (
-    pageNum: number,
-    isLeftPage: boolean,
-    isSinglePage: boolean
-  ) => {
-    return getPage(
-      pages[pageNum],
-      `${isLeftPage ? "" : styles.right} ${styles.below} ${
-        isSinglePage ? styles.onePage : ""
-      }`,
-      `page-${pageNum}`
-    );
-  };
-
-  const renderPages = () => {
-    const isLastPage = currentPage === totalPages - 1;
-    const isFirstPage = currentPage === 0;
-
-    if (isSinglePage) {
-      return getAnimatedPage(currentPage);
-    }
-
-    return (
-      <>
-        {getAnimatedPage(currentPage)}
-        {!isFirstPage && !isLastPage && getAnimatedPage(currentPage + 1)}
-      </>
-    );
-  };
-
-  return <AnimatePresence>{renderPages()}</AnimatePresence>;
 };
 
 export default AnimatedPages;

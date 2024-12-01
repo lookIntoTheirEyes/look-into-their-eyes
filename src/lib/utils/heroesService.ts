@@ -11,9 +11,9 @@ export function getAllHeroes() {
   return heroes;
 }
 
-if (heroes.length % 2 === 0) {
-  throw new Error("Heroes amount must be uneven due to styling issues");
-}
+// if (heroes.length % 2 === 0) {
+//   throw new Error("Heroes amount must be uneven due to styling issues");
+// }
 
 interface Hero {
   id: number;
@@ -63,5 +63,5 @@ export function getAllPages(lang: Language): Page[] {
     };
   });
 
-  return lang === Language.he ? pages.reverse() : pages;
+  return pages;
 }

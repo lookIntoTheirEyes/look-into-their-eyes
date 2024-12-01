@@ -33,6 +33,8 @@ const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
     totalPages,
   } = useBookLogic({ pagesContent, toc, isSinglePage });
 
+  console.log("currentPage NewBook", currentPage);
+
   const tocContainer = toc && (
     <TableOfContentsContainer
       key='toc'
