@@ -65,7 +65,7 @@ const HTMLFlipBookForward = React.forwardRef<
       }
     }
   }, [
-    pages.length,
+    // pages.length,
     props.children,
     props.renderOnlyPageLengthChange,
     props.rtl,
