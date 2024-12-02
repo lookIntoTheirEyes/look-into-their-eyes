@@ -24,8 +24,7 @@ export async function generateMetadata(props: IProps) {
       title,
       description,
     };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch {
     const t = await getTranslations("Metadata");
 
     const title = t("layout.title");
@@ -46,10 +45,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
   const rtl = locale === Language.he;
   const noContentPages = 3;
 
-  const pagesAmount = bookPages.length + noContentPages;
-
-  const pageNum = (i: number) =>
-    (rtl ? pagesAmount - i - noContentPages : i + 1) + noContentPages - 1;
+  const pageNum = (i: number) => i + 1 + noContentPages - 1;
 
   const Pages = structuredClone(bookPages).map((content, i) => (
     <Page rtl={rtl} key={content.title} pageNum={pageNum(i)}>
@@ -74,8 +70,8 @@ const BookComponent: React.FC<IProps> = async (props) => {
     longDescription: t("story.back.longDescription"),
   };
 
-  const Front = <PageCover details={rtl ? backDetails : frontDetails} />;
-  const Back = <PageCover details={rtl ? frontDetails : backDetails} />;
+  const Front = <PageCover details={frontDetails} />;
+  const Back = <PageCover details={backDetails} />;
 
   return (
     <BookContainer

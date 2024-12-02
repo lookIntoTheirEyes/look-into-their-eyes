@@ -24,8 +24,7 @@ const UsersBook: React.FC<IProps> = ({
     title,
   };
 
-  const Front = rtl ? undefined : <PageCover details={frontDetails} />;
-  const Back = rtl ? <PageCover details={frontDetails} /> : undefined;
+  const Front = <PageCover details={frontDetails} />;
 
   const Pages = [] as JSX.Element[];
   const pagesContent = [] as BookPage[];
@@ -53,7 +52,6 @@ const UsersBook: React.FC<IProps> = ({
       Pages={Pages}
       rtl={rtl}
       Front={Front}
-      Back={Back}
       noContentAmount={1}
     >
       {newButton}

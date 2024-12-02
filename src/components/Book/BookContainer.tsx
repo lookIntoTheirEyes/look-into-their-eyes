@@ -7,7 +7,7 @@ interface IBookProps {
   rtl: boolean;
   tableOfContentsTitle?: string;
   Pages: JSX.Element[];
-  Front?: JSX.Element;
+  Front: JSX.Element;
   Back?: JSX.Element;
   pagesContent: BookPage[];
   noContentAmount: number;

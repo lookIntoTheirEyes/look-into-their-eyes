@@ -63,7 +63,6 @@ export const CommentForm: React.FC<IProps> = ({
         try {
           await sendEmail(comment);
           setStatus(FormState.SUCCESS);
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           console.error(error);
           setStatus(FormState.ERROR);

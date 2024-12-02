@@ -17,12 +17,8 @@ export interface TableOfContentsPageProps {
 const TableOfContentsContainer = forwardRef<
   HTMLDivElement,
   TableOfContentsPageProps
->(({ rtl, toc, goToPage, pagesAmount, noContentAmount }, ref) => {
-  const getPageNum = (i: number) => {
-    return rtl
-      ? pagesAmount - i - noContentAmount + noContentAmount - 1
-      : i + noContentAmount;
-  };
+>(({ rtl, toc, goToPage, noContentAmount }, ref) => {
+  const getPageNum = (i: number) => i + noContentAmount;
   return (
     <Page rtl={rtl} pageNum={2} ref={ref}>
       <TableOfContents

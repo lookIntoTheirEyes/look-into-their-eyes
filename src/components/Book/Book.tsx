@@ -1,6 +1,4 @@
 "use client";
-
-import PageFlip from "react-pageflip";
 import { useBookNavigation } from "@/hooks/useNavigation";
 import styles from "./Book.module.css";
 import { BookActions } from "@/lib/utils/utils";
@@ -8,6 +6,8 @@ import { Page } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
 import DummyPage from "@/components/Book/DummyPage";
 import TableOfContentsContainer from "@/components/Book/TableOfContents/TableOfContentsContainer";
+import FlipBook from "@/components/FlipBook/ReactFlipBook/index";
+import { SizeType } from "@/components/FlipBook/Settings";
 
 interface BookProps extends BookActions {
   rtl: boolean;
@@ -32,11 +32,10 @@ const Book: React.FC<BookProps> = ({
   const pagesAmount = Pages.length + noContentAmount;
 
   const { currPage, pageFlipRef, flipPage, updatePage, goToPage } =
-    useBookNavigation(pagesAmount, rtl);
-
-  const renderToc = (isRender: boolean) => {
+    useBookNavigation(pagesAmount);
+  const renderToc = () => {
     return renderPage(
-      !!toc && isRender,
+      !!toc,
       <TableOfContentsContainer
         noContentAmount={noContentAmount}
         rtl={rtl}
@@ -56,55 +55,28 @@ const Book: React.FC<BookProps> = ({
 
   return (
     <div className={styles.storyContainer}>
-      <PageFlip
+      <FlipBook
         ref={pageFlipRef}
-        className={""}
-        style={{}}
-        startPage={
-          rtl
-            ? currPage < noContentAmount - 1
-              ? pagesAmount - 1
-              : pagesAmount - currPage
-            : currPage - 1
-        }
+        startPage={currPage - 1}
         width={550}
         height={720}
-        size='stretch'
+        size={SizeType.STRETCH}
         minWidth={315}
         maxWidth={1000}
         minHeight={400}
         maxHeight={1533}
-        maxShadowOpacity={1}
-        drawShadow={false}
-        flippingTime={700}
-        startZIndex={30}
-        swipeDistance={30}
-        usePortrait
-        autoSize
-        showCover
-        mobileScrollSupport
-        clickEventForward
-        useMouseEvents
-        showPageCorners
-        renderOnlyPageLengthChange
-        disableFlipByClick={false}
-        onFlip={({ data, object }) => {
-          const isOnePageMode = object.render.orientation === "portrait";
-          const pageNum = rtl
-            ? !data
-              ? pagesAmount
-              : pagesAmount - data - (isOnePageMode ? 0 : 1)
-            : data + 1;
+        rtl={rtl}
+        onFlip={({ data }) => {
+          const pageNum = (data || 0) + 1;
 
           updatePage(pageNum || 1);
         }}
       >
         {renderPage(!!Front, Front)}
-        {renderToc(!rtl)}
+        {renderToc()}
         {renderPage(Pages.length > 0, Pages)}
-        {renderToc(rtl)}
         {renderPage(!!Back, Back)}
-      </PageFlip>
+      </FlipBook>
       <Controls
         currPage={currPage}
         pageCount={pagesAmount}
