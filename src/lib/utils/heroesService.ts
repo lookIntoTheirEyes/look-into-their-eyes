@@ -63,5 +63,5 @@ export function getAllPages(lang: Language): Page[] {
     };
   });
 
-  return lang === Language.he ? pages.reverse() : pages;
+  return pages;
 }
