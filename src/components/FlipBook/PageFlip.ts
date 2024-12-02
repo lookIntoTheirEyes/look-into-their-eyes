@@ -6,7 +6,6 @@ import { Orientation, Render } from "./Render/Render";
 
 import { HTMLUI } from "./UI/HTMLUI";
 import { Helper } from "./Helper";
-import { Page } from "./Page/Page";
 import { EventObject } from "./Event/EventObject";
 import { HTMLRender } from "./Render/HTMLRender";
 import { FlipSetting, Settings } from "./Settings";

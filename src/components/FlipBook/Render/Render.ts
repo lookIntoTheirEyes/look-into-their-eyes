@@ -1,7 +1,7 @@
 import { PageFlip } from "../PageFlip";
 import { Point, PageRect, RectPoints } from "../BasicTypes";
 import { FlipDirection } from "../Flip/Flip";
-import { Page, PageOrientation } from "../Page/Page";
+import { PageOrientation } from "../Page/Page";
 import { FlipSetting, SizeType } from "../Settings";
 import { HTMLPage } from "../Page/HTMLPage";
 
