@@ -1,5 +1,3 @@
-"use client";
-
 import React, {
   ReactElement,
   useCallback,
@@ -11,7 +9,6 @@ import React, {
 import { IFlipSetting, IEventProps } from "./settings";
 import { PageFlip } from "../PageFlip";
 import { WidgetEvent } from "../Event/EventObject";
-
 interface IProps extends IFlipSetting, IEventProps {
   children: React.ReactNode;
   renderOnlyPageLengthChange?: boolean;
@@ -25,7 +22,7 @@ const HTMLFlipBookForward = React.forwardRef<
   const childRef = useRef<HTMLElement[]>([]);
   const pageFlip = useRef<PageFlip | null>(null);
 
-  const [pages, setPages] = useState<React.ReactNode[]>([]);
+  const [pages, setPages] = useState<ReactElement[]>([]);
 
   useImperativeHandle(ref, () => ({
     pageFlip: () => pageFlip.current,
@@ -41,10 +38,6 @@ const HTMLFlipBookForward = React.forwardRef<
     const flip = pageFlip.current;
     if (flip) {
       flip.off("flip");
-      flip.off("changeOrientation");
-      flip.off("changeState");
-      flip.off("init");
-      flip.off("update");
     }
   }, []);
 
@@ -71,12 +64,7 @@ const HTMLFlipBookForward = React.forwardRef<
         setPages(childList || []);
       }
     }
-  }, [
-    props.children,
-    props.renderOnlyPageLengthChange,
-    refreshOnPageDelete,
-    pages.length,
-  ]);
+  }, []);
 
   useEffect(() => {
     const setHandlers = () => {
@@ -101,15 +89,12 @@ const HTMLFlipBookForward = React.forwardRef<
 
       setHandlers();
     }
-  }, [pages, props, removeHandlers]);
+    return () => removeHandlers();
+  }, [pages]);
 
   return <div ref={htmlElementRef}>{pages}</div>;
 });
 
 HTMLFlipBookForward.displayName = "HTMLFlipBookForward";
 
-const HTMLFlipBook = React.memo(HTMLFlipBookForward);
-
-HTMLFlipBook.displayName = "HTMLFlipBook";
-
-export default HTMLFlipBook;
+export default React.memo(HTMLFlipBookForward);

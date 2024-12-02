@@ -53,7 +53,6 @@ const Book: React.FC<BookProps> = ({
     return condition ? page : <DummyPage />;
   };
 
-  console.log("pageFlipRef", pageFlipRef.current);
   return (
     <div className={styles.storyContainer}>
       <FlipBook
@@ -72,6 +71,7 @@ const Book: React.FC<BookProps> = ({
         maxWidth={1000}
         minHeight={400}
         maxHeight={1533}
+        renderOnlyPageLengthChange
         onFlip={({ data, object }) => {
           const isOnePageMode = object.getOrientation() === "portrait";
           const pageNum = rtl
