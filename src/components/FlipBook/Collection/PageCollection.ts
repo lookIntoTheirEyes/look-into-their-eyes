@@ -2,6 +2,7 @@ import { Orientation, Render } from "../Render/Render";
 import { Page, PageDensity } from "../Page/Page";
 import { PageFlip } from "../PageFlip";
 import { FlipDirection } from "../Flip/Flip";
+import { HTMLPage } from "../Page/HTMLPage";
 
 type NumberArray = number[];
 
@@ -14,7 +15,7 @@ export abstract class PageCollection {
   protected readonly isShowCover: boolean;
 
   /** Pages List */
-  protected pages: Page[] = [];
+  protected pages: HTMLPage[] = [];
   /** Index of the current page in list */
   protected currentPageIndex = 0;
 
@@ -105,7 +106,7 @@ export abstract class PageCollection {
   /**
    * Get the pages list
    */
-  public getPages(): Page[] {
+  public getPages(): HTMLPage[] {
     return this.pages;
   }
 
@@ -114,7 +115,7 @@ export abstract class PageCollection {
    *
    * @param {number} pageIndex
    */
-  public getPage(pageIndex: number): Page {
+  public getPage(pageIndex: number): HTMLPage {
     if (pageIndex >= 0 && pageIndex < this.pages.length) {
       return this.pages[pageIndex];
     }
@@ -127,7 +128,7 @@ export abstract class PageCollection {
    *
    * @param {Page} current
    */
-  public nextBy(current: Page): Page | null {
+  public nextBy(current: HTMLPage): HTMLPage | null {
     const idx = this.pages.indexOf(current);
 
     if (idx < this.pages.length - 1) return this.pages[idx + 1];
@@ -140,7 +141,7 @@ export abstract class PageCollection {
    *
    * @param {Page} current
    */
-  public prevBy(current: Page): Page | null {
+  public prevBy(current: HTMLPage): HTMLPage | null {
     const idx = this.pages.indexOf(current);
 
     if (idx > 0) return this.pages[idx - 1];
@@ -153,7 +154,7 @@ export abstract class PageCollection {
    *
    * @param {FlipDirection} direction
    */
-  public getFlippingPage(direction: FlipDirection): Page {
+  public getFlippingPage(direction: FlipDirection): HTMLPage {
     const current = this.currentSpreadIndex;
 
     if (this.render.getOrientation() === Orientation.PORTRAIT) {
@@ -179,7 +180,7 @@ export abstract class PageCollection {
    *
    * @param {FlipDirection}  direction
    */
-  public getBottomPage(direction: FlipDirection): Page {
+  public getBottomPage(direction: FlipDirection): HTMLPage {
     const current = this.currentSpreadIndex;
 
     if (this.render.getOrientation() === Orientation.PORTRAIT) {

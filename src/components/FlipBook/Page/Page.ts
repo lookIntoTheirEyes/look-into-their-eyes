@@ -1,5 +1,6 @@
 import { Render } from "../Render/Render";
 import { Point } from "../BasicTypes";
+import { HTMLPage } from "./HTMLPage";
 
 /**
  * State of the page on the basis of which rendering
@@ -180,7 +181,7 @@ export abstract class Page {
     return this.state.hardAngle;
   }
 
-  public abstract newTemporaryCopy(): Page;
-  public abstract getTemporaryCopy(): Page;
+  public abstract newTemporaryCopy(): HTMLPage;
+  public abstract getTemporaryCopy(): HTMLPage;
   public abstract hideTemporaryCopy(): void;
 }

@@ -3,7 +3,8 @@ import { PageFlip } from "../PageFlip";
 import { Helper } from "../Helper";
 import { PageRect, Point } from "../BasicTypes";
 import { FlipCalculation } from "./FlipCalculation";
-import { Page, PageDensity } from "../Page/Page";
+import { PageDensity } from "../Page/Page";
+import { HTMLPage } from "../Page/HTMLPage";
 
 /**
  * Flipping direction
@@ -45,8 +46,8 @@ export class Flip {
   private readonly render: Render;
   private readonly app: PageFlip;
 
-  private flippingPage: Page | null = null;
-  private bottomPage: Page | null = null;
+  private flippingPage: HTMLPage | null = null;
+  private bottomPage: HTMLPage | null = null;
 
   private calc: FlipCalculation | null = null;
 
@@ -77,12 +78,6 @@ export class Flip {
    * @param globalPos - Touch Point Coordinates (relative window)
    */
   public flip(globalPos: Point): void {
-    if (
-      this.app.getSettings().disableFlipByClick &&
-      !this.isPointOnCorners(globalPos)
-    )
-      return;
-
     // the flipiing process is already running
     if (this.calc !== null) this.render.finishAnimation();
 
@@ -197,8 +192,8 @@ export class Flip {
     if (this.calc.calc(pagePos)) {
       // Perform calculations for a specific position
       const progress = this.calc.getFlippingProgress();
-      const bottomPage = this.bottomPage as Page;
-      const flippingPage = this.flippingPage as Page;
+      const bottomPage = this.bottomPage as HTMLPage;
+      const flippingPage = this.flippingPage as HTMLPage;
 
       bottomPage.setArea(this.calc.getBottomClipArea());
       bottomPage.setPosition(this.calc.getBottomPagePosition());

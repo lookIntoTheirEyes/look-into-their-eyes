@@ -47,9 +47,7 @@ export interface IFlipSetting {
 
   /** if this value is true, fold the corners of the book when the mouse pointer is over them. */
   showPageCorners?: boolean;
-
-  /** if this value is true, flipping by clicking on the whole book will be locked. Only on corners */
-  disableFlipByClick?: boolean;
+  rtl: boolean;
 }
 
 export interface IBookState {

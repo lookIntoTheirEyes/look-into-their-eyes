@@ -56,7 +56,7 @@ export interface FlipSetting {
   showPageCorners: boolean;
 
   /** if this value is true, flipping by clicking on the whole book will be locked. Only on corners */
-  disableFlipByClick: boolean;
+  rtl: boolean;
 }
 
 export class Settings {
@@ -81,7 +81,7 @@ export class Settings {
     clickEventForward: true,
     useMouseEvents: true,
     showPageCorners: true,
-    disableFlipByClick: false,
+    rtl: false,
   };
 
   public getSettings(

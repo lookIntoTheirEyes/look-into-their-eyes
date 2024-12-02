@@ -3,6 +3,7 @@ import { Point, PageRect, RectPoints } from "../BasicTypes";
 import { FlipDirection } from "../Flip/Flip";
 import { Page, PageOrientation } from "../Page/Page";
 import { FlipSetting, SizeType } from "../Settings";
+import { HTMLPage } from "../Page/HTMLPage";
 
 type FrameAction = () => void;
 type AnimationSuccessAction = () => void;
@@ -58,19 +59,20 @@ export abstract class Render {
   protected readonly app: PageFlip;
 
   /** Left static book page */
-  protected leftPage!: Page | null;
+  protected leftPage!: HTMLPage | null;
   /** Right static book page */
-  protected rightPage!: Page | null;
+  protected rightPage!: HTMLPage | null;
 
   /** Page currently flipping */
-  protected flippingPage!: Page | null;
+  protected flippingPage!: HTMLPage | null;
   /** Next page at the time of flipping */
-  protected bottomPage!: Page | null;
+  protected bottomPage!: HTMLPage | null;
 
   /** Current flipping direction */
   protected direction!: FlipDirection;
   /** Current book orientation */
   protected orientation!: Orientation;
+  protected rtl: boolean = false;
   /** Сurrent state of the shadows */
   protected shadow: Shadow | null = null;
   /** Сurrent animation process */
@@ -190,10 +192,16 @@ export abstract class Render {
    */
   public update(): void {
     const orientation = this.calculateBoundsRect();
+    const rtl = this.app.getSettings().rtl;
 
     if (this.orientation !== orientation) {
       this.orientation = orientation;
       this.app.updateOrientation(orientation);
+    }
+
+    if (this.rtl !== rtl) {
+      this.rtl = rtl;
+      this.app.updateRTL(rtl);
     }
   }
 
@@ -362,7 +370,7 @@ export abstract class Render {
    *
    * @param page
    */
-  public setRightPage(page: Page | null): void {
+  public setRightPage(page: HTMLPage | null): void {
     if (page !== null) page.setOrientation(PageOrientation.RIGHT);
 
     this.rightPage = page;
@@ -372,7 +380,7 @@ export abstract class Render {
    * Set left static book page
    * @param page
    */
-  public setLeftPage(page: Page | null): void {
+  public setLeftPage(page: HTMLPage | null): void {
     if (page !== null) page.setOrientation(PageOrientation.LEFT);
 
     this.leftPage = page;
@@ -382,7 +390,7 @@ export abstract class Render {
    * Set next page at the time of flipping
    * @param page
    */
-  public setBottomPage(page: Page | null): void {
+  public setBottomPage(page: HTMLPage | null): void {
     if (page !== null)
       page.setOrientation(
         this.direction === FlipDirection.BACK
@@ -398,7 +406,7 @@ export abstract class Render {
    *
    * @param page
    */
-  public setFlippingPage(page: Page | null): void {
+  public setFlippingPage(page: HTMLPage | null): void {
     if (page !== null)
       page.setOrientation(
         this.direction === FlipDirection.FORWARD &&
@@ -450,6 +458,9 @@ export abstract class Render {
       x,
       y: pos.y - rect.top,
     };
+  }
+  public getRTL(): boolean {
+    return this.rtl;
   }
 
   /**

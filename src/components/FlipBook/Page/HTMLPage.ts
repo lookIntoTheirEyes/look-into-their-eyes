@@ -11,7 +11,7 @@ export class HTMLPage extends Page {
   private readonly element: HTMLElement;
   private copiedElement: HTMLElement | null = null;
 
-  private temporaryCopy: Page | null = null;
+  private temporaryCopy: HTMLPage | null = null;
 
   private isLoad = false;
 
@@ -23,9 +23,9 @@ export class HTMLPage extends Page {
     this.element.classList.add("--" + density);
   }
 
-  public newTemporaryCopy(): Page {
+  public newTemporaryCopy(): HTMLPage {
     if (this.nowDrawingDensity === PageDensity.HARD) {
-      return this as Page;
+      return this as HTMLPage;
     }
 
     if (this.temporaryCopy === null) {
@@ -36,14 +36,14 @@ export class HTMLPage extends Page {
         this.render,
         this.copiedElement,
         this.nowDrawingDensity
-      ) as Page;
+      );
     }
 
     return this.getTemporaryCopy();
   }
 
-  public getTemporaryCopy(): Page {
-    return this.temporaryCopy as Page;
+  public getTemporaryCopy(): HTMLPage {
+    return this.temporaryCopy as HTMLPage;
   }
 
   public hideTemporaryCopy(): void {
@@ -87,7 +87,6 @@ export class HTMLPage extends Page {
       commonStyle +
       `
                 backface-visibility: hidden;
-             
                 clip-path: none;
              
             ` +
@@ -150,7 +149,7 @@ export class HTMLPage extends Page {
             height: ${pageHeight}px; 
             left: ${x}px; 
             top: ${y}px; 
-            width: ${pageWidth}px; 
+            width: ${pageWidth + 1}px; 
             z-index: ${this.render.getSettings().startZIndex + 1};`;
   }
 

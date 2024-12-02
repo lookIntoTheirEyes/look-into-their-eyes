@@ -64,7 +64,7 @@ const HTMLFlipBookForward = React.forwardRef<
         setPages(childList || []);
       }
     }
-  }, []);
+  }, [props.rtl]);
 
   useEffect(() => {
     const setHandlers = () => {
@@ -90,7 +90,7 @@ const HTMLFlipBookForward = React.forwardRef<
       setHandlers();
     }
     return () => removeHandlers();
-  }, [pages]);
+  }, [pages, props.rtl]);
 
   return <div ref={htmlElementRef}>{pages}</div>;
 });

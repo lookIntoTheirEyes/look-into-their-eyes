@@ -343,7 +343,7 @@ export class HTMLRender extends Render {
 
     const tempDensity = this.flippingPage
       ? this.flippingPage.getDrawingDensity()
-      : null;
+      : undefined;
 
     if (
       !(
@@ -369,8 +369,20 @@ export class HTMLRender extends Render {
     this.drawBottomPage();
 
     if (this.flippingPage != null) {
-      (this.flippingPage as HTMLPage).getElement().style.zIndex = (
-        this.getSettings().startZIndex + 5
+      const { rtl } = this.app.getSettings();
+      const progress = this.app.getProgress();
+      const pages = this.app.getPageCollection();
+      const pageIdx = pages.getCurrentPageIndex();
+
+      const factor = getFlippingPageZIdxFactor(
+        rtl,
+        pages.getPageCount(),
+        pageIdx,
+        progress
+      );
+
+      this.flippingPage.getElement().style.zIndex = (
+        this.getSettings().startZIndex + factor
       ).toString(10);
 
       this.flippingPage.draw();
@@ -415,4 +427,21 @@ export class HTMLRender extends Render {
       this.leftPage.setOrientation(PageOrientation.LEFT);
     }
   }
+}
+
+function getFlippingPageZIdxFactor(
+  isRtl: boolean,
+  pagesCount: number,
+  pageIdx: number,
+  progress: number
+): number {
+  if (!isRtl || (!pageIdx && progress >= 50)) {
+    return 5;
+  }
+
+  if ((pageIdx >= pagesCount - 3 || pageIdx === 1) && progress >= 50) {
+    return 6;
+  }
+
+  return 4;
 }

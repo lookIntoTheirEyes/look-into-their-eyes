@@ -172,9 +172,21 @@ export abstract class UI {
     const rect = this.distElement.getBoundingClientRect();
 
     return {
-      x: x - rect.left,
+      x: this.app.getSettings().rtl
+        ? rect.width - (x - rect.left)
+        : x - rect.left,
       y: y - rect.top,
     };
+  }
+
+  public setRTLStyle(rtl: boolean): void {
+    this.wrapper.classList.remove("--rtl");
+
+    if (rtl) {
+      this.wrapper.classList.add("--rtl");
+    }
+
+    this.update();
   }
 
   private checkTarget(targer: EventTarget): boolean {

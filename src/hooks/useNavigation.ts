@@ -7,7 +7,7 @@ interface CustomPageFlip {
   pageFlip: () => PageFlip | null;
 }
 
-export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
+export const useBookNavigation = (pagesAmount: number) => {
   const pageFlipRef = useRef<CustomPageFlip | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -39,13 +39,7 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
   );
 
   const flipPage = (direction: "next" | "previous") => {
-    const flipDirection = isRtl
-      ? direction === "next"
-        ? "flipPrev"
-        : "flipNext"
-      : direction === "next"
-      ? "flipNext"
-      : "flipPrev";
+    const flipDirection = direction === "next" ? "flipNext" : "flipPrev";
 
     pageFlipRef.current?.pageFlip()?.[flipDirection]();
   };
@@ -56,7 +50,7 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
   };
 
   const goToPage = (pageNum: number) => {
-    const adjustedPageNum = (isRtl ? pagesAmount - pageNum + 1 : pageNum) - 1;
+    const adjustedPageNum = pageNum - 1;
     pageFlipRef.current?.pageFlip()?.flip(adjustedPageNum);
   };
 

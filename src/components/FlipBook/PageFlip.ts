@@ -13,6 +13,7 @@ import { FlipSetting, Settings } from "./Settings";
 import { UI } from "./UI/UI";
 
 import "./Style/stPageFlip.css";
+import { HTMLPage } from "./Page/HTMLPage";
 
 export class PageFlip extends EventObject {
   private mousePosition!: Point;
@@ -43,6 +44,11 @@ export class PageFlip extends EventObject {
   public update(): void {
     this.render.update();
     this.pages.show();
+  }
+
+  public updateRTL(newRTL: boolean): void {
+    this.ui.setRTLStyle(newRTL);
+    this.update();
   }
 
   public loadFromHTML(items: HTMLElement[]): void {
@@ -132,7 +138,7 @@ export class PageFlip extends EventObject {
     return this.pages.getCurrentPageIndex();
   }
 
-  public getPage(pageIndex: number): Page {
+  public getPage(pageIndex: number): HTMLPage {
     return this.pages.getPage(pageIndex);
   }
 
@@ -183,6 +189,10 @@ export class PageFlip extends EventObject {
         this.flipController.fold(pos);
       }
     }
+  }
+
+  public getProgress(): number {
+    return this.flipController.getCalculation().getFlippingProgress();
   }
 
   public userStop(pos: Point, isSwipe = false): void {
