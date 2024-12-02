@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { PageFlip } from "@/components/flip/PageFlip";
+import { PageFlip } from "@/components/FlipBook/PageFlip";
 
 interface CustomPageFlip {
   pageFlip: () => PageFlip | null;
