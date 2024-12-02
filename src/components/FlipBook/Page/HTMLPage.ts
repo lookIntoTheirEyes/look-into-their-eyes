@@ -4,15 +4,10 @@ import { Helper } from "../Helper";
 import { FlipDirection } from "../Flip/Flip";
 import { Point } from "../BasicTypes";
 
-/**
- * Class representing a book page as a HTML Element
- */
 export class HTMLPage extends Page {
   private readonly element: HTMLElement;
   private copiedElement: HTMLElement | null = null;
-
   private temporaryCopy: HTMLPage | null = null;
-
   private isLoad = false;
 
   constructor(render: Render, element: HTMLElement, density: PageDensity) {
@@ -124,9 +119,7 @@ export class HTMLPage extends Page {
     const newStyle =
       commonStyle +
       `transform-origin: 0 0; clip-path: ${polygon}; ` +
-      (this.render.isSafari() && this.state.angle === 0
-        ? `transform: translate(${position.x}px, ${position.y}px);`
-        : `transform: translate3d(${position.x}px, ${position.y}px, 0) rotate(${this.state.angle}rad);`);
+      `transform: translate3d(${position.x}px, ${position.y}px, 0) rotate(${this.state.angle}rad);`;
 
     this.element.style.cssText = newStyle;
   }

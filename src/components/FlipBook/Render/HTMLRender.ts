@@ -6,28 +6,14 @@ import { HTMLPage } from "../Page/HTMLPage";
 import { Helper } from "../Helper";
 import { FlipSetting } from "../Settings";
 
-/**
- * Class responsible for rendering the HTML book
- */
 export class HTMLRender extends Render {
-  /** Parent HTML Element */
   private readonly element: HTMLElement;
-
-  /** Pages List as HTMLElements */
   private readonly items!: HTMLElement[];
-
   private outerShadow: HTMLElement | null = null;
   private innerShadow: HTMLElement | null = null;
   private hardShadow: HTMLElement | null = null;
   private hardInnerShadow: HTMLElement | null = null;
 
-  /**
-   * @constructor
-   *
-   * @param {PageFlip} app - PageFlip object
-   * @param {FlipSetting} setting - Configuration object
-   * @param {HTMLElement} element - Parent HTML Element
-   */
   constructor(app: PageFlip, setting: FlipSetting, element: HTMLElement) {
     super(app, setting);
 
@@ -68,9 +54,6 @@ export class HTMLRender extends Render {
     }
   }
 
-  /**
-   * Draw inner shadow to the hard page
-   */
   private drawHardInnerShadow(): void {
     const rect = this.getRect();
 
@@ -110,9 +93,6 @@ export class HTMLRender extends Render {
     this.hardInnerShadow!.style.cssText = newStyle;
   }
 
-  /**
-   * Draw outer shadow to the hard page
-   */
   private drawHardOuterShadow(): void {
     if (!this.shadow) {
       return;
@@ -150,9 +130,6 @@ export class HTMLRender extends Render {
     this.hardShadow!.style.cssText = newStyle;
   }
 
-  /**
-   * Draw inner shadow to the soft page
-   */
   private drawInnerShadow(): void {
     if (!this.shadow) {
       return;
@@ -218,9 +195,6 @@ export class HTMLRender extends Render {
     this.innerShadow!.style.cssText = newStyle;
   }
 
-  /**
-   * Draw outer shadow to the soft page
-   */
   private drawOuterShadow(): void {
     if (!this.shadow) {
       return;
@@ -288,9 +262,6 @@ export class HTMLRender extends Render {
     this.outerShadow!.style.cssText = newStyle;
   }
 
-  /**
-   * Draw left static page
-   */
   private drawLeftPage(): void {
     if (this.orientation === Orientation.PORTRAIT || this.leftPage === null)
       return;
@@ -311,9 +282,6 @@ export class HTMLRender extends Render {
     }
   }
 
-  /**
-   * Draw right static page
-   */
   private drawRightPage(): void {
     if (this.rightPage === null) return;
 
@@ -335,9 +303,6 @@ export class HTMLRender extends Render {
     }
   }
 
-  /**
-   * Draw the next page at the time of flipping
-   */
   private drawBottomPage(): void {
     if (!this.bottomPage) return;
 

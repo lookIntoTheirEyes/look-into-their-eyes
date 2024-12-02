@@ -4,9 +4,6 @@ import { PageCollection } from "./PageCollection";
 import { PageFlip } from "../PageFlip";
 import { PageDensity } from "../Page/Page";
 
-/**
- * Сlass representing a collection of pages as HTML Element
- */
 export class HTMLPageCollection extends PageCollection {
   private readonly element: HTMLElement;
   private readonly pagesElement: HTMLElement[];

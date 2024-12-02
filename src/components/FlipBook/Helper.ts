@@ -1,15 +1,6 @@
 import { Point, Rect, Segment } from "./BasicTypes";
 
-/**
- * A class containing helping mathematical methods
- */
 export class Helper {
-  /**
-   * Get the distance between two points
-   *
-   * @param {Point} point1
-   * @param {Point} point2
-   */
   public static GetDistanceBetweenTwoPoint(
     point1: Point | null,
     point2: Point | null
@@ -23,21 +14,10 @@ export class Helper {
     );
   }
 
-  /**
-   * Get the length of the line segment
-   *
-   * @param {Segment} segment
-   */
   public static GetSegmentLength(segment: Segment): number {
     return Helper.GetDistanceBetweenTwoPoint(segment[0], segment[1]);
   }
 
-  /**
-   * Get the angle between two lines
-   *
-   * @param {Segment} line1
-   * @param {Segment} line2
-   */
   public static GetAngleBetweenTwoLine(line1: Segment, line2: Segment): number {
     const A1 = line1[0].y - line1[1].y;
     const A2 = line2[0].y - line2[1].y;
@@ -51,14 +31,6 @@ export class Helper {
     );
   }
 
-  /**
-   * Check for a point in a rectangle
-   *
-   * @param {Rect} rect
-   * @param {Point} pos
-   *
-   * @returns {Point} If the point enters the rectangle its coordinates will be returned, otherwise - null
-   */
   public static PointInRect(rect: Rect, pos: Point | null): Point | null {
     if (pos === null) {
       return null;
@@ -75,15 +47,6 @@ export class Helper {
     return null;
   }
 
-  /**
-   * Transform point coordinates to a given angle
-   *
-   * @param {Point} transformedPoint - Point to rotate
-   * @param {Point} startPoint - Transformation reference point
-   * @param {number} angle - Rotation angle (in radians)
-   *
-   * @returns {Point} Point coordinates after rotation
-   */
   public static GetRotatedPoint(
     transformedPoint: Point,
     startPoint: Point,
@@ -101,22 +64,11 @@ export class Helper {
     };
   }
 
-  /**
-   * Limit a point "linePoint" to a given circle centered at point "startPoint" and a given radius
-   *
-   * @param {Point} startPoint - Circle center
-   * @param {number} radius - Circle radius
-   * @param {Point} limitedPoint - Сhecked point
-   *
-   * @returns {Point} If "linePoint" enters the circle, then its coordinates are returned.
-   * Else will be returned the intersection point between the line ([startPoint, linePoint]) and the circle
-   */
   public static LimitPointToCircle(
     startPoint: Point,
     radius: number,
     limitedPoint: Point
   ): Point {
-    // If "linePoint" enters the circle, do nothing
     if (Helper.GetDistanceBetweenTwoPoint(startPoint, limitedPoint) <= radius) {
       return limitedPoint;
     }
@@ -126,7 +78,6 @@ export class Helper {
     const n = limitedPoint.x;
     const m = limitedPoint.y;
 
-    // Find the intersection between the line at two points: (startPoint and limitedPoint) and the circle.
     let x =
       Math.sqrt(
         (Math.pow(radius, 2) * Math.pow(a - n, 2)) /
@@ -144,15 +95,6 @@ export class Helper {
     return { x, y };
   }
 
-  /**
-   * Find the intersection of two lines bounded by a rectangle "rectBorder"
-   *
-   * @param {Rect} rectBorder
-   * @param {Segment} one
-   * @param {Segment} two
-   *
-   * @returns {Point} The intersection point, or "null" if it does not exist, or it lies outside the rectangle "rectBorder"
-   */
   public static GetIntersectBetweenTwoSegment(
     rectBorder: Rect,
     one: Segment,
@@ -164,15 +106,6 @@ export class Helper {
     );
   }
 
-  /**
-   * Find the intersection point of two lines
-   *
-   * @param one
-   * @param two
-   *
-   * @returns {Point} The intersection point, or "null" if it does not exist
-   * @throws Error if the segments are on the same line
-   */
   public static GetIntersectBeetwenTwoLine(
     one: Segment,
     two: Segment
@@ -201,14 +134,6 @@ export class Helper {
     return null;
   }
 
-  /**
-   * Get a list of coordinates (step: 1px) between two points
-   *
-   * @param pointOne
-   * @param pointTwo
-   *
-   * @returns {Point[]}
-   */
   public static GetCordsFromTwoPoint(
     pointOne: Point,
     pointTwo: Point

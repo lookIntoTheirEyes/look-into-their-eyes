@@ -2,9 +2,6 @@ import { UI } from "./UI";
 import { PageFlip } from "../PageFlip";
 import { FlipSetting } from "../Settings";
 
-/**
- * UI for HTML mode
- */
 export class HTMLUI extends UI {
   private items: HTMLElement[];
 

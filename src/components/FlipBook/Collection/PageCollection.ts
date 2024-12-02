@@ -6,24 +6,15 @@ import { HTMLPage } from "../Page/HTMLPage";
 
 type NumberArray = number[];
 
-/**
- * Сlass representing a collection of pages
- */
 export abstract class PageCollection {
   protected readonly app: PageFlip;
   protected readonly render: Render;
   protected readonly isShowCover: boolean;
-
-  /** Pages List */
   protected pages: HTMLPage[] = [];
-  /** Index of the current page in list */
   protected currentPageIndex = 0;
 
-  /** Number of the current spread in book */
   protected currentSpreadIndex = 0;
-  /**  Two-page spread in landscape mode */
   protected landscapeSpread: NumberArray[] = [];
-  /**  One-page spread in portrait mode */
   protected portraitSpread: NumberArray[] = [];
 
   protected constructor(app: PageFlip, render: Render) {
@@ -34,27 +25,18 @@ export abstract class PageCollection {
     this.isShowCover = this.app.getSettings().showCover;
   }
 
-  /**
-   * Load pages
-   */
   public abstract load(): void;
 
-  /**
-   * Clear pages list
-   */
   public destroy(): void {
     this.pages = [];
   }
 
-  /**
-   * Split the book on the two-page spread in landscape mode and one-page spread in portrait mode
-   */
   protected createSpread(): void {
     this.landscapeSpread = [];
     this.portraitSpread = [];
 
     for (let i = 0; i < this.pages.length; i++) {
-      this.portraitSpread.push([i]); // In portrait mode - (one spread = one page)
+      this.portraitSpread.push([i]);
     }
 
     let start = 0;
@@ -73,20 +55,12 @@ export abstract class PageCollection {
     }
   }
 
-  /**
-   * Get spread by mode (portrait or landscape)
-   */
   protected getSpread(): NumberArray[] {
     return this.render.getOrientation() === Orientation.LANDSCAPE
       ? this.landscapeSpread
       : this.portraitSpread;
   }
 
-  /**
-   * Get spread index by page number
-   *
-   * @param {number} pageNum - page index
-   */
   public getSpreadIndexByPage(pageNum: number): number | null {
     const spread = this.getSpread();
 
@@ -96,25 +70,14 @@ export abstract class PageCollection {
     return null;
   }
 
-  /**
-   * Get the total number of pages
-   */
   public getPageCount(): number {
     return this.pages.length;
   }
 
-  /**
-   * Get the pages list
-   */
   public getPages(): HTMLPage[] {
     return this.pages;
   }
 
-  /**
-   * Get page by index
-   *
-   * @param {number} pageIndex
-   */
   public getPage(pageIndex: number): HTMLPage {
     if (pageIndex >= 0 && pageIndex < this.pages.length) {
       return this.pages[pageIndex];
@@ -123,11 +86,6 @@ export abstract class PageCollection {
     throw new Error("Invalid page number");
   }
 
-  /**
-   * Get the next page from the specified
-   *
-   * @param {Page} current
-   */
   public nextBy(current: HTMLPage): HTMLPage | null {
     const idx = this.pages.indexOf(current);
 
@@ -136,11 +94,6 @@ export abstract class PageCollection {
     return null;
   }
 
-  /**
-   * Get previous page from specified
-   *
-   * @param {Page} current
-   */
   public prevBy(current: HTMLPage): HTMLPage | null {
     const idx = this.pages.indexOf(current);
 
@@ -149,11 +102,6 @@ export abstract class PageCollection {
     return null;
   }
 
-  /**
-   * Get flipping page depending on the direction
-   *
-   * @param {FlipDirection} direction
-   */
   public getFlippingPage(direction: FlipDirection): HTMLPage {
     const current = this.currentSpreadIndex;
 
@@ -175,11 +123,6 @@ export abstract class PageCollection {
     }
   }
 
-  /**
-   * Get Next page at the time of flipping
-   *
-   * @param {FlipDirection}  direction
-   */
   public getBottomPage(direction: FlipDirection): HTMLPage {
     const current = this.currentSpreadIndex;
 
@@ -201,9 +144,6 @@ export abstract class PageCollection {
     }
   }
 
-  /**
-   * Show next spread
-   */
   public showNext(): void {
     if (this.currentSpreadIndex < this.getSpread().length) {
       this.currentSpreadIndex++;
@@ -211,9 +151,6 @@ export abstract class PageCollection {
     }
   }
 
-  /**
-   * Show prev spread
-   */
   public showPrev(): void {
     if (this.currentSpreadIndex > 0) {
       this.currentSpreadIndex--;
@@ -221,17 +158,10 @@ export abstract class PageCollection {
     }
   }
 
-  /**
-   * Get the number of the current spread in book
-   */
   public getCurrentPageIndex(): number {
     return this.currentPageIndex;
   }
 
-  /**
-   * Show specified page
-   * @param {number} pageNum - Page index (from 0s)
-   */
   public show(pageNum: number | null = null): void {
     if (pageNum === null) pageNum = this.currentPageIndex;
 
@@ -244,18 +174,10 @@ export abstract class PageCollection {
     }
   }
 
-  /**
-   * Index of the current page in list
-   */
   public getCurrentSpreadIndex(): number {
     return this.currentSpreadIndex;
   }
 
-  /**
-   * Set new spread index as current
-   *
-   * @param {number} newIndex - new spread index
-   */
   public setCurrentSpreadIndex(newIndex: number): void {
     if (newIndex >= 0 && newIndex < this.getSpread().length) {
       this.currentSpreadIndex = newIndex;
@@ -264,9 +186,6 @@ export abstract class PageCollection {
     }
   }
 
-  /**
-   * Show current spread
-   */
   private showSpread(): void {
     const spread = this.getSpread()[this.currentSpreadIndex];
 

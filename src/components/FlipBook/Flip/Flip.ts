@@ -6,51 +6,35 @@ import { FlipCalculation } from "./FlipCalculation";
 import { PageDensity } from "../Page/Page";
 import { HTMLPage } from "../Page/HTMLPage";
 
-/**
- * Flipping direction
- */
-export const enum FlipDirection {
-  FORWARD,
-  BACK,
-}
+export const FlipDirection = {
+  FORWARD: 1,
+  BACK: 2,
+} as const;
 
-/**
- * Active corner when flipping
- */
-export const enum FlipCorner {
-  TOP = "top",
-  BOTTOM = "bottom",
-}
+export type FlipDirection = (typeof FlipDirection)[keyof typeof FlipDirection];
 
-/**
- * State of the book
- */
-export const enum FlippingState {
-  /** The user folding the page */
-  USER_FOLD = "user_fold",
+export const FlipCorner = {
+  TOP: 1,
+  BOTTOM: 2,
+} as const;
 
-  /** Mouse over active corners */
-  FOLD_CORNER = "fold_corner",
+export type FlipCorner = (typeof FlipCorner)[keyof typeof FlipCorner];
 
-  /** During flipping animation */
-  FLIPPING = "flipping",
+export const FlippingState = {
+  USER_FOLD: 1,
+  FOLD_CORNER: 2,
+  FLIPPING: 3,
+  READ: 4,
+} as const;
 
-  /** Base state */
-  READ = "read",
-}
+export type FlippingState = (typeof FlippingState)[keyof typeof FlippingState];
 
-/**
- * Class representing the flipping process
- */
 export class Flip {
   private readonly render: Render;
   private readonly app: PageFlip;
-
   private flippingPage: HTMLPage | null = null;
   private bottomPage: HTMLPage | null = null;
-
   private calc: FlipCalculation | null = null;
-
   private state: FlippingState = FlippingState.READ;
 
   constructor(render: Render, app: PageFlip) {
@@ -58,27 +42,15 @@ export class Flip {
     this.app = app;
   }
 
-  /**
-   * Called when the page folding (User drags page corner)
-   *
-   * @param globalPos - Touch Point Coordinates (relative window)
-   */
   public fold(globalPos: Point): void {
     this.setState(FlippingState.USER_FOLD);
 
-    // If the process has not started yet
     if (this.calc === null) this.start(globalPos);
 
     this.do(this.render.convertToPage(globalPos));
   }
 
-  /**
-   * Page turning with animation
-   *
-   * @param globalPos - Touch Point Coordinates (relative window)
-   */
   public flip(globalPos: Point): void {
-    // the flipiing process is already running
     if (this.calc !== null) this.render.finishAnimation();
 
     if (!this.start(globalPos)) return;
@@ -111,14 +83,7 @@ export class Flip {
     );
   }
 
-  /**
-   * Start the flipping process. Find direction and corner of flipping. Creating an object for calculation.
-   *
-   * @param {Point} globalPos - Touch Point Coordinates (relative window)
-   *
-   * @returns {boolean} True if flipping is possible, false otherwise
-   */
-  public start(globalPos: Point): boolean {
+  public start(globalPos: Point): FlipCalculation | undefined {
     this.reset();
 
     const bookPos = this.render.convertToBook(globalPos);
@@ -131,7 +96,7 @@ export class Flip {
     const flipCorner =
       bookPos.y >= rect.height / 2 ? FlipCorner.BOTTOM : FlipCorner.TOP;
 
-    if (!this.checkDirection(direction)) return false;
+    if (!this.checkDirection(direction)) return;
 
     try {
       this.flippingPage = this.app
@@ -170,27 +135,20 @@ export class Flip {
       this.calc = new FlipCalculation(
         direction,
         flipCorner,
-        rect.pageWidth.toString(10), // fix bug with type casting
-        rect.height.toString(10) // fix bug with type casting
+        rect.pageWidth.toString(10),
+        rect.height.toString(10)
       );
 
-      return true;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      return false;
+      return this.calc;
+    } catch {
+      return;
     }
   }
 
-  /**
-   * Perform calculations for the current page position. Pass data to render object
-   *
-   * @param {Point} pagePos - Touch Point Coordinates (relative active page)
-   */
   private do(pagePos: Point): void {
-    if (this.calc === null) return; // Flipping process not started
+    if (this.calc === null) return;
 
     if (this.calc.calc(pagePos)) {
-      // Perform calculations for a specific position
       const progress = this.calc.getFlippingProgress();
       const bottomPage = this.bottomPage as HTMLPage;
       const flippingPage = this.flippingPage as HTMLPage;
@@ -224,12 +182,6 @@ export class Flip {
     }
   }
 
-  /**
-   * Turn to the specified page number (with animation)
-   *
-   * @param {number} page - New page number
-   * @param {FlipCorner} corner - Active page corner when turning
-   */
   public flipToPage(page: number, corner: FlipCorner): void {
     const current = this.app.getPageCollection().getCurrentSpreadIndex();
     const next = this.app
@@ -245,15 +197,9 @@ export class Flip {
         this.app.getPageCollection().setCurrentSpreadIndex(next + 1);
         this.flipPrev(corner);
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {}
+    } catch {}
   }
 
-  /**
-   * Turn to the next page (with animation)
-   *
-   * @param {FlipCorner} corner - Active page corner when turning
-   */
   public flipNext(corner: FlipCorner): void {
     this.flip({
       x: this.render.getRect().left + this.render.getRect().pageWidth * 2 - 10,
@@ -261,11 +207,6 @@ export class Flip {
     });
   }
 
-  /**
-   * Turn to the prev page (with animation)
-   *
-   * @param {FlipCorner} corner - Active page corner when turning
-   */
   public flipPrev(corner: FlipCorner): void {
     this.flip({
       x: 10,
@@ -273,9 +214,6 @@ export class Flip {
     });
   }
 
-  /**
-   * Called when the user has stopped flipping
-   */
   public stopMove(): void {
     if (this.calc === null) return;
 
@@ -289,12 +227,6 @@ export class Flip {
     else this.animateFlippingTo(pos, { x: rect.pageWidth, y }, false);
   }
 
-  /**
-   * Fold the corners of the book when the mouse pointer is over them.
-   * Called when the mouse pointer is over the book without clicking
-   *
-   * @param globalPos
-   */
   public showCorner(globalPos: Point): void {
     if (!this.checkState(FlippingState.READ, FlippingState.FOLD_CORNER)) return;
 
@@ -303,8 +235,8 @@ export class Flip {
 
     if (this.isPointOnCorners(globalPos)) {
       if (this.calc === null) {
-        if (!this.start(globalPos)) return;
-        const calc = this.calc as unknown as FlipCalculation;
+        const calc = this.start(globalPos);
+        if (!calc) return;
 
         this.setState(FlippingState.FOLD_CORNER);
 
@@ -336,14 +268,6 @@ export class Flip {
     }
   }
 
-  /**
-   * Starting the flipping animation process
-   *
-   * @param {Point} start - animation start point
-   * @param {Point} dest - animation end point
-   * @param {boolean} isTurned - will the page turn over, or just bring it back
-   * @param {boolean} needReset - reset the flipping process at the end of the animation
-   */
   private animateFlippingTo(
     start: Point,
     dest: Point,
@@ -379,16 +303,10 @@ export class Flip {
     });
   }
 
-  /**
-   * Get the current calculations object
-   */
   public getCalculation(): FlipCalculation {
     return this.calc as FlipCalculation;
   }
 
-  /**
-   * Get current flipping state
-   */
   public getState(): FlippingState {
     return this.state;
   }

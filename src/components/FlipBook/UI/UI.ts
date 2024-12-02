@@ -9,31 +9,18 @@ type SwipeData = {
   time: number;
 };
 
-/**
- * UI Class, represents work with DOM
- */
 export abstract class UI {
   protected readonly parentElement: HTMLElement;
-
   protected readonly app: PageFlip;
   protected readonly wrapper: HTMLElement;
   protected distElement!: HTMLElement;
-
   private touchPoint: SwipeData | null = null;
   private readonly swipeTimeout = 250;
   private readonly swipeDistance: number;
-
   private onResize = (): void => {
     this.update();
   };
 
-  /**
-   * @constructor
-   *
-   * @param {HTMLElement} inBlock - Root HTML Element
-   * @param {PageFlip} app - PageFlip instanse
-   * @param {FlipSetting} setting - Configuration object
-   */
   protected constructor(
     inBlock: HTMLElement,
     app: PageFlip,
@@ -74,9 +61,6 @@ export abstract class UI {
     this.swipeDistance = setting.swipeDistance;
   }
 
-  /**
-   * Destructor. Remove all HTML elements and all event handlers
-   */
   public destroy(): void {
     if (this.app.getSettings().useMouseEvents) this.removeHandlers();
 
@@ -84,34 +68,16 @@ export abstract class UI {
     this.wrapper.remove();
   }
 
-  /**
-   * Updating child components when resizing
-   */
   public abstract update(): void;
 
-  /**
-   * Get parent element for book
-   *
-   * @returns {HTMLElement}
-   */
   public getDistElement(): HTMLElement {
     return this.distElement;
   }
 
-  /**
-   * Get wrapper element
-   *
-   * @returns {HTMLElement}
-   */
   public getWrapper(): HTMLElement {
     return this.wrapper;
   }
 
-  /**
-   * Updates styles and sizes based on book orientation
-   *
-   * @param {Orientation} orientation - New book orientation
-   */
   public setOrientationStyle(orientation: Orientation): void {
     this.wrapper.classList.remove("--portrait", "--landscape");
 
@@ -162,12 +128,6 @@ export abstract class UI {
     window.addEventListener("touchend", this.onTouchEnd);
   }
 
-  /**
-   * Convert global coordinates to relative book coordinates
-   *
-   * @param x
-   * @param y
-   */
   private getMousePos(x: number, y: number): Point {
     const rect = this.distElement.getBoundingClientRect();
 

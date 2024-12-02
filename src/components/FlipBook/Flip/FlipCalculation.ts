@@ -2,37 +2,19 @@ import { Helper } from "../Helper";
 import { Point, Rect, RectPoints, Segment } from "../BasicTypes";
 import { FlipCorner, FlipDirection } from "./Flip";
 
-/**
- * Class representing mathematical methods for calculating page position (rotation angle, clip area ...)
- */
 export class FlipCalculation {
-  /** Calculated rotation angle to flipping page */
   private angle!: number;
-  /** Calculated position to flipping page */
   private position!: Point;
-
   private rect!: RectPoints;
-
-  /** The point of intersection of the page with the borders of the book */
-  private topIntersectPoint: Point | null = null; // With top border
-  private sideIntersectPoint: Point | null = null; // With side border
-  private bottomIntersectPoint: Point | null = null; // With bottom border
-
+  private topIntersectPoint: Point | null = null;
+  private sideIntersectPoint: Point | null = null;
+  private bottomIntersectPoint: Point | null = null;
   private readonly pageWidth: number;
   private readonly pageHeight: number;
 
-  /**
-   * @constructor
-   *
-   * @param {FlipDirection} direction - Flipping direction
-   * @param {FlipCorner} corner - Flipping corner
-   * @param pageWidth - Current page width
-   * @param pageHeight - Current page height
-   */
   constructor(
     private direction: FlipDirection,
     private corner: FlipCorner,
-
     pageWidth: string,
     pageHeight: string
   ) {
@@ -40,13 +22,6 @@ export class FlipCalculation {
     this.pageHeight = parseInt(pageHeight, 10);
   }
 
-  /**
-   * The main calculation method
-   *
-   * @param {Point} localPos - Touch Point Coordinates (relative active page!)
-   *
-   * @returns {boolean} True - if the calculations were successful, false if errors occurred
-   */
   public calc(localPos: Point): boolean {
     try {
       // Find: page rotation angle and active corner position
@@ -60,11 +35,6 @@ export class FlipCalculation {
     }
   }
 
-  /**
-   * Get the crop area for the flipping page
-   *
-   * @returns {Point[]} Polygon page
-   */
   public getFlippingClipArea(): Point[] {
     const result = [];
     let clipBottom = false;
@@ -89,11 +59,6 @@ export class FlipCalculation {
     return result;
   }
 
-  /**
-   * Get the crop area for the page that is below the page to be flipped
-   *
-   * @returns {Point[]} Polygon page
-   */
   public getBottomClipArea(): Point[] {
     const result = [];
 
@@ -128,9 +93,6 @@ export class FlipCalculation {
     return result;
   }
 
-  /**
-   * Get page rotation angle
-   */
   public getAngle(): number {
     if (this.direction === FlipDirection.FORWARD) {
       return -this.angle;
@@ -139,23 +101,14 @@ export class FlipCalculation {
     return this.angle;
   }
 
-  /**
-   * Get page area while flipping
-   */
   public getRect(): RectPoints {
     return this.rect;
   }
 
-  /**
-   * Get the position of the active angle when turning
-   */
   public getPosition(): Point {
     return this.position;
   }
 
-  /**
-   * Get the active corner of the page (which pull)
-   */
   public getActiveCorner(): Point {
     if (this.direction === FlipDirection.FORWARD) {
       return this.rect.topLeft;
@@ -164,32 +117,20 @@ export class FlipCalculation {
     return this.rect.topRight;
   }
 
-  /**
-   * Get flipping direction
-   */
   public getDirection(): FlipDirection {
     return this.direction;
   }
 
-  /**
-   * Get flipping progress (0-100)
-   */
   public getFlippingProgress(): number {
     return Math.abs(
       ((this.position.x - this.pageWidth) / (2 * this.pageWidth)) * 100
     );
   }
 
-  /**
-   * Get flipping corner position (top, bottom)
-   */
   public getCorner(): FlipCorner {
     return this.corner;
   }
 
-  /**
-   * Get start position for the page that is below the page to be flipped
-   */
   public getBottomPagePosition(): Point {
     if (this.direction === FlipDirection.BACK) {
       return { x: this.pageWidth, y: 0 };
@@ -198,9 +139,6 @@ export class FlipCalculation {
     return { x: 0, y: 0 };
   }
 
-  /**
-   * Get the starting position of the shadow
-   */
   public getShadowStartPoint(): Point {
     if (this.corner === FlipCorner.TOP) {
       return this.topIntersectPoint as Point;
@@ -211,9 +149,6 @@ export class FlipCalculation {
     }
   }
 
-  /**
-   * Get the rotate angle of the shadow
-   */
   public getShadowAngle(): number {
     const angle = Helper.GetAngleBetweenTwoLine(this.getSegmentToShadowLine(), [
       { x: 0, y: 0 },
