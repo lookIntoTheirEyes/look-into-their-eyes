@@ -65,6 +65,7 @@ const Book: React.FC<BookProps> = ({
         maxWidth={1000}
         minHeight={400}
         maxHeight={1533}
+        renderOnlyPageLengthChange
         rtl={rtl}
         onFlip={({ data }) => {
           const pageNum = (data || 0) + 1;

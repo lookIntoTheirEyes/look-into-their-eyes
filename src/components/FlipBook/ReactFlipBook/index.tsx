@@ -42,7 +42,6 @@ const HTMLFlipBookForward = React.forwardRef<
   }, []);
 
   useEffect(() => {
-    childRef.current = [];
     if (props.children) {
       const childList = React.Children.map(props.children, (child) =>
         React.cloneElement(child as ReactElement, {
@@ -65,7 +64,7 @@ const HTMLFlipBookForward = React.forwardRef<
       }
     }
   }, [
-    // pages.length,
+    pages.length,
     props.children,
     props.renderOnlyPageLengthChange,
     props.rtl,
