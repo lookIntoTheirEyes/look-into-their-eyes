@@ -8,7 +8,7 @@ interface IBookProps {
   tableOfContentsTitle?: string;
   Pages: JSX.Element[];
   Front: JSX.Element;
-  Back: JSX.Element;
+  Back?: JSX.Element;
   pagesContent: BookPage[];
   noContentAmount: number;
   children?: ReactNode;
