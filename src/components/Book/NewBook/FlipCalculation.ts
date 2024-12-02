@@ -457,7 +457,12 @@ export class FlipCalculation2 {
   }
 }
 function getFlippingProgress(x: number, pageWidth: number): number {
-  return Math.abs(((x - pageWidth) / (2 * pageWidth)) * 100);
+  const clampedX = Math.max(-pageWidth, Math.min(pageWidth, x));
+
+  // Normalize progress: 0 at start, 100 at the end
+  const progress = (clampedX / pageWidth) * 100;
+
+  return Math.max(0, Math.min(100, progress)); // Clamp to [0, 100]
 }
 function getAngle(direction: FlipDirection, progress: number) {
   return (

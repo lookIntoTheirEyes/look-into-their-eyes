@@ -46,7 +46,7 @@ export function useBookStyle() {
 
       setBookStyle({
         width: width || containerWidth,
-        height,
+        height: height + 70,
         top,
         left,
         mode: isMobile ? Orientation.PORTRAIT : Orientation.LANDSCAPE,

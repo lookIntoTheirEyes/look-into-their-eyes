@@ -4,24 +4,25 @@ import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/routing";
 
 export interface BookLogicParams {
-  pagesContent: React.ReactNode[];
+  pagesContent: Page[];
   toc?: {
     title: string;
     pages: Page[];
   };
   isSinglePage: boolean;
+  noContentPages: number;
 }
 
 export function useBookLogic({
   pagesContent,
-  toc,
   isSinglePage,
+  noContentPages,
 }: BookLogicParams) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const queryParamPage = +searchParams.get("page")!;
-  const totalPages = pagesContent.length + (toc ? 1 : 0);
+  const totalPages = pagesContent.length + noContentPages;
   const pageNum =
     (queryParamPage <= 0 || queryParamPage > totalPages ? 1 : queryParamPage) -
     1;

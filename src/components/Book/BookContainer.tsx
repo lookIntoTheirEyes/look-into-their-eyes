@@ -2,14 +2,12 @@ import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 
 import { Page as BookPage } from "@/lib/model/book";
-import NewBookContainer from "./NewBook/NewBookContainer";
+import NewBook from "./NewBook/NewBook";
 
 interface IBookProps {
   rtl: boolean;
   tableOfContentsTitle?: string;
-
   pagesContent: BookPage[];
-
   children?: ReactNode;
 }
 
@@ -31,8 +29,6 @@ const BookContainer: React.FC<IBookProps> = ({
 
   const noContentPages = 3;
 
-  const pageNum = (i: number) => i + noContentPages;
-
   const frontDetails = {
     title: t("story.front.title"),
     author: t("story.front.author"),
@@ -48,10 +44,10 @@ const BookContainer: React.FC<IBookProps> = ({
   return (
     <>
       {children}
-      <NewBookContainer
+      <NewBook
         storyTitle={t("story.title")}
         pageCta={t("common.pageCta")}
-        pageNum={pageNum}
+        noContentPages={noContentPages}
         frontDetails={frontDetails}
         backDetails={backDetails}
         bookPages={pagesContent}

@@ -1,5 +1,5 @@
 import { PageMouseLocation, Point, Rect, Segment } from "./model";
-import { BookStyle } from "./useBookStyle";
+import { BookStyle } from "./hooks/useBookStyle";
 
 /**
  * A class containing helping mathematical methods

@@ -1,16 +1,17 @@
 "use client";
 
-import { useBookLogic } from "./useBookLogic";
+import { useRef } from "react";
+import { CoverPage, Page as BookPage } from "@/lib/model/book";
+import { useBookStyle } from "./hooks/useBookStyle";
+import { useBookLogic } from "./hooks/useBookLogic";
+import { usePageFlip } from "./hooks/usePageFlip";
+import { useBookLayout } from "./hooks/useBookLayout";
 import Controls from "../Controls/Controls";
-import { Page } from "@/lib/model/book";
-import styles from "./NewBook.module.css";
-import TableOfContentsContainer from "../TableOfContents/TableOfContentsContainer";
-import { useBookStyle } from "./useBookStyle";
+import AnimatedPage from "./AnimatedPage/AnimatedPage";
 
-import AnimatedPages from "./AnimatedPages/AnimatedPages";
+import styles from "./NewBook.module.css";
 
 interface BookProps {
-  pagesContent: React.ReactNode[];
   text: {
     next: string;
     previous: string;
@@ -18,61 +19,98 @@ interface BookProps {
   isRtl: boolean;
   toc?: {
     title: string;
-    pages: Page[];
+    pages: BookPage[];
   };
+  bookPages: BookPage[];
+  storyTitle: string;
+  pageCta: string;
+  backDetails: CoverPage;
+  frontDetails: CoverPage;
+  noContentPages: number;
 }
 
-const NewBook: React.FC<BookProps> = ({ pagesContent, isRtl, text, toc }) => {
-  const { bookContainerRef, bookStyle, isSinglePage } = useBookStyle();
+const NewBook: React.FC<BookProps> = ({
+  bookPages,
+  toc,
+  storyTitle,
+  pageCta,
+  backDetails,
+  frontDetails,
+  noContentPages,
+  isRtl,
+  text,
+}) => {
+  const bookRef = useRef<HTMLDivElement>(null);
+  const { bookStyle, bookContainerRef, isSinglePage } = useBookStyle();
 
   const {
+    totalPages,
     currentPage,
+    setCurrentPage,
     handleNextPage,
     handlePrevPage,
+  } = useBookLogic({ noContentPages, isSinglePage, pagesContent: bookPages });
+
+  const { pages } = useBookLayout({
+    bookPages,
+    toc,
+    noContentPages,
+    storyTitle,
+    pageCta,
+    backDetails,
+    frontDetails,
+    isRtl,
     setCurrentPage,
-    totalPages,
-  } = useBookLogic({ pagesContent, toc, isSinglePage });
+  });
 
-  console.log("currentPage NewBook", currentPage);
+  const { props, bind } = usePageFlip({
+    pageWidth: bookStyle.width / 2,
+    isRtl,
+    onNextPage: handleNextPage,
+    onPrevPage: handlePrevPage,
+    bookRef,
+  });
 
-  const tocContainer = toc && (
-    <TableOfContentsContainer
-      key='toc'
-      noContentAmount={2}
-      rtl={isRtl}
-      goToPage={(pageNum: number) => {
-        return setCurrentPage((pageNum % 2 === 0 ? pageNum - 1 : pageNum) - 1);
-      }}
-      toc={toc}
-    />
-  );
-  const pages = toc
-    ? [
-        pagesContent[0],
-        tocContainer as React.ReactNode,
-        ...pagesContent.slice(1),
-      ]
-    : pagesContent;
+  const isFirstPage = currentPage === 0;
+  const isLastPage = currentPage === totalPages;
 
   return (
     <div ref={bookContainerRef} className={styles.bookContainer}>
       <div
+        ref={bookRef}
+        key='book'
         style={{
           width: `${bookStyle.width}px`,
           height: `${bookStyle.height}px`,
         }}
         className={styles.book}
       >
-        <AnimatedPages
-          currentPage={currentPage}
-          pages={pages}
-          bookStyle={bookStyle}
-          handleNextPage={handleNextPage}
-          handlePrevPage={handlePrevPage}
-          isRtl={isRtl}
-          isSinglePage={isSinglePage}
-          totalPages={totalPages}
-        />
+        {props.map(({ x, y, r, z, displayFront, displayBack }, i) => {
+          const shouldRender = !i || (!isFirstPage && !isLastPage);
+
+          return (
+            shouldRender && (
+              <AnimatedPage
+                key={`page-${currentPage + i}`}
+                isFirst={isFirstPage}
+                isLast={isLastPage}
+                isSinglePage={isSinglePage}
+                isRtl={isRtl}
+                pages={pages}
+                i={i}
+                x={x}
+                y={y}
+                r={r}
+                z={z}
+                displayFront={displayFront}
+                displayBack={displayBack}
+                bind={bind}
+                pageNum={currentPage + i}
+                pageWidth={bookStyle.width / 2}
+              />
+            )
+          );
+        })}
       </div>
       <Controls
         flipPage={(dir) =>
