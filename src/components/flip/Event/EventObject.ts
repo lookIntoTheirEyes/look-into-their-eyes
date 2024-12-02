@@ -1,13 +1,7 @@
 import { PageFlip } from "../PageFlip";
 
-/**
- * Data type passed to the event handler
- */
-export type DataType = number | string | boolean | object;
+export type DataType = number | null;
 
-/**
- * Type of object in event handlers
- */
 export interface WidgetEvent {
   data: DataType;
   object: PageFlip;
@@ -15,35 +9,21 @@ export interface WidgetEvent {
 
 type EventCallback = (e: WidgetEvent) => void;
 
-/**
- * A class implementing a basic event model
- */
 export abstract class EventObject {
-  private events = new Map<string, EventCallback[]>();
+  private events: Map<string, EventCallback[]> = new Map();
 
-  /**
-   * Add new event handler
-   *
-   * @param {string} eventName
-   * @param {EventCallback} callback
-   */
-  public on(eventName: string, callback: EventCallback): EventObject {
+  public on(eventName: string, callback: EventCallback): this {
     if (!this.events.has(eventName)) {
       this.events.set(eventName, [callback]);
     } else {
-      this.events.get(eventName)?.push(callback);
+      this.events.get(eventName)!.push(callback);
     }
 
     return this;
   }
 
-  /**
-   * Removing all handlers from an event
-   *
-   * @param {string} event - Event name
-   */
-  public off(event: string): void {
-    this.events.delete(event);
+  public off(eventName: string): void {
+    this.events.delete(eventName);
   }
 
   protected trigger(
@@ -51,9 +31,10 @@ export abstract class EventObject {
     app: PageFlip,
     data: DataType = null
   ): void {
-    if (!this.events.has(eventName)) return;
+    const callbacks = this.events.get(eventName);
+    if (!callbacks) return;
 
-    for (const callback of this.events.get(eventName)) {
+    for (const callback of callbacks) {
       callback({ data, object: app });
     }
   }

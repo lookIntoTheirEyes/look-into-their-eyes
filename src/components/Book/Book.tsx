@@ -78,7 +78,7 @@ const Book: React.FC<BookProps> = ({
             ? !data
               ? pagesAmount
               : pagesAmount - data - (isOnePageMode ? 0 : 1)
-            : data + 1;
+            : (data || 0) + 1;
 
           updatePage(pageNum || 1);
         }}
