@@ -106,4 +106,8 @@ const HTMLFlipBookForward = React.forwardRef<
   return <div ref={htmlElementRef}>{pages}</div>;
 });
 
-export const HTMLFlipBook = React.memo(HTMLFlipBookForward);
+const HTMLFlipBook = React.memo(HTMLFlipBookForward);
+
+HTMLFlipBook.displayName = "HTMLFlipBook";
+
+export default HTMLFlipBook;

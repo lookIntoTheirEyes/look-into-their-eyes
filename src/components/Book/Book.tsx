@@ -6,7 +6,7 @@ import { Page } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
 import DummyPage from "@/components/Book/DummyPage";
 import TableOfContentsContainer from "@/components/Book/TableOfContents/TableOfContentsContainer";
-import { HTMLFlipBook } from "../flip/html-flip-book/index";
+import FlipBook from "../flip/html-flip-book/index";
 import { SizeType } from "../flip/Settings";
 
 interface BookProps extends BookActions {
@@ -56,7 +56,7 @@ const Book: React.FC<BookProps> = ({
   console.log("pageFlipRef", pageFlipRef.current);
   return (
     <div className={styles.storyContainer}>
-      <HTMLFlipBook
+      <FlipBook
         ref={pageFlipRef}
         startPage={
           rtl
@@ -88,7 +88,7 @@ const Book: React.FC<BookProps> = ({
         {renderPage(Pages.length > 0, Pages)}
         {renderToc(rtl)}
         {renderPage(!!Back, Back)}
-      </HTMLFlipBook>
+      </FlipBook>
       <Controls
         currPage={currPage}
         pageCount={pagesAmount}

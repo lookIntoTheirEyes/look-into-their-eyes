@@ -1,5 +1,4 @@
 import { WidgetEvent } from "../Event/EventObject";
-import { PageFlip } from "../PageFlip";
 import { SizeType } from "../Settings";
 
 export type PageState = "user_fold" | "fold_corner" | "flipping" | "read";
