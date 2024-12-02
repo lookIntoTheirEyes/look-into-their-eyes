@@ -87,9 +87,9 @@ export class HTMLPage extends Page {
       commonStyle +
       `
                 backface-visibility: hidden;
-                -webkit-backface-visibility: hidden;
+             
                 clip-path: none;
-                -webkit-clip-path: none;
+             
             ` +
       (this.orientation === PageOrientation.LEFT
         ? `transform-origin: ${this.render.getRect().pageWidth}px 0; 
@@ -124,7 +124,7 @@ export class HTMLPage extends Page {
 
     const newStyle =
       commonStyle +
-      `transform-origin: 0 0; clip-path: ${polygon}; -webkit-clip-path: ${polygon};` +
+      `transform-origin: 0 0; clip-path: ${polygon}; ` +
       (this.render.isSafari() && this.state.angle === 0
         ? `transform: translate(${position.x}px, ${position.y}px);`
         : `transform: translate3d(${position.x}px, ${position.y}px, 0) rotate(${this.state.angle}rad);`);

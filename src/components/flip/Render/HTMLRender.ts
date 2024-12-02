@@ -74,6 +74,10 @@ export class HTMLRender extends Render {
   private drawHardInnerShadow(): void {
     const rect = this.getRect();
 
+    if (!this.shadow) {
+      return;
+    }
+
     const progress =
       this.shadow.progress > 100
         ? 200 - this.shadow.progress
@@ -110,6 +114,9 @@ export class HTMLRender extends Render {
    * Draw outer shadow to the hard page
    */
   private drawHardOuterShadow(): void {
+    if (!this.shadow) {
+      return;
+    }
     const rect = this.getRect();
 
     const progress =
@@ -147,6 +154,9 @@ export class HTMLRender extends Render {
    * Draw inner shadow to the soft page
    */
   private drawInnerShadow(): void {
+    if (!this.shadow) {
+      return;
+    }
     const rect = this.getRect();
 
     const innerShadowSize = (this.shadow.width * 3) / 4;
@@ -202,7 +212,7 @@ export class HTMLRender extends Render {
       shadowPos.y - 100
     }px, 0) rotate(${angle}rad);
             clip-path: ${polygon};
-            -webkit-clip-path: ${polygon};
+           
         `;
 
     this.innerShadow!.style.cssText = newStyle;
@@ -212,6 +222,9 @@ export class HTMLRender extends Render {
    * Draw outer shadow to the soft page
    */
   private drawOuterShadow(): void {
+    if (!this.shadow) {
+      return;
+    }
     const rect = this.getRect();
 
     const shadowPos = this.convertToGlobal({
@@ -269,7 +282,7 @@ export class HTMLRender extends Render {
       shadowPos.y - 100
     }px, 0) rotate(${angle}rad);
             clip-path: ${polygon};
-            -webkit-clip-path: ${polygon};
+           
         `;
 
     this.outerShadow!.style.cssText = newStyle;
