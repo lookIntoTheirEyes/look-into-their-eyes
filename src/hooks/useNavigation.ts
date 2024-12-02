@@ -1,29 +1,23 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
-interface PageFlipMethods {
-  flipNext: () => void;
-  flipPrev: () => void;
-  destroy: () => void;
-  flip: (pageNum: number) => void;
-}
+import { PageFlip } from "@/components/flip/PageFlip";
 
 interface CustomPageFlip {
-  pageFlip: () => PageFlipMethods;
+  pageFlip: () => PageFlip | null;
 }
 
 export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
-  const pageFlipRef = useRef<CustomPageFlip>(null);
+  const pageFlipRef = useRef<CustomPageFlip | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const queryParamPage = +searchParams.get("page")!;
+  const queryParamPage = +(searchParams.get("page") || 1);
   const page =
     queryParamPage <= 0 || queryParamPage > pagesAmount ? 1 : queryParamPage;
 
-  const [currPage, setCurrPage] = useState<number>(page);
+  const [currPage, setCurrPage] = useState(page);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -53,7 +47,7 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
       ? "flipNext"
       : "flipPrev";
 
-    pageFlipRef.current?.pageFlip()[flipDirection]();
+    pageFlipRef.current?.pageFlip()?.[flipDirection]();
   };
 
   const updatePage = (pageNum: number) => {
@@ -63,8 +57,7 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
 
   const goToPage = (pageNum: number) => {
     const adjustedPageNum = (isRtl ? pagesAmount - pageNum + 1 : pageNum) - 1;
-
-    pageFlipRef.current?.pageFlip().flip(adjustedPageNum);
+    pageFlipRef.current?.pageFlip()?.flip(adjustedPageNum);
   };
 
   useEffect(() => {
@@ -72,15 +65,13 @@ export const useBookNavigation = (pagesAmount: number, isRtl: boolean) => {
       setCurrPage(page);
       updateUrlWithSearchParams(page);
     }
-  }, [page, queryParamPage, updateUrlWithSearchParams, isRtl]);
+  }, [page, queryParamPage, updateUrlWithSearchParams]);
 
   useEffect(() => {
-    const pageFlipInstance = pageFlipRef.current?.pageFlip();
-
     return () => {
-      pageFlipInstance?.destroy();
+      pageFlipRef.current?.pageFlip()?.destroy();
     };
-  }, [pageFlipRef, isRtl]);
+  }, []);
 
   return {
     currPage,

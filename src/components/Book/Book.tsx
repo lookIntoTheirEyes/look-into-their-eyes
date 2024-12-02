@@ -1,6 +1,4 @@
 "use client";
-
-import PageFlip from "react-pageflip";
 import { useBookNavigation } from "@/hooks/useNavigation";
 import styles from "./Book.module.css";
 import { BookActions } from "@/lib/utils/utils";
@@ -8,6 +6,8 @@ import { Page } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
 import DummyPage from "@/components/Book/DummyPage";
 import TableOfContentsContainer from "@/components/Book/TableOfContents/TableOfContentsContainer";
+import { HTMLFlipBook } from "../flip/html-flip-book/index";
+import { SizeType } from "../flip/Settings";
 
 interface BookProps extends BookActions {
   rtl: boolean;
@@ -33,7 +33,6 @@ const Book: React.FC<BookProps> = ({
 
   const { currPage, pageFlipRef, flipPage, updatePage, goToPage } =
     useBookNavigation(pagesAmount, rtl);
-
   const renderToc = (isRender: boolean) => {
     return renderPage(
       !!toc && isRender,
@@ -54,12 +53,11 @@ const Book: React.FC<BookProps> = ({
     return condition ? page : <DummyPage />;
   };
 
+  console.log("pageFlipRef", pageFlipRef.current);
   return (
     <div className={styles.storyContainer}>
-      <PageFlip
+      <HTMLFlipBook
         ref={pageFlipRef}
-        className={""}
-        style={{}}
         startPage={
           rtl
             ? currPage < noContentAmount - 1
@@ -69,27 +67,13 @@ const Book: React.FC<BookProps> = ({
         }
         width={550}
         height={720}
-        size='stretch'
+        size={SizeType.STRETCH}
         minWidth={315}
         maxWidth={1000}
         minHeight={400}
         maxHeight={1533}
-        maxShadowOpacity={1}
-        drawShadow={false}
-        flippingTime={700}
-        startZIndex={30}
-        swipeDistance={30}
-        usePortrait
-        autoSize
-        showCover
-        mobileScrollSupport
-        clickEventForward
-        useMouseEvents
-        showPageCorners
-        renderOnlyPageLengthChange
-        disableFlipByClick={false}
         onFlip={({ data, object }) => {
-          const isOnePageMode = object.render.orientation === "portrait";
+          const isOnePageMode = object.getOrientation() === "portrait";
           const pageNum = rtl
             ? !data
               ? pagesAmount
@@ -104,7 +88,7 @@ const Book: React.FC<BookProps> = ({
         {renderPage(Pages.length > 0, Pages)}
         {renderToc(rtl)}
         {renderPage(!!Back, Back)}
-      </PageFlip>
+      </HTMLFlipBook>
       <Controls
         currPage={currPage}
         pageCount={pagesAmount}
