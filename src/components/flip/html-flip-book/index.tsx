@@ -106,6 +106,8 @@ const HTMLFlipBookForward = React.forwardRef<
   return <div ref={htmlElementRef}>{pages}</div>;
 });
 
+HTMLFlipBookForward.displayName = "HTMLFlipBookForward";
+
 const HTMLFlipBook = React.memo(HTMLFlipBookForward);
 
 HTMLFlipBook.displayName = "HTMLFlipBook";
