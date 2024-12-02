@@ -55,8 +55,7 @@ export class FlipCalculation {
       this.calculateIntersectPoint(this.position);
 
       return true;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
+    } catch {
       return false;
     }
   }

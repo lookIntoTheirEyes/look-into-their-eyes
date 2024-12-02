@@ -39,8 +39,7 @@ const StoryModal: React.FC<IStoryModalProps> = async ({
         </div>
       </ModalClient>
     );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch {
     redirect({ href: "/story", locale: lang });
   }
 };
