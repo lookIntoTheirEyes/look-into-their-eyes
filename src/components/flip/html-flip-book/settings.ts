@@ -1,3 +1,4 @@
+import { WidgetEvent } from "../Event/EventObject";
 import { PageFlip } from "../PageFlip";
 import { SizeType } from "../Settings";
 
@@ -58,5 +59,5 @@ export interface IBookState {
 }
 
 export interface IEventProps {
-  onFlip?: (flipEvent: { data: number; object: PageFlip }) => void;
+  onFlip?: (flipEvent: WidgetEvent) => void;
 }

@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import { IFlipSetting, IEventProps } from "./settings";
 import { PageFlip } from "../PageFlip";
+import { WidgetEvent } from "../Event/EventObject";
 
 interface IProps extends IFlipSetting, IEventProps {
   children: React.ReactNode;
@@ -81,7 +82,7 @@ const HTMLFlipBookForward = React.forwardRef<
     const setHandlers = () => {
       const flip = pageFlip.current;
       if (flip && props.onFlip) {
-        flip.on("flip", (e: unknown) => props.onFlip?.(e));
+        flip.on("flip", (e: WidgetEvent) => props.onFlip?.(e));
       }
     };
 
