@@ -86,7 +86,7 @@ export abstract class PageCollection {
    *
    * @param {number} pageNum - page index
    */
-  public getSpreadIndexByPage(pageNum: number): number {
+  public getSpreadIndexByPage(pageNum: number): number | null {
     const spread = this.getSpread();
 
     for (let i = 0; i < spread.length; i++)
@@ -127,7 +127,7 @@ export abstract class PageCollection {
    *
    * @param {Page} current
    */
-  public nextBy(current: Page): Page {
+  public nextBy(current: Page): Page | null {
     const idx = this.pages.indexOf(current);
 
     if (idx < this.pages.length - 1) return this.pages[idx + 1];
@@ -140,7 +140,7 @@ export abstract class PageCollection {
    *
    * @param {Page} current
    */
-  public prevBy(current: Page): Page {
+  public prevBy(current: Page): Page | null {
     const idx = this.pages.indexOf(current);
 
     if (idx > 0) return this.pages[idx - 1];
@@ -237,7 +237,7 @@ export abstract class PageCollection {
     if (pageNum < 0 || pageNum >= this.pages.length) return;
 
     const spreadIndex = this.getSpreadIndexByPage(pageNum);
-    if (spreadIndex >= 0) {
+    if (spreadIndex !== null && spreadIndex >= 0) {
       this.currentSpreadIndex = spreadIndex;
       this.showSpread();
     }

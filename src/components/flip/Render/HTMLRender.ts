@@ -408,8 +408,6 @@ export class HTMLRender extends Render {
     super.update();
 
     if (this.rightPage) {
-      console.log("this.rightPage", this.rightPage);
-
       this.rightPage.setOrientation(PageOrientation.RIGHT);
     }
 

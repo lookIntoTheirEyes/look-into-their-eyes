@@ -58,14 +58,14 @@ export abstract class Render {
   protected readonly app: PageFlip;
 
   /** Left static book page */
-  protected leftPage!: Page;
+  protected leftPage!: Page | null;
   /** Right static book page */
-  protected rightPage!: Page;
+  protected rightPage!: Page | null;
 
   /** Page currently flipping */
-  protected flippingPage!: Page;
+  protected flippingPage!: Page | null;
   /** Next page at the time of flipping */
-  protected bottomPage!: Page;
+  protected bottomPage!: Page | null;
 
   /** Current flipping direction */
   protected direction!: FlipDirection;
@@ -362,7 +362,7 @@ export abstract class Render {
    *
    * @param page
    */
-  public setRightPage(page: Page): void {
+  public setRightPage(page: Page | null): void {
     if (page !== null) page.setOrientation(PageOrientation.RIGHT);
 
     this.rightPage = page;
@@ -372,7 +372,7 @@ export abstract class Render {
    * Set left static book page
    * @param page
    */
-  public setLeftPage(page: Page): void {
+  public setLeftPage(page: Page | null): void {
     if (page !== null) page.setOrientation(PageOrientation.LEFT);
 
     this.leftPage = page;
@@ -382,7 +382,7 @@ export abstract class Render {
    * Set next page at the time of flipping
    * @param page
    */
-  public setBottomPage(page: Page): void {
+  public setBottomPage(page: Page | null): void {
     if (page !== null)
       page.setOrientation(
         this.direction === FlipDirection.BACK
@@ -398,7 +398,7 @@ export abstract class Render {
    *
    * @param page
    */
-  public setFlippingPage(page: Page): void {
+  public setFlippingPage(page: Page | null): void {
     if (page !== null)
       page.setOrientation(
         this.direction === FlipDirection.FORWARD &&
@@ -460,10 +460,8 @@ export abstract class Render {
    *
    * @returns {Point} Global coordinates relative to the window
    */
-  public convertToGlobal(pos: Point, direction?: FlipDirection): Point | null {
+  public convertToGlobal(pos: Point, direction?: FlipDirection): Point {
     if (!direction) direction = this.direction;
-
-    if (pos == null) return null;
 
     const rect = this.getRect();
 

@@ -66,12 +66,12 @@ export class FlipCalculation {
    *
    * @returns {Point[]} Polygon page
    */
-  public getFlippingClipArea(): (Point | null)[] {
+  public getFlippingClipArea(): Point[] {
     const result = [];
     let clipBottom = false;
 
     result.push(this.rect.topLeft);
-    result.push(this.topIntersectPoint);
+    result.push(this.topIntersectPoint as Point);
 
     if (this.sideIntersectPoint === null) {
       clipBottom = true;
@@ -81,7 +81,7 @@ export class FlipCalculation {
       if (this.bottomIntersectPoint === null) clipBottom = false;
     }
 
-    result.push(this.bottomIntersectPoint);
+    result.push(this.bottomIntersectPoint as Point);
 
     if (clipBottom || this.corner === FlipCorner.BOTTOM) {
       result.push(this.rect.bottomLeft);
@@ -98,7 +98,7 @@ export class FlipCalculation {
   public getBottomClipArea(): Point[] {
     const result = [];
 
-    result.push(this.topIntersectPoint);
+    result.push(this.topIntersectPoint as Point);
 
     if (this.corner === FlipCorner.TOP) {
       result.push({ x: this.pageWidth, y: 0 });
@@ -123,8 +123,8 @@ export class FlipCalculation {
       }
     }
 
-    result.push(this.bottomIntersectPoint);
-    result.push(this.topIntersectPoint);
+    result.push(this.bottomIntersectPoint as Point);
+    result.push(this.topIntersectPoint as Point);
 
     return result;
   }
@@ -204,11 +204,11 @@ export class FlipCalculation {
    */
   public getShadowStartPoint(): Point {
     if (this.corner === FlipCorner.TOP) {
-      return this.topIntersectPoint;
+      return this.topIntersectPoint as Point;
     } else {
       if (this.sideIntersectPoint !== null) return this.sideIntersectPoint;
 
-      return this.topIntersectPoint;
+      return this.topIntersectPoint as Point;
     }
   }
 
@@ -435,7 +435,7 @@ export class FlipCalculation {
     const second =
       first !== this.sideIntersectPoint && this.sideIntersectPoint !== null
         ? this.sideIntersectPoint
-        : this.bottomIntersectPoint;
+        : (this.bottomIntersectPoint as Point);
 
     return [first, second];
   }

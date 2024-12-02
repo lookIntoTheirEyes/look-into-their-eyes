@@ -17,9 +17,9 @@ export abstract class UI {
 
   protected readonly app: PageFlip;
   protected readonly wrapper: HTMLElement;
-  protected distElement: HTMLElement;
+  protected distElement!: HTMLElement;
 
-  private touchPoint: SwipeData = null;
+  private touchPoint: SwipeData | null = null;
   private readonly swipeTimeout = 250;
   private readonly swipeDistance: number;
 
@@ -48,7 +48,7 @@ export abstract class UI {
       '<div class="stf__wrapper"></div>'
     );
 
-    this.wrapper = inBlock.querySelector(".stf__wrapper");
+    this.wrapper = inBlock.querySelector(".stf__wrapper")!;
 
     this.app = app;
 
@@ -190,7 +190,7 @@ export abstract class UI {
   }
 
   private onMouseDown = (e: MouseEvent): void => {
-    if (this.checkTarget(e.target)) {
+    if (this.checkTarget(e.target!)) {
       const pos = this.getMousePos(e.clientX, e.clientY);
 
       this.app.startUserTouch(pos);
@@ -200,7 +200,7 @@ export abstract class UI {
   };
 
   private onTouchStart = (e: TouchEvent): void => {
-    if (this.checkTarget(e.target)) {
+    if (this.checkTarget(e.target!)) {
       if (e.changedTouches.length > 0) {
         const t = e.changedTouches[0];
         const pos = this.getMousePos(t.clientX, t.clientY);
