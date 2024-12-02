@@ -41,41 +41,50 @@ const HTMLFlipBookForward = React.forwardRef<
     }
   }, []);
 
-  useEffect(() => {
-    if (props.children) {
-      const childList = React.Children.map(props.children, (child) =>
-        React.cloneElement(child as ReactElement, {
-          ref: (dom: HTMLElement | null) => {
-            if (dom) {
-              childRef.current.push(dom);
-            }
-          },
-        })
-      );
+  useEffect(
+    () => {
+      childRef.current = [];
 
-      if (
-        !props.renderOnlyPageLengthChange ||
-        pages.length !== childList?.length
-      ) {
-        if (childList && childList.length < pages.length) {
-          refreshOnPageDelete();
+      if (props.children) {
+        const childList = React.Children.map(props.children, (child) =>
+          React.cloneElement(child as ReactElement, {
+            ref: (dom: HTMLElement | null) => {
+              if (dom) {
+                childRef.current.push(dom);
+              }
+            },
+          })
+        );
+
+        if (
+          !props.renderOnlyPageLengthChange ||
+          pages.length !== childList?.length
+        ) {
+          if (childList && childList.length < pages.length) {
+            refreshOnPageDelete();
+          }
+          setPages(childList || []);
         }
-        setPages(childList || []);
       }
-    }
-  }, [
-    pages.length,
-    props.children,
-    props.renderOnlyPageLengthChange,
-    props.rtl,
-    refreshOnPageDelete,
-  ]);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      // pages.length,
+      props.children,
+      props.renderOnlyPageLengthChange,
+      props.rtl,
+      refreshOnPageDelete,
+    ]
+  );
 
   useEffect(() => {
     const setHandlers = () => {
       const flip = pageFlip.current;
-      if (flip && props.onFlip) {
-        flip.on("flip", (e: WidgetEvent) => props.onFlip?.(e));
+
+      if (flip) {
+        if (props.onFlip) {
+          flip.on("flip", (e: WidgetEvent) => props.onFlip?.(e));
+        }
       }
     };
 
@@ -89,7 +98,7 @@ const HTMLFlipBookForward = React.forwardRef<
       if (!pageFlip.current?.getFlipController()) {
         pageFlip.current?.loadFromHTML(childRef.current);
       } else {
-        pageFlip.current?.updateFromHtml(childRef.current);
+        pageFlip.current.updateFromHtml(childRef.current);
       }
 
       setHandlers();
