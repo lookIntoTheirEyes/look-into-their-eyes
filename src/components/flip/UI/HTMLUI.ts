@@ -22,7 +22,7 @@ export class HTMLUI extends UI {
       '<div class="stf__block"></div>'
     );
 
-    this.distElement = inBlock.querySelector(".stf__block");
+    this.distElement = inBlock.querySelector(".stf__block")!;
 
     this.items = items;
     for (const item of items) {
