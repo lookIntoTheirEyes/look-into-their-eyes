@@ -13,6 +13,8 @@ interface UsePageFlipParams {
   bookRef: RefObject<HTMLDivElement>;
 }
 
+const ANIMATION_DURATION = 500;
+
 export const usePageFlip = ({
   isRtl,
   onNextPage,
@@ -44,72 +46,70 @@ export const usePageFlip = ({
         progress: pageWidth ? 100 : 0,
         immediate,
         direction,
+        config: {
+          tension: 200,
+          friction: 25,
+          duration: 0,
+          // easing: easings.steps(5),
+        },
       };
     },
     []
   );
 
   const [props, api] = useSprings(2, () => ({
-    // ...from(),
     from: from(),
   }));
 
-  const finishDrag = (px: number, side: "left" | "right") => {
-    api.start((i) => {
-      if (i !== 0) {
-        return;
-      }
-      const progress = getProgress(px, side === "right", bookRef);
-      const shouldFlip = progress > 50;
-
-      const val = {
-        ...from({ pageWidth: shouldFlip ? pageWidth : undefined }),
-        onRest: shouldFlip
-          ? () => {
-              onNextPage();
-              api.start((i) => from({ immediate: true }));
-            }
-          : undefined,
-      };
-
-      return val;
-    });
+  const handleDragEnd = (progress: number, idx: number) => {
+    if (progress < 50) {
+      api.start({
+        immediate: false,
+        progress: 0,
+        config: { duration: ANIMATION_DURATION },
+      });
+    } else {
+      api.start((i) => {
+        if (i !== idx) {
+          return;
+        }
+        return {
+          immediate: false,
+          progress: 100,
+          config: { duration: ANIMATION_DURATION },
+          onRest: () => {
+            onNextPage();
+            api.start((i) => {
+              return {
+                ...from({ immediate: false }),
+                config: { duration: 0 },
+              };
+            });
+          },
+        };
+      });
+    }
   };
 
   const bind = useGesture(
     {
-      onDragEnd: (params) => {
-        const {
-          args: [idx],
-          movement: [mx, my],
-          velocity: [vx],
-          xy: [px, py],
-          offset: [ox, oy],
-          initial,
-          memo,
-        } = params;
-
-        finishDrag(px, memo.side);
-      },
       onDrag: (params) => {
         const {
-          // movement: [mx, my],
           down,
           args: [idx],
           direction: [xDir],
           xy: [px],
           initial,
           memo,
+          tap,
         } = params;
 
         const dir = xDir < 0 ? -1 : 1;
-        if (!down) {
-          return;
-        }
 
-        if (!dir) {
+        if ((!dir && down) || tap) {
           return memo;
         }
+
         if (!memo) {
           return {
             direction: getDirection(isRtl, xDir),
@@ -125,17 +125,16 @@ export const usePageFlip = ({
 
         const progress = getProgress(px, memo.side === "right", bookRef);
 
-        api.start((i) => {
-          if (i !== 0) {
-            return;
-          }
-          return {
+        if (!down) {
+          handleDragEnd(progress, idx);
+        } else {
+          api.start({
             ...from(),
+            immediate: true,
             progress,
-            immediate: down,
-            z: 10,
-          };
-        });
+          });
+        }
+
         return memo;
       },
     },
