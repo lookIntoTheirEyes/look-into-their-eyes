@@ -456,14 +456,24 @@ export class FlipCalculation2 {
     return [first, second];
   }
 }
-function getFlippingProgress(x: number, pageWidth: number): number {
-  const clampedX = Math.max(-pageWidth, Math.min(pageWidth, x));
+function getFlippingProgress(
+  px: number,
+  isRightPage: boolean,
+  bookLeft: number,
+  bookWidth: number
+) {
+  let progress;
 
-  // Normalize progress: 0 at start, 100 at the end
-  const progress = (clampedX / pageWidth) * 100;
+  if (isRightPage) {
+    const maxProgress = bookLeft + bookWidth;
+    progress = ((maxProgress - px) / bookWidth) * 100;
+  } else {
+    progress = ((px - bookLeft) / bookWidth) * 100;
+  }
 
-  return Math.max(0, Math.min(100, progress)); // Clamp to [0, 100]
+  return Math.min(100, Math.max(0, progress));
 }
+
 function getAngle(direction: FlipDirection, progress: number) {
   return (
     ((direction === FlipDirection.FORWARD ? 90 : -90) * (200 - progress * 2)) /

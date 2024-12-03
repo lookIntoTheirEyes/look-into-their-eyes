@@ -1,6 +1,7 @@
 import { animated, SpringValue, to } from "@react-spring/web";
 import { ReactDOMAttributes } from "@use-gesture/react/dist/declarations/src/types";
 import styles from "./AnimatedPage.module.css";
+import { FlipDirection } from "../model";
 
 interface IProps {
   pageNum: number;
@@ -12,9 +13,9 @@ interface IProps {
   x: SpringValue<number>;
   y: SpringValue<number>;
   r: SpringValue<number>;
-  z: SpringValue<number>;
-  displayFront: SpringValue<string>;
-  displayBack: SpringValue<string>;
+  // direction: SpringValue<FlipDirection>;
+  angle: SpringValue<number>;
+  progress: SpringValue<number>;
   bind: (...args: unknown[]) => ReactDOMAttributes;
   i: number;
   pageWidth: number;
@@ -24,18 +25,18 @@ const AnimatedPage: React.FC<IProps> = ({
   pageNum,
   isRtl,
   i,
-  isFirst,
-  isLast,
-  z,
+  // isFirst,
+  // isLast,
+  // z,
+  // r,
   isSinglePage,
   pages,
   bind,
   x,
   y,
-  r,
-  displayFront,
-  displayBack,
+  progress,
   pageWidth,
+  angle,
 }) => {
   const isLeftPage = getIsLeftPage(pageNum, isRtl);
 
@@ -57,42 +58,51 @@ const AnimatedPage: React.FC<IProps> = ({
   return (
     <>
       <animated.div
-        key={`Page-${pageNum}`}
-        className={`${styles.pageContainer} ${
+        key={`page-front-${pageNum}`}
+        {...bind(i)}
+        className={`${styles.page} ${
           getIsLeftPage(pageNum, isRtl) ? "" : styles.right
         }`}
-        style={{ x, y, zIndex: z.to((z) => `${z}`) }}
+        style={{
+          display: to([progress], (progress) =>
+            progress < 50 ? "block" : "none"
+          ),
+          transformOrigin: isLeftPage ? pageWidth + "px 0px" : "0px 0px",
+          clipPath: "none",
+          transform: to([x, angle], (x, angle) => {
+            // console.log("progress below 50", progress.get() < 50);
+            console.log("angle front", angle);
+
+            return `translate3d(${x}px, 0px, 0px) rotateY(${angle}deg) `;
+          }),
+        }}
       >
-        <animated.div
-          key={`Page-inner-${pageNum}`}
-          {...bind(i)}
-          className={`${styles.page} `}
-          style={{
-            height: "100%",
-            display: displayFront,
-            transform: r.to((r) => `rotateY(${r}deg)`),
-            // transformOrigin: i % 2 === 0 ? pageWidth + "px 0px" : "0px 0px",
-            // transform: to([x, y, r], (x, y, r) => {
-            //   console.log(x, y, r);
-
-            //   return `translateX(${x}px) translateY(${y}px) rotate(${r}rad) scaleX(${1})`;
-            // }),
-          }}
-        >
-          {pages[pageNum]}
-        </animated.div>
-
-        <animated.div
-          className={`${styles.page} ${styles.back}`}
-          style={{
-            height: "100%",
-            display: displayBack,
-            transform: r.to((r) => `rotateY(${180 - r}deg)`),
-          }}
-        >
-          {pages[backPageNum]}
-        </animated.div>
+        {pages[pageNum]}
       </animated.div>
+
+      <animated.div
+        key={`page-back-${backPageNum}`}
+        className={`${styles.page} ${styles.back} ${
+          !isRtl ? "" : styles.right
+        }`}
+        style={{
+          display: to([progress], (progress) => {
+            console.log("prog", progress);
+
+            return progress >= 50 ? "block" : "none";
+          }),
+          transformOrigin: `${isRtl ? 0 : pageWidth}px 0px`, // Pivot on the left for right page
+          transform: to([x, y, angle], (x, y, angle) => {
+            const correctedAngle = x > 0 ? 0 : angle - 180;
+
+            console.log("angle back", correctedAngle);
+            return `translate3d(0px, 0px, 0px) rotateY(${correctedAngle}deg)`;
+          }),
+        }}
+      >
+        {pages[backPageNum]}
+      </animated.div>
+
       {belowPageNum > 0 && belowPageNum < pages.length - 1 && (
         <div
           className={`${styles.page} ${isLeftPage ? "" : styles.right} ${

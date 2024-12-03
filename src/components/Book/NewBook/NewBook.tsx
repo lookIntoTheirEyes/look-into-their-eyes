@@ -63,16 +63,17 @@ const NewBook: React.FC<BookProps> = ({
     setCurrentPage,
   });
 
+  const isFirstPage = currentPage === 0;
+  const isLastPage = currentPage === totalPages;
+
   const { props, bind } = usePageFlip({
-    pageWidth: bookStyle.width / 2,
     isRtl,
     onNextPage: handleNextPage,
     onPrevPage: handlePrevPage,
     bookRef,
+    isFirstPage,
+    isLastPage,
   });
-
-  const isFirstPage = currentPage === 0;
-  const isLastPage = currentPage === totalPages;
 
   return (
     <div ref={bookContainerRef} className={styles.bookContainer}>
@@ -85,7 +86,7 @@ const NewBook: React.FC<BookProps> = ({
         }}
         className={styles.book}
       >
-        {props.map(({ x, y, r, z, displayFront, displayBack }, i) => {
+        {props.map(({ x, y, r, angle, progress }, i) => {
           const shouldRender = !i || (!isFirstPage && !isLastPage);
 
           return (
@@ -101,9 +102,9 @@ const NewBook: React.FC<BookProps> = ({
                 x={x}
                 y={y}
                 r={r}
-                z={z}
-                displayFront={displayFront}
-                displayBack={displayBack}
+                // direction={direction}
+                angle={angle}
+                progress={progress}
                 bind={bind}
                 pageNum={currentPage + i}
                 pageWidth={bookStyle.width / 2}

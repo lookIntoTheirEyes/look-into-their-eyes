@@ -1,26 +1,15 @@
-.pageContainer {
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%;
-  &.onePage {
-    width: 100%;
-  }
-  &.right:not(.onePage) {
-    left: 50%;
-  }
-}
-
 .page {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 50%;
   height: 100%;
   touch-action: none;
   z-index: 5;
 
+  &.right:not(.onePage) {
+    left: 50%;
+  }
   perspective: 1500px;
 
   &.below {
