@@ -2,11 +2,7 @@ import { RefObject, useCallback } from "react";
 import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
 import FlipCalculation from "../FlipCalculation";
-
-export const enum FlipDirection {
-  FORWARD,
-  BACK,
-}
+import { FlipDirection } from "../model";
 
 interface UsePageFlipParams {
   isRtl: boolean;
@@ -66,14 +62,13 @@ export const usePageFlip = ({
           initial,
           memo,
         } = params;
-        console.log("memo", memo);
 
         api.start((i) => {
           const progress = getProgress(px, memo.side === "right", bookRef);
           const val = {
             ...from({ pageWidth: progress > 50 ? pageWidth : undefined }),
           };
-          console.log("progress", progress, val);
+
           return val;
         });
       },
@@ -108,13 +103,7 @@ export const usePageFlip = ({
 
         const progress = getProgress(px, memo.side === "right", bookRef);
 
-        const angle = Math.abs(
-          (memo.direction === isRtl
-            ? FlipDirection.BACK
-            : FlipDirection.FORWARD
-            ? (-90 * (200 - progress * 2)) / 100
-            : (90 * (200 - progress * 2)) / 100) + (isRtl ? -180 : 180)
-        );
+        const angle = getAngle(isRtl, progress, memo.direction);
 
         const isShowingBack = progress > 50;
 
@@ -125,22 +114,6 @@ export const usePageFlip = ({
             immediate: down,
             angle,
             z: 10,
-
-            onRest: () => {
-              if (down) {
-                return;
-              }
-              console.log("rest func!!");
-
-              //   api.start((i) => {
-              //     // const progress = getProgress(px, side === "right", bookRef);
-              //     const val = { ...from() };
-              //     // console.log("progress", progress, val);
-
-              //     return val;
-              //   });
-              //   // onNextPage();
-            },
           };
         });
         return memo;
@@ -195,4 +168,17 @@ function determinePageSide(
   } else {
     return "left";
   }
+}
+
+function getAngle(
+  isRtl: boolean,
+  progress: number,
+  direction: FlipDirection
+): number {
+  const baseAngle =
+    direction === (isRtl ? FlipDirection.BACK : FlipDirection.FORWARD)
+      ? (-90 * (200 - progress * 2)) / 100
+      : (90 * (200 - progress * 2)) / 100;
+
+  return Math.abs(baseAngle - 180);
 }
