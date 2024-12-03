@@ -11,7 +11,6 @@ import { PageFlip } from "../PageFlip";
 import { WidgetEvent } from "../Event/EventObject";
 interface IProps extends IFlipSetting, IEventProps {
   children: React.ReactNode;
-  renderOnlyPageLengthChange?: boolean;
 }
 
 const HTMLFlipBookForward = React.forwardRef<
