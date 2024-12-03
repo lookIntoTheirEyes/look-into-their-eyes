@@ -30,15 +30,19 @@ export const usePageFlip = ({
     ({
       direction = FlipDirection.FORWARD,
       pageWidth,
-    }: { direction?: FlipDirection; pageWidth?: number } = {}) => {
+      immediate = false,
+    }: {
+      direction?: FlipDirection;
+      pageWidth?: number;
+      immediate?: boolean;
+    } = {}) => {
       return {
         x: pageWidth || 0,
         y: 0,
         r: 0,
         z: 10,
-        progress: 0,
-        // angle: 0,
-        immediate: false,
+        progress: pageWidth ? 100 : 0,
+        immediate,
         direction,
       };
     },
@@ -46,9 +50,31 @@ export const usePageFlip = ({
   );
 
   const [props, api] = useSprings(2, () => ({
-    ...from(),
+    // ...from(),
     from: from(),
   }));
+
+  const finishDrag = (px: number, side: "left" | "right") => {
+    api.start((i) => {
+      if (i !== 0) {
+        return;
+      }
+      const progress = getProgress(px, side === "right", bookRef);
+      const shouldFlip = progress > 50;
+
+      const val = {
+        ...from({ pageWidth: shouldFlip ? pageWidth : undefined }),
+        onRest: shouldFlip
+          ? () => {
+              onNextPage();
+              api.start((i) => from({ immediate: true }));
+            }
+          : undefined,
+      };
+
+      return val;
+    });
+  };
 
   const bind = useGesture(
     {
@@ -63,14 +89,7 @@ export const usePageFlip = ({
           memo,
         } = params;
 
-        api.start((i) => {
-          const progress = getProgress(px, memo.side === "right", bookRef);
-          const val = {
-            ...from({ pageWidth: progress > 50 ? pageWidth : undefined }),
-          };
-
-          return val;
-        });
+        finishDrag(px, memo.side);
       },
       onDrag: (params) => {
         const {
@@ -84,6 +103,9 @@ export const usePageFlip = ({
         } = params;
 
         const dir = xDir < 0 ? -1 : 1;
+        if (!down) {
+          return;
+        }
 
         if (!dir) {
           return memo;
@@ -103,14 +125,14 @@ export const usePageFlip = ({
 
         const progress = getProgress(px, memo.side === "right", bookRef);
 
-        // const angle = getAngle(isRtl, progress, memo.direction);
-
         api.start((i) => {
+          if (i !== 0) {
+            return;
+          }
           return {
             ...from(),
             progress,
             immediate: down,
-            // angle,
             z: 10,
           };
         });
@@ -166,17 +188,4 @@ function determinePageSide(
   } else {
     return "left";
   }
-}
-
-function getAngle(
-  isRtl: boolean,
-  progress: number,
-  direction: FlipDirection
-): number {
-  const baseAngle =
-    direction === (isRtl ? FlipDirection.BACK : FlipDirection.FORWARD)
-      ? (-90 * (200 - progress * 2)) / 100
-      : (90 * (200 - progress * 2)) / 100;
-
-  return Math.abs(baseAngle - 180);
 }

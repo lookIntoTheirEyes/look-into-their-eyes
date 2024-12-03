@@ -6,6 +6,7 @@
   height: 100%;
   touch-action: none;
   z-index: 5;
+  user-select: none;
 
   &.right:not(.onePage) {
     left: 50%;
