@@ -41,41 +41,26 @@ const HTMLFlipBookForward = React.forwardRef<
     }
   }, []);
 
-  useEffect(
-    () => {
-      childRef.current = [];
+  useEffect(() => {
+    if (pages.length === childRef.current.length && pages.length > 0) {
+      return;
+    }
+    childRef.current = [];
 
-      if (props.children) {
-        const childList = React.Children.map(props.children, (child) =>
-          React.cloneElement(child as ReactElement, {
-            ref: (dom: HTMLElement | null) => {
-              if (dom) {
-                childRef.current.push(dom);
-              }
-            },
-          })
-        );
+    if (props.children) {
+      const childList = React.Children.map(props.children, (child) =>
+        React.cloneElement(child as ReactElement, {
+          ref: (dom: HTMLElement | null) => {
+            if (dom) {
+              childRef.current.push(dom);
+            }
+          },
+        })
+      );
 
-        if (
-          !props.renderOnlyPageLengthChange ||
-          pages.length !== childList?.length
-        ) {
-          if (childList && childList.length < pages.length) {
-            refreshOnPageDelete();
-          }
-          setPages(childList || []);
-        }
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      // pages.length,
-      props.children,
-      props.renderOnlyPageLengthChange,
-      props.rtl,
-      refreshOnPageDelete,
-    ]
-  );
+      setPages(childList || []);
+    }
+  }, [pages.length, props.children, props.rtl, refreshOnPageDelete]);
 
   useEffect(() => {
     const setHandlers = () => {
