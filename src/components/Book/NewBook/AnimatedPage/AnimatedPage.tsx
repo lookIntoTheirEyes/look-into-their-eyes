@@ -13,8 +13,7 @@ interface IProps {
   x: SpringValue<number>;
   y: SpringValue<number>;
   r: SpringValue<number>;
-  // direction: SpringValue<FlipDirection>;
-  angle: SpringValue<number>;
+  direction: SpringValue<FlipDirection>;
   progress: SpringValue<number>;
   bind: (...args: unknown[]) => ReactDOMAttributes;
   i: number;
@@ -36,7 +35,7 @@ const AnimatedPage: React.FC<IProps> = ({
   y,
   progress,
   pageWidth,
-  angle,
+  direction,
 }) => {
   const isLeftPage = getIsLeftPage(pageNum, isRtl);
 
@@ -69,7 +68,8 @@ const AnimatedPage: React.FC<IProps> = ({
           ),
           transformOrigin: isLeftPage ? pageWidth + "px 0px" : "0px 0px",
           clipPath: "none",
-          transform: to([x, angle, progress], (x, angle, progress) => {
+          transform: to([x, progress, direction], (x, progress, direction) => {
+            const angle = getAngle(isRtl, progress, direction as FlipDirection);
             return `translate3d(${x}px, 0px, 0px) rotateY(${angle}deg) `;
           }),
         }}
@@ -87,7 +87,8 @@ const AnimatedPage: React.FC<IProps> = ({
             return progress >= 50 ? "block" : "none";
           }),
           transformOrigin: `${isRtl ? 0 : pageWidth}px 0px`, // Pivot on the left for right page
-          transform: to([x, y, angle, progress], (x, y, angle, progress) => {
+          transform: to([x, progress, direction], (x, progress, direction) => {
+            const angle = getAngle(isRtl, progress, direction as FlipDirection);
             const correctedAngle = x > 0 ? 0 : angle - 180;
 
             return `translate3d(0px, 0px, 0px) rotateY(${correctedAngle}deg)`;

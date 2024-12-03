@@ -37,9 +37,9 @@ export const usePageFlip = ({
         r: 0,
         z: 10,
         progress: 0,
-        angle: 0,
+        // angle: 0,
         immediate: false,
-        // direction,
+        direction,
       };
     },
     []
@@ -103,16 +103,14 @@ export const usePageFlip = ({
 
         const progress = getProgress(px, memo.side === "right", bookRef);
 
-        const angle = getAngle(isRtl, progress, memo.direction);
-
-        const isShowingBack = progress > 50;
+        // const angle = getAngle(isRtl, progress, memo.direction);
 
         api.start((i) => {
           return {
             ...from(),
             progress,
             immediate: down,
-            angle,
+            // angle,
             z: 10,
           };
         });
