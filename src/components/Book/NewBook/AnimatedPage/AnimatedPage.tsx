@@ -70,6 +70,9 @@ const AnimatedPage: React.FC<IProps> = ({
           clipPath: "none",
           transform: to([x, progress, direction], (x, progress, direction) => {
             const angle = getAngle(isRtl, progress, direction as FlipDirection);
+            if (progress > 20) {
+              // debugger;
+            }
             return `translate3d(${
               isRtl ? x : -x
             }px, 0px, 0px) rotateY(${angle}deg) `;

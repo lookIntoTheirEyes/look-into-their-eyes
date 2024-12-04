@@ -61,35 +61,38 @@ export const usePageFlip = ({
     from: from(),
   }));
 
-  const handleDragEnd = (progress: number, idx: number) => {
-    if (progress < 50) {
-      api.start({
-        immediate: false,
-        progress: 0,
-        config: { duration: ANIMATION_DURATION },
-      });
-    } else {
-      api.start((i) => {
-        if (i !== idx) {
-          return;
-        }
-        return {
+  const handleDragEnd = useCallback(
+    (progress: number, idx: number) => {
+      if (progress < 50) {
+        api.start({
           immediate: false,
-          progress: 100,
+          progress: 0,
           config: { duration: ANIMATION_DURATION },
-          onRest: () => {
-            onNextPage();
-            api.start((i) => {
-              return {
-                ...from({ immediate: false }),
-                config: { duration: 0 },
-              };
-            });
-          },
-        };
-      });
-    }
-  };
+        });
+      } else {
+        api.start((i) => {
+          if (i !== idx) {
+            return;
+          }
+          return {
+            immediate: false,
+            progress: 100,
+            config: { duration: ANIMATION_DURATION },
+            onRest: () => {
+              onNextPage();
+              api.start(() => {
+                return {
+                  ...from({ immediate: false }),
+                  config: { duration: 0 },
+                };
+              });
+            },
+          };
+        });
+      }
+    },
+    [api, from, onNextPage]
+  );
 
   const bind = useGesture(
     {
@@ -109,10 +112,17 @@ export const usePageFlip = ({
         if ((!dir && down) || tap) {
           return memo;
         }
+        // console.log("memo", memo);
+        // console.log("dir", dir);
 
         if (!memo) {
+          if (!xDir) {
+            return;
+          }
+          const direction = getDirection(isRtl, xDir);
+
           return {
-            direction: getDirection(isRtl, xDir),
+            direction,
             side: determinePageSide(
               initial[0],
               bookLeft,
@@ -124,6 +134,7 @@ export const usePageFlip = ({
         }
 
         const progress = getProgress(px, memo.side === "right", bookRef);
+        console.log("progress", progress);
 
         if (!down) {
           handleDragEnd(progress, idx);
@@ -145,13 +156,10 @@ export const usePageFlip = ({
 };
 
 function getDirection(isRtl: boolean, xDir: number) {
-  return isRtl
-    ? xDir > 0
-      ? FlipDirection.BACK
-      : FlipDirection.FORWARD
-    : xDir < 0
-    ? FlipDirection.BACK
-    : FlipDirection.FORWARD;
+  if (isRtl) {
+    return xDir < 0 ? FlipDirection.BACK : FlipDirection.FORWARD;
+  }
+  return xDir < 0 ? FlipDirection.FORWARD : FlipDirection.BACK;
 }
 
 function getProgress(
