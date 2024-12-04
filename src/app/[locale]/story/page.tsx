@@ -45,7 +45,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
   const rtl = locale === Language.he;
   const noContentPages = 3;
 
-  const pageNum = (i: number) => i + 1 + noContentPages - 1;
+  const pageNum = (i: number) => i + 1 + noContentPages - 1 - 1;
 
   const Pages = structuredClone(bookPages).map((content, i) => (
     <Page rtl={rtl} key={content.title} pageNum={pageNum(i)}>
