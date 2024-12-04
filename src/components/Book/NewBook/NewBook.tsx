@@ -64,7 +64,7 @@ const NewBook: React.FC<BookProps> = ({
   });
 
   const isFirstPage = currentPage === 0;
-  const isLastPage = currentPage === totalPages;
+  const isLastPage = currentPage === totalPages - 1;
 
   const { props, bind } = usePageFlip({
     isRtl,

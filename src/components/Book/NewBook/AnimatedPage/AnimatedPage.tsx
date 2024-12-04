@@ -25,14 +25,14 @@ const AnimatedPage: React.FC<IProps> = ({
   isRtl,
   i,
   // isFirst,
-  // isLast,
+  isLast,
   // z,
   // r,
   isSinglePage,
   pages,
   bind,
   x,
-  y,
+  // y,
   progress,
   pageWidth,
   direction,
@@ -69,10 +69,13 @@ const AnimatedPage: React.FC<IProps> = ({
           transformOrigin: isLeftPage ? pageWidth + "px 0px" : "0px 0px",
           clipPath: "none",
           transform: to([x, progress, direction], (x, progress, direction) => {
-            const angle = getAngle(isRtl, progress, direction as FlipDirection);
-            if (progress > 20) {
-              // debugger;
-            }
+            const angle = getAngle(
+              isRtl,
+              progress,
+              direction as FlipDirection,
+              isLast
+            );
+
             return `translate3d(${
               isRtl ? x : -x
             }px, 0px, 0px) rotateY(${angle}deg) `;
@@ -91,7 +94,7 @@ const AnimatedPage: React.FC<IProps> = ({
           display: to([progress], (progress) => {
             return progress >= 50 ? "block" : "none";
           }),
-          transformOrigin: `${isRtl ? 0 : pageWidth}px 0px`, // Pivot on the left for right page
+          transformOrigin: `${isRtl ? 0 : pageWidth}px 0px`,
           transform: to([x, progress, direction], (x, progress, direction) => {
             const angle = getAngle(isRtl, progress, direction as FlipDirection);
             const correctedAngle = x > 0 ? 0 : angle - 180;
@@ -142,12 +145,13 @@ function getHiddenPageNum(
 function getAngle(
   isRtl: boolean,
   progress: number,
-  direction: FlipDirection
+  direction: FlipDirection,
+  isLast = false
 ): number {
   const baseAngle =
     direction === (isRtl ? FlipDirection.BACK : FlipDirection.FORWARD)
       ? (-90 * (200 - progress * 2)) / 100
       : (90 * (200 - progress * 2)) / 100;
-
-  return Math.abs(baseAngle - 180);
+  const angle = Math.abs(baseAngle - 180);
+  return isLast ? Math.abs(360 - angle) : angle;
 }
