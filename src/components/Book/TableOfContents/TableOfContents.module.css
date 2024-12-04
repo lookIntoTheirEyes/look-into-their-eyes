@@ -5,9 +5,6 @@
 .tocList {
   display: flex;
   flex-direction: column;
-  &:dir(rtl) {
-    flex-direction: column-reverse;
-  }
 }
 
 .tocItem {
