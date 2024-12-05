@@ -6,8 +6,7 @@ import { FlipDirection } from "../model";
 interface IProps {
   pageNum: number;
   isRtl: boolean;
-  isFirst: boolean;
-  isLast: boolean;
+
   isSinglePage: boolean;
   pages: JSX.Element[];
   x: SpringValue<number>;
@@ -24,8 +23,7 @@ const AnimatedPage: React.FC<IProps> = ({
   pageNum,
   isRtl,
   i,
-  // isFirst,
-  isLast,
+
   // z,
   // r,
   isSinglePage,
@@ -53,6 +51,7 @@ const AnimatedPage: React.FC<IProps> = ({
     isLeftPage,
     isRtl
   );
+  const adjustOrigin = pageNum === pages.length - 1 || pageNum === 1;
 
   return (
     <>
@@ -80,13 +79,15 @@ const AnimatedPage: React.FC<IProps> = ({
 
       <animated.div
         key={`page-back-${backPageNum}`}
-        className={`${styles.page} ${isLast === isRtl ? "" : styles.right}`}
+        className={`${styles.page} ${
+          adjustOrigin === isRtl ? "" : styles.right
+        }`}
         style={{
           display: to([progress], (progress) => {
             return progress >= 50 ? "block" : "none";
           }),
           zIndex: progress.to((progress) => (progress > 50 ? 6 : 3)),
-          transformOrigin: getOrigin(isLast ? isRtl : !isRtl, pageWidth),
+          transformOrigin: getOrigin(adjustOrigin ? isRtl : !isRtl, pageWidth),
           transform: to([x, progress, direction], (x, progress, direction) => {
             const angle = getAngle(
               isRtl,
@@ -94,7 +95,6 @@ const AnimatedPage: React.FC<IProps> = ({
               direction as FlipDirection,
               true
             );
-            // const correctedAngle = x > 0 ? 0 : angle - 180;
 
             return `translate3d(0px, 0px, 0px) rotateY(${
               !progress || angle
