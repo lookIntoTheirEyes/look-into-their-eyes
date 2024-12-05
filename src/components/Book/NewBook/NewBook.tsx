@@ -73,6 +73,7 @@ const NewBook: React.FC<BookProps> = ({
     bookRef,
     isFirstPage,
     isLastPage,
+    isSinglePage,
   });
 
   return (
@@ -105,7 +106,7 @@ const NewBook: React.FC<BookProps> = ({
                 progress={progress}
                 bind={bind}
                 pageNum={currentPage + i}
-                pageWidth={isSinglePage ? bookStyle.width : bookStyle.width / 2}
+                pageWidth={bookStyle.width / (isSinglePage ? 1 : 2)}
               />
             )
           );

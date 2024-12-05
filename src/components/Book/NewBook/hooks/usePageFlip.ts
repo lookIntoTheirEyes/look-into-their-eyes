@@ -11,6 +11,7 @@ interface UsePageFlipParams {
   onNextPage: () => void;
   onPrevPage: () => void;
   bookRef: RefObject<HTMLDivElement>;
+  isSinglePage: boolean;
 }
 
 const ANIMATION_DURATION = 500;
@@ -22,9 +23,10 @@ export const usePageFlip = ({
   bookRef,
   isLastPage,
   isFirstPage,
+  isSinglePage,
 }: UsePageFlipParams) => {
   const book = bookRef.current?.getBoundingClientRect();
-  const pageWidth = (book?.width ?? 0) / 2;
+  const pageWidth = (book?.width ?? 0) / (isSinglePage ? 1 : 2);
   const bookLeft = (book?.left ?? 0) / 2;
   const bookTop = (book?.top ?? 0) / 2;
 
@@ -131,7 +133,7 @@ export const usePageFlip = ({
           if (!xDir) {
             return;
           }
-          console.log("onDrag", memo, dir, down, tap);
+
           const direction = getDirection(isRtl, xDir);
 
           return {
@@ -147,8 +149,6 @@ export const usePageFlip = ({
         }
 
         const progress = getProgress(px, memo.side === "right", bookRef);
-        console.log("progress", progress);
-        console.log("down", down);
 
         if (!down) {
           handleDragEnd(
