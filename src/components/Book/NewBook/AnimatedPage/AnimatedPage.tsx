@@ -59,14 +59,12 @@ const AnimatedPage: React.FC<IProps> = ({
       <animated.div
         key={`page-front-${pageNum}`}
         {...bind(i)}
-        className={`${styles.page} ${
-          getIsLeftPage(pageNum, isRtl) ? "" : styles.right
-        }`}
+        className={`${styles.page} ${isLeftPage ? "" : styles.right}`}
         style={{
           display: to([progress], (progress) =>
             progress < 50 ? "block" : "none"
           ),
-          transformOrigin: isLeftPage ? pageWidth + "px 0px" : "0px 0px",
+          transformOrigin: getOrigin(isLeftPage, pageWidth),
           clipPath: "none",
           transform: to([x, progress, direction], (x, progress, direction) => {
             const angle = getAngle(
@@ -88,13 +86,13 @@ const AnimatedPage: React.FC<IProps> = ({
       <animated.div
         key={`page-back-${backPageNum}`}
         className={`${styles.page} ${styles.back} ${
-          !isRtl ? "" : styles.right
+          isLast ? isRtl : !isRtl ? "" : styles.right
         }`}
         style={{
           display: to([progress], (progress) => {
             return progress >= 50 ? "block" : "none";
           }),
-          transformOrigin: `${isRtl ? 0 : pageWidth}px 0px`,
+          transformOrigin: getOrigin(isLast ? isRtl : !isRtl, pageWidth),
           transform: to([x, progress, direction], (x, progress, direction) => {
             const angle = getAngle(isRtl, progress, direction as FlipDirection);
             const correctedAngle = x > 0 ? 0 : angle - 180;
@@ -154,4 +152,8 @@ function getAngle(
       : (90 * (200 - progress * 2)) / 100;
   const angle = Math.abs(baseAngle - 180);
   return isLast ? Math.abs(360 - angle) : angle;
+}
+
+function getOrigin(condition: boolean, pageWidth: number) {
+  return condition ? pageWidth + "px 0px" : "0px 0px";
 }
