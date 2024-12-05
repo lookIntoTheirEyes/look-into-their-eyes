@@ -27,7 +27,7 @@ export function useBookStyle() {
       top,
       left,
     }: DOMRectReadOnly) => {
-      const aspectRatio = 1.4; // Ideal book aspect ratio
+      const aspectRatio = 1.7; // Ideal book aspect ratio
       const isMobile = containerWidth <= 600;
 
       let height = 0,
