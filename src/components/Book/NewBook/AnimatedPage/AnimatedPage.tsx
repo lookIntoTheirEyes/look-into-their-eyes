@@ -86,7 +86,7 @@ const AnimatedPage: React.FC<IProps> = ({
       <animated.div
         key={`page-back-${backPageNum}`}
         className={`${styles.page} ${styles.back} ${
-          isLast ? isRtl : !isRtl ? "" : styles.right
+          isLast === isRtl ? "" : styles.right
         }`}
         style={{
           display: to([progress], (progress) => {
