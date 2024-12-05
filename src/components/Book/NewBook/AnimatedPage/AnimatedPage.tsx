@@ -147,14 +147,13 @@ function getAngle(
   direction: FlipDirection,
   isBack = false
 ): number {
-  const baseAngle = (-90 * (200 - progress * 2)) / 100;
+  const baseAngle =
+    (-90 * (200 - progress * 2)) / 100 +
+    (direction === (isRtl ? FlipDirection.FORWARD : FlipDirection.BACK)
+      ? 360
+      : 0);
 
-  const adjustedAngle =
-    direction === (isRtl ? FlipDirection.FORWARD : FlipDirection.BACK)
-      ? baseAngle + 360
-      : baseAngle;
-
-  const normalizedAngle = Math.abs((adjustedAngle - 180) % 360);
+  const normalizedAngle = Math.abs((baseAngle - 180) % 360);
 
   return isBack ? normalizedAngle - 180 : normalizedAngle;
 }
