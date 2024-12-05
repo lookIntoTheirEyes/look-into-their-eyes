@@ -72,7 +72,7 @@ const AnimatedPage: React.FC<IProps> = ({
 
   const shadowStyle = {
     display: progress.to((progress) => (progress > 0 ? "block" : "none")),
-    width: progress.to((progress) => getShadowSize(progress, pageWidth)),
+    width: progress.to((progress) => getShadowWidth(progress, pageWidth)),
     transform: to([progress, direction], (progress, direction) =>
       getShadowTransform(progress, direction as FlipDirection)
     ),
@@ -185,8 +185,10 @@ function getOrigin(condition: boolean, pageWidth: number) {
   return condition ? `${pageWidth}px 0px` : "0px 0px";
 }
 
-function getShadowSize(progress: number, pageWidth: number) {
-  return Math.min(((100 - progress) * (2.5 * pageWidth)) / 100 + 20, pageWidth);
+function getShadowWidth(progress: number, pageWidth: number) {
+  let width = ((100 - progress * 2) * (2.5 * pageWidth)) / 100 + 20;
+  if (width > pageWidth) width = pageWidth;
+  return width;
 }
 
 function getShadowTransform(progress: number, direction: FlipDirection) {
