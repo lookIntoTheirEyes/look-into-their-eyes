@@ -73,9 +73,6 @@ const AnimatedPage: React.FC<IProps> = ({
   const shadowStyle = {
     display: progress.to((progress) => (progress > 0 ? "block" : "none")),
     width: progress.to((progress) => getShadowWidth(progress, pageWidth)),
-    transform: to([progress, direction], (progress, direction) =>
-      getShadowTransform(progress, direction as FlipDirection, isRtl)
-    ),
   };
 
   return (
@@ -119,6 +116,9 @@ const AnimatedPage: React.FC<IProps> = ({
             background: progress.to((progress) =>
               getShadowBackground(progress)
             ),
+            transform: to([progress, direction], (progress, direction) =>
+              getShadowTransform(progress, direction as FlipDirection, isRtl)
+            ),
           }}
         />
       )}
@@ -132,6 +132,14 @@ const AnimatedPage: React.FC<IProps> = ({
             ...shadowStyle,
             background: progress.to((progress) =>
               getShadowBackground(progress, true)
+            ),
+            transform: to([progress, direction], (progress, direction) =>
+              getShadowTransform(
+                progress,
+                direction as FlipDirection,
+                isRtl,
+                true
+              )
             ),
           }}
         />
@@ -186,7 +194,8 @@ function getOrigin(condition: boolean, pageWidth: number) {
 }
 
 function getShadowWidth(progress: number, pageWidth: number) {
-  let width = ((100 - progress * 2) * (2.5 * pageWidth)) / 100 + 20;
+  let width = Math.abs(((100 - progress * 2) * (2.5 * pageWidth)) / 100 + 20);
+
   if (width > pageWidth) width = pageWidth;
   return width;
 }
@@ -194,20 +203,27 @@ function getShadowWidth(progress: number, pageWidth: number) {
 function getShadowTransform(
   progress: number,
   direction: FlipDirection,
-  isRtl = false
+  isRtl = false,
+  isInner = false
 ) {
   const flipCondition =
     (direction === (isRtl ? FlipDirection.BACK : FlipDirection.FORWARD) &&
-      progress > 100) ||
+      progress > 50) ||
     (direction === (isRtl ? FlipDirection.FORWARD : FlipDirection.BACK) &&
-      progress <= 100);
-  return `translate3d(0, 0, 0)${flipCondition ? " rotateY(180deg)" : ""}`;
+      progress <= 50);
+  const val = `translate3d(0, 0, 0)${
+    flipCondition !== isInner ? " rotateY(180deg)" : ""
+  }`;
+
+  return val;
 }
 
 function getShadowBackground(progress: number, isInner = false) {
   const opacity = (100 - progress) / 100;
 
   return `linear-gradient(${isInner ? "to right" : "to left"}, 
-      rgba(0, 0, 0, ${opacity}) 5%, 
+      rgba(0, 0, 0, ${
+        isInner && progress < 50 ? Math.abs(1 - opacity) : opacity
+      }) 5%, 
       rgba(0, 0, 0, 0) 100%)`;
 }
