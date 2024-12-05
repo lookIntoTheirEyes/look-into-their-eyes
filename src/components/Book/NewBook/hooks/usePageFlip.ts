@@ -163,6 +163,7 @@ export const usePageFlip = ({
               ...from(),
               immediate: true,
               progress,
+              direction: memo.direction,
             };
           });
         }
