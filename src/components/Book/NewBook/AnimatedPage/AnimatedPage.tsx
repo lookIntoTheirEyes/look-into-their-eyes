@@ -36,6 +36,7 @@ const AnimatedPage: React.FC<IProps> = ({
   direction,
 }) => {
   const isLeftPage = getIsLeftPage(pageNum, isRtl);
+  const hasShadow = pageNum >= pages.length - 2 || pageNum < 2;
 
   const backPageNum = getHiddenPageNum(
     pageNum,
@@ -114,6 +115,10 @@ const AnimatedPage: React.FC<IProps> = ({
           {pages[belowPageNum]}
         </div>
       )}
+      {hasShadow && <animated.div className={styles.shadow} />}
+      {hasShadow && (
+        <animated.div className={`${styles.shadow} ${styles.inner}`} />
+      )}
     </>
   );
 };
@@ -160,4 +165,33 @@ function getAngle(
 
 function getOrigin(condition: boolean, pageWidth: number) {
   return condition ? pageWidth + "px 0px" : "0px 0px";
+}
+
+function drawHardShadow(
+  pageWidth: number,
+  progress: number,
+  opacity: number,
+  direction: FlipDirection,
+  isInner: boolean
+): string {
+  const effectiveProgress = progress > 100 ? 200 - progress : progress;
+
+  const shadowSize = Math.min(
+    ((100 - effectiveProgress) * (2.5 * pageWidth)) / 100 + 20,
+    pageWidth
+  );
+
+  const gradientDirection = isInner ? "to right" : "to left";
+
+  const flipCondition =
+    (direction === FlipDirection.FORWARD && progress > 100) ||
+    (direction === FlipDirection.BACK && progress <= 100);
+
+  return `
+    width: ${shadowSize}px;
+    background: linear-gradient(${gradientDirection}, 
+      rgba(0, 0, 0, ${(opacity * effectiveProgress) / 100}) 5%, 
+      rgba(0, 0, 0, 0) 100%);
+    transform: translate3d(0, 0, 0)${flipCondition ? " rotateY(180deg)" : ""};
+  `;
 }

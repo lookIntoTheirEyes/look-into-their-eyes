@@ -7,17 +7,31 @@
   touch-action: none;
   z-index: 5;
   user-select: none;
+  perspective: 1500px;
 
   &.right:not(.onePage) {
     left: 50%;
   }
-  perspective: 1500px;
 
   &.below {
     z-index: 4;
     width: 50%;
+
     &.right:not(.onePage) {
       left: 50%;
     }
+  }
+}
+
+.shadow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform-origin: 0px 0px;
+  height: 100%;
+  z-index: 4;
+
+  &.inner {
+    z-index: 5;
   }
 }
