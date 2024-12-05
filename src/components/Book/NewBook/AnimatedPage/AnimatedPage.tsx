@@ -67,12 +67,7 @@ const AnimatedPage: React.FC<IProps> = ({
           transformOrigin: getOrigin(isLeftPage, pageWidth),
           clipPath: "none",
           transform: to([x, progress, direction], (x, progress, direction) => {
-            const angle = getAngle(
-              isRtl,
-              progress,
-              direction as FlipDirection,
-              isLast
-            );
+            const angle = getAngle(isRtl, progress, direction as FlipDirection);
 
             return `translate3d(${
               isRtl ? x : -x
@@ -93,10 +88,17 @@ const AnimatedPage: React.FC<IProps> = ({
           zIndex: progress.to((progress) => (progress > 50 ? 6 : 3)),
           transformOrigin: getOrigin(isLast ? isRtl : !isRtl, pageWidth),
           transform: to([x, progress, direction], (x, progress, direction) => {
-            const angle = getAngle(isRtl, progress, direction as FlipDirection);
-            const correctedAngle = x > 0 ? 0 : angle - 180;
+            const angle = getAngle(
+              isRtl,
+              progress,
+              direction as FlipDirection,
+              true
+            );
+            // const correctedAngle = x > 0 ? 0 : angle - 180;
 
-            return `translate3d(0px, 0px, 0px) rotateY(${correctedAngle}deg)`;
+            return `translate3d(0px, 0px, 0px) rotateY(${
+              !progress || angle
+            }deg)`;
           }),
         }}
       >
@@ -143,14 +145,18 @@ function getAngle(
   isRtl: boolean,
   progress: number,
   direction: FlipDirection,
-  isLast = false
+  isBack = false
 ): number {
-  const baseAngle =
-    direction === (isRtl ? FlipDirection.BACK : FlipDirection.FORWARD)
-      ? (-90 * (200 - progress * 2)) / 100
-      : (90 * (200 - progress * 2)) / 100;
-  const angle = Math.abs(baseAngle - 180);
-  return isLast ? Math.abs(360 - angle) : angle;
+  const baseAngle = (-90 * (200 - progress * 2)) / 100;
+
+  const adjustedAngle =
+    direction === (isRtl ? FlipDirection.FORWARD : FlipDirection.BACK)
+      ? baseAngle + 360
+      : baseAngle;
+
+  const normalizedAngle = Math.abs((adjustedAngle - 180) % 360);
+
+  return isBack ? normalizedAngle - 180 : normalizedAngle;
 }
 
 function getOrigin(condition: boolean, pageWidth: number) {
