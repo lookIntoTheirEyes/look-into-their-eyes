@@ -7,7 +7,6 @@
   touch-action: none;
   z-index: 5;
   user-select: none;
-  perspective: 1500px;
 
   &.right:not(.onePage) {
     left: 50%;

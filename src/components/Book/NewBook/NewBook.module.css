@@ -22,6 +22,7 @@
   transform-style: preserve-3d;
   transition: transform 1s;
   position: relative;
+  perspective: 1500px;
 }
 
 .wrapper {
