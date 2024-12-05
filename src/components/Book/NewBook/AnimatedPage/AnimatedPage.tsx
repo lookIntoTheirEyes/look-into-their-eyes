@@ -74,7 +74,7 @@ const AnimatedPage: React.FC<IProps> = ({
     display: progress.to((progress) => (progress > 0 ? "block" : "none")),
     width: progress.to((progress) => getShadowWidth(progress, pageWidth)),
     transform: to([progress, direction], (progress, direction) =>
-      getShadowTransform(progress, direction as FlipDirection)
+      getShadowTransform(progress, direction as FlipDirection, isRtl)
     ),
   };
 
@@ -191,10 +191,16 @@ function getShadowWidth(progress: number, pageWidth: number) {
   return width;
 }
 
-function getShadowTransform(progress: number, direction: FlipDirection) {
+function getShadowTransform(
+  progress: number,
+  direction: FlipDirection,
+  isRtl = false
+) {
   const flipCondition =
-    (direction === FlipDirection.FORWARD && progress > 100) ||
-    (direction === FlipDirection.BACK && progress <= 100);
+    (direction === (isRtl ? FlipDirection.BACK : FlipDirection.FORWARD) &&
+      progress > 100) ||
+    (direction === (isRtl ? FlipDirection.FORWARD : FlipDirection.BACK) &&
+      progress <= 100);
   return `translate3d(0, 0, 0)${flipCondition ? " rotateY(180deg)" : ""}`;
 }
 
