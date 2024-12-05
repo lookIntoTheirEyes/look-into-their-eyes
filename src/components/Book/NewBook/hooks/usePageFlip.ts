@@ -62,12 +62,22 @@ export const usePageFlip = ({
   }));
 
   const handleDragEnd = useCallback(
-    (progress: number, idx: number) => {
+    (
+      progress: number,
+      idx: number,
+      direction: FlipDirection,
+      returnCondition: boolean
+    ) => {
       if (progress < 50) {
-        api.start({
-          immediate: false,
-          progress: 0,
-          config: { duration: ANIMATION_DURATION },
+        api.start((i) => {
+          if (idx !== i) {
+            return;
+          }
+          return {
+            immediate: false,
+            progress: 0,
+            config: { duration: ANIMATION_DURATION },
+          };
         });
       } else {
         api.start((i) => {
@@ -79,7 +89,11 @@ export const usePageFlip = ({
             progress: 100,
             config: { duration: ANIMATION_DURATION },
             onRest: () => {
-              onNextPage();
+              if (direction === FlipDirection.BACK) {
+                onPrevPage();
+              } else {
+                onNextPage();
+              }
               api.start(() => {
                 return {
                   ...from({ immediate: false }),
@@ -91,7 +105,7 @@ export const usePageFlip = ({
         });
       }
     },
-    [api, from, onNextPage]
+    [api, from, onNextPage, onPrevPage]
   );
 
   const bind = useGesture(
@@ -112,8 +126,6 @@ export const usePageFlip = ({
         if ((!dir && down) || tap) {
           return memo;
         }
-        // console.log("memo", memo);
-        // console.log("dir", dir);
 
         if (!memo) {
           if (!xDir) {
@@ -134,15 +146,24 @@ export const usePageFlip = ({
         }
 
         const progress = getProgress(px, memo.side === "right", bookRef);
-        console.log("progress", progress);
 
         if (!down) {
-          handleDragEnd(progress, idx);
-        } else {
-          api.start({
-            ...from(),
-            immediate: true,
+          handleDragEnd(
             progress,
+            idx,
+            memo.direction,
+            isLastPage || isFirstPage
+          );
+        } else {
+          api.start((i) => {
+            if (idx !== i) {
+              return;
+            }
+            return {
+              ...from(),
+              immediate: true,
+              progress,
+            };
           });
         }
 

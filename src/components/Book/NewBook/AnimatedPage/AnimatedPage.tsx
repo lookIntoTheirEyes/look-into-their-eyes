@@ -85,13 +85,12 @@ const AnimatedPage: React.FC<IProps> = ({
 
       <animated.div
         key={`page-back-${backPageNum}`}
-        className={`${styles.page} ${styles.back} ${
-          isLast === isRtl ? "" : styles.right
-        }`}
+        className={`${styles.page} ${isLast === isRtl ? "" : styles.right}`}
         style={{
           display: to([progress], (progress) => {
             return progress >= 50 ? "block" : "none";
           }),
+          zIndex: progress.to((progress) => (progress > 50 ? 6 : 3)),
           transformOrigin: getOrigin(isLast ? isRtl : !isRtl, pageWidth),
           transform: to([x, progress, direction], (x, progress, direction) => {
             const angle = getAngle(isRtl, progress, direction as FlipDirection);
