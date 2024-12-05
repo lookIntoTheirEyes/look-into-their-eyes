@@ -83,7 +83,9 @@ const AnimatedPage: React.FC<IProps> = ({
       <animated.div
         key={`page-front-${pageNum}`}
         {...bind(i)}
-        className={`${styles.page} ${isLeftPage ? "" : styles.right}`}
+        className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
+          isSinglePage ? styles.onePage : ""
+        }`}
         style={frontStyle}
       >
         {pages[pageNum]}
@@ -93,7 +95,7 @@ const AnimatedPage: React.FC<IProps> = ({
         key={`page-back-${backPageNum}`}
         className={`${styles.page} ${
           adjustOrigin === isRtl ? "" : styles.right
-        }`}
+        } ${isSinglePage ? styles.onePage : ""}`}
         style={backStyle}
       >
         {pages[backPageNum]}
@@ -111,7 +113,7 @@ const AnimatedPage: React.FC<IProps> = ({
 
       {hasShadow && (
         <animated.div
-          className={styles.shadow}
+          className={`${styles.shadow} ${isSinglePage ? styles.onePage : ""}`}
           style={{
             ...shadowStyle,
             background: progress.to((progress) =>
@@ -123,7 +125,9 @@ const AnimatedPage: React.FC<IProps> = ({
 
       {hasShadow && (
         <animated.div
-          className={`${styles.shadow} ${styles.inner}`}
+          className={`${styles.shadow} ${styles.inner} ${
+            isSinglePage ? styles.onePage : ""
+          }`}
           style={{
             ...shadowStyle,
             background: progress.to((progress) =>

@@ -7,6 +7,9 @@
   touch-action: none;
   z-index: 5;
   user-select: none;
+  &.onePage {
+    width: 100%;
+  }
 
   &.right:not(.onePage) {
     left: 50%;
@@ -29,6 +32,9 @@
   transform-origin: 0px 0px;
   height: 100%;
   z-index: 4;
+  &.onePage {
+    left: 0;
+  }
 
   &.inner {
     z-index: 5;

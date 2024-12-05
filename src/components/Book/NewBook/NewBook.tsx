@@ -87,7 +87,8 @@ const NewBook: React.FC<BookProps> = ({
         className={styles.book}
       >
         {props.map(({ x, y, r, progress, direction }, i) => {
-          const shouldRender = !i || (!isFirstPage && !isLastPage);
+          const shouldRender =
+            !i || (!isSinglePage && !isFirstPage && !isLastPage);
 
           return (
             shouldRender && (
@@ -104,7 +105,7 @@ const NewBook: React.FC<BookProps> = ({
                 progress={progress}
                 bind={bind}
                 pageNum={currentPage + i}
-                pageWidth={bookStyle.width / 2}
+                pageWidth={isSinglePage ? bookStyle.width : bookStyle.width / 2}
               />
             )
           );

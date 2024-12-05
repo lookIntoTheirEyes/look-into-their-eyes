@@ -114,7 +114,7 @@ export const usePageFlip = ({
         const {
           down,
           args: [idx],
-          direction: [xDir],
+          _direction: [xDir],
           xy: [px],
           initial,
           memo,
@@ -131,6 +131,7 @@ export const usePageFlip = ({
           if (!xDir) {
             return;
           }
+          console.log("onDrag", memo, dir, down, tap);
           const direction = getDirection(isRtl, xDir);
 
           return {
@@ -146,6 +147,8 @@ export const usePageFlip = ({
         }
 
         const progress = getProgress(px, memo.side === "right", bookRef);
+        console.log("progress", progress);
+        console.log("down", down);
 
         if (!down) {
           handleDragEnd(
