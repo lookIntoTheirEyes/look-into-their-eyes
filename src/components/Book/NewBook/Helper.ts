@@ -409,15 +409,10 @@ function getProgress(
 function getHoverCorner(
   bookWidth: number,
   bookHeight: number,
-  x: number,
-  y: number,
-  bookTop: number,
-  bookLeft: number
+  localX: number,
+  localY: number
 ): string | null {
   const maxDistance = 200;
-
-  const localX = x - bookLeft;
-  const localY = y - bookTop;
 
   if (
     localX < 0 ||

@@ -13,9 +13,11 @@ interface IProps {
   y: SpringValue<number>;
   progress: SpringValue<number>;
   direction: SpringValue<FlipDirection>;
+
   bind: (...args: unknown[]) => ReactDOMAttributes;
   i: number;
   pageWidth: number;
+  bookRef: React.RefObject<HTMLDivElement>;
 }
 
 const AnimatedPage: React.FC<IProps> = ({
@@ -25,13 +27,15 @@ const AnimatedPage: React.FC<IProps> = ({
   pages,
   bind,
   x,
+  y,
   progress,
   direction,
   i,
   pageWidth,
+  bookRef,
 }) => {
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
-  const hasShadow = Helper.isHardPage(pageNum, pages.length);
+  const isHardPage = Helper.isHardPage(pageNum, pages.length);
   const backPageNum = Helper.getHiddenPageNum(
     pageNum,
     isSinglePage,
@@ -47,7 +51,6 @@ const AnimatedPage: React.FC<IProps> = ({
   );
   const adjustOrigin = pageNum === pages.length - 1 || pageNum === 1;
 
-  // Styles for Front and Back Pages
   const getPageStyle = (isFront: boolean) => ({
     display: progress.to((p) =>
       (isFront ? p < 50 : p >= 50) ? "block" : "none"
@@ -56,22 +59,24 @@ const AnimatedPage: React.FC<IProps> = ({
       isFront ? isLeftPage : adjustOrigin === isRtl,
       pageWidth
     ),
+    clipPath: to([x, y], (x, y) =>
+      getCorner(bookRef, x as number, y as number)
+    ),
+    // `polygon(50% 0%, 100% 38%, 100% 100%, 0 100%, 0 0)`,
     transform: getHardPageTransform(x, progress, direction, isRtl, isFront),
-    zIndex: isFront ? undefined : progress.to((p) => (p > 50 ? 6 : 3)),
+    zIndex: isFront ? 10 : progress.to((p) => (p > 50 ? 6 : 3)),
   });
 
-  // Front Page Style
-
-  // Shadow Styles
-  const shadowStyle = {
+  const getShadowStyle = (inner = false) => ({
     display: progress.to((p) => (p > 0 ? "block" : "none")),
     width: progress.to((p) => Helper.getShadowWidth(p, pageWidth)),
-  };
-
-  const shadowTransform = (inner = false) =>
-    to([progress, direction], (p, dir) =>
+    background: progress.to((p: number) =>
+      Helper.getShadowBackground(p, inner)
+    ),
+    transform: to([progress, direction], (p, dir) =>
       Helper.getShadowTransform(p as number, dir as FlipDirection, isRtl, inner)
-    );
+    ),
+  });
 
   return (
     <>
@@ -97,37 +102,27 @@ const AnimatedPage: React.FC<IProps> = ({
       </animated.div>
 
       {belowPageNum > 0 && belowPageNum < pages.length - 1 && (
-        <div
+        <animated.div
           className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
             styles.below
           } ${isSinglePage ? styles.onePage : ""}`}
+          // style={{ zIndex: 10 }}
         >
           {pages[belowPageNum]}
-        </div>
+        </animated.div>
       )}
 
-      {hasShadow && (
+      {isHardPage && (
         <>
-          <animated.div
-            className={`${styles.shadow} ${isSinglePage ? styles.onePage : ""}`}
-            style={{
-              ...shadowStyle,
-              background: progress.to((p) => Helper.getShadowBackground(p)),
-              transform: shadowTransform(),
-            }}
-          />
-          <animated.div
-            className={`${styles.shadow} ${styles.inner} ${
-              isSinglePage ? styles.onePage : ""
-            }`}
-            style={{
-              ...shadowStyle,
-              background: progress.to((p) =>
-                Helper.getShadowBackground(p, true)
-              ),
-              transform: shadowTransform(true),
-            }}
-          />
+          {[false, true].map((isInner) => (
+            <animated.div
+              key={isInner ? "inner-shadow" : "outer-shadow"}
+              className={`${styles.shadow} ${
+                isSinglePage ? styles.onePage : ""
+              }`}
+              style={getShadowStyle(isInner)}
+            />
+          ))}
         </>
       )}
     </>
@@ -135,41 +130,6 @@ const AnimatedPage: React.FC<IProps> = ({
 };
 
 export default AnimatedPage;
-
-// Helper Functions
-function getFrontTransform(
-  x: SpringValue<number>,
-  progress: SpringValue<number>,
-  direction: SpringValue<FlipDirection>,
-  isRtl: boolean
-) {
-  return to(
-    [x, progress, direction],
-    (x, p, dir) =>
-      `translate3d(${isRtl ? x : -x}px, 0, 0) rotateY(${Helper.getAngle(
-        isRtl,
-        p as number,
-        dir as FlipDirection
-      )}deg)`
-  );
-}
-
-function getBackTransform(
-  progress: SpringValue<number>,
-  direction: SpringValue<FlipDirection>,
-  isRtl: boolean
-) {
-  return to(
-    [progress, direction],
-    (p, dir) =>
-      `translate3d(0, 0, 0) rotateY(${Helper.getAngle(
-        isRtl,
-        p as number,
-        dir as FlipDirection,
-        true
-      )}deg)`
-  );
-}
 
 function getHardPageTransform(
   x: SpringValue<number>,
@@ -181,13 +141,62 @@ function getHardPageTransform(
   return to(
     [x, progress, direction],
     (x, p, dir) =>
-      `translate3d(${
-        !isFront ? 0 : isRtl ? x : -x
-      }px, 0, 0) rotateY(${Helper.getAngle(
+      `translate3d(0, 0, 0) rotateY(${Helper.getAngle(
         isRtl,
         p as number,
         dir as FlipDirection,
         !isFront
       )}deg)`
   );
+}
+
+function getCorner(
+  bookRef: React.RefObject<HTMLDivElement>,
+  clientX: number,
+  clientY: number
+) {
+  const book = bookRef.current?.getBoundingClientRect();
+
+  const bookTop = book?.top ?? 0;
+  const bookWidth = book?.width ?? 0;
+  const bookHeight = book?.height ?? 0;
+  const bookLeft = book?.left ?? 0;
+
+  const localX = clientX - bookLeft;
+  const localY = clientY - bookTop;
+  const corner = Helper.getHoverCorner(bookWidth, bookHeight, localX, localY);
+
+  const poli = getClipPathForCorner(
+    corner,
+    bookWidth,
+    bookHeight,
+    localX,
+    localY
+  );
+
+  return poli;
+}
+function getClipPathForCorner(
+  corner: string | null,
+  bookWidth: number,
+  bookHeight: number,
+  localX: number,
+  localY: number
+): string {
+  // Adjust clipping dynamically based on localX and localY
+  const xPercent = (localX / bookWidth) * 100;
+  const yPercent = (localY / bookHeight) * 100;
+
+  switch (corner) {
+    case "top-left":
+      return `polygon(${xPercent}% 0%, 100% 0, 100% 100%, 0 100%, 0 ${yPercent}%)`;
+    case "top-right":
+      return `polygon(0% 0%, ${xPercent}% ${yPercent}%, 100% 100%, 0 100%, 0 0)`;
+    case "bottom-left":
+      return `polygon(0 0, 100% 0, 100% 100%, ${xPercent}% 100%, 0 ${yPercent}%)`;
+    case "bottom-right":
+      return `polygon(0 0, 100% 0, 100% ${yPercent}%, ${xPercent}% 100%, 0 100%)`;
+    default:
+      return "";
+  }
 }

@@ -108,6 +108,7 @@ const NewBook: React.FC<BookProps> = ({
                 bind={bind}
                 pageNum={currentPage + i}
                 pageWidth={bookStyle.width / (isSinglePage ? 1 : 2)}
+                bookRef={bookRef}
               />
             )
           );

@@ -15,6 +15,10 @@ interface UsePageFlipParams {
 }
 
 const ANIMATION_DURATION = 500;
+const INITIAL_STATUS = {
+  isHover: false,
+  isDrag: false,
+};
 
 export const usePageFlip = ({
   isRtl,
@@ -25,11 +29,12 @@ export const usePageFlip = ({
   currentPage,
   totalPages,
 }: UsePageFlipParams) => {
-  const [isDrag, setIsDrag] = useState(false);
-  const [isHover, setIsHover] = useState(false);
+  const [{ isHover, isDrag }, setStatus] = useState({
+    isHover: false,
+    isDrag: false,
+  });
   const book = bookRef.current?.getBoundingClientRect();
   const bookWidth = book?.width ?? 0;
-  const bookHeight = book?.height ?? 0;
   const pageWidth = bookWidth / (isSinglePage ? 1 : 2);
   const bookLeft = book?.left ?? 0;
 
@@ -83,12 +88,15 @@ export const usePageFlip = ({
           } else {
             onNextPage();
           }
-          setIsDrag(false);
+          setStatus(INITIAL_STATUS);
           api.start(() => {
             return {
               ...from({ immediate: false }),
               direction,
               config: { duration: 0 },
+              onRest: () => {
+                setStatus(INITIAL_STATUS);
+              },
             };
           });
         },
@@ -108,11 +116,14 @@ export const usePageFlip = ({
           if (idx !== i) {
             return;
           }
-          isDrag && setIsDrag(false);
+
           return {
             immediate: false,
             progress: 0,
             config: { duration: ANIMATION_DURATION },
+            onRest: () => {
+              isDrag && setStatus(INITIAL_STATUS);
+            },
           };
         });
       } else {
@@ -141,56 +152,107 @@ export const usePageFlip = ({
 
   const handleHardPageHover = useCallback(
     (isLeft: boolean, progress: number, idx: number) => {
-      const dir = isLeft
-        ? isRtl
-          ? FlipDirection.FORWARD
-          : FlipDirection.BACK
-        : isRtl
-        ? FlipDirection.BACK
-        : FlipDirection.FORWARD;
+      const dir = getDirByPoint(isLeft);
       if (progress > 10) {
         handleDragEnd(0, idx, dir, false);
-        setIsHover(false);
+        setStatus(INITIAL_STATUS);
       } else {
-        setIsHover(true);
         animateDrag(idx, progress, dir);
       }
     },
     []
   );
 
+  const resetLocation = useCallback((idx: number) => {
+    api.start((i) => {
+      if (idx !== i) {
+        return;
+      }
+      return {
+        ...from({ immediate: false }),
+      };
+    });
+  }, []);
+
+  const getDirByPoint = useCallback(
+    (isLeft: boolean) => {
+      return isLeft
+        ? isRtl
+          ? FlipDirection.FORWARD
+          : FlipDirection.BACK
+        : isRtl
+        ? FlipDirection.BACK
+        : FlipDirection.FORWARD;
+    },
+    [isRtl]
+  );
+
   const bind = useCallback(
     useGesture(
       {
+        onMouseLeave: ({ args: [idx], event: { clientX, clientY } }) => {
+          console.log("mouse leave", isHover);
+          const book = bookRef.current?.getBoundingClientRect();
+
+          const bookTop = book?.top ?? 0;
+          const bookWidth = book?.width ?? 0;
+          const bookHeight = book?.height ?? 0;
+          const bookLeft = book?.left ?? 0;
+
+          const localX = clientX - bookLeft;
+          const localY = clientY - bookTop;
+          const corner = Helper.getHoverCorner(
+            bookWidth,
+            bookHeight,
+            localX,
+            localY
+          );
+
+          if (!isHover || corner) {
+            return;
+          }
+          console.log("corner", corner);
+
+          setStatus(INITIAL_STATUS);
+          resetLocation(idx);
+        },
         onMouseMove: (params) => {
           if (isDrag) {
             return;
           }
+          console.log("hovering");
+
           const {
             args: [idx],
-            event: { clientX, clientY },
+            event: { clientX: x, clientY: y },
           } = params;
+
+          if (!isHover) {
+            setStatus((prev) => ({ ...prev, isHover: true }));
+          }
 
           const isHardPage = Helper.isHardPage(currentPage + idx, totalPages);
           const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
           if (!isHardPage) {
-            const book = bookRef.current?.getBoundingClientRect();
-            const bookTop = book?.top ?? 0;
-            const corner = Helper.getHoverCorner(
-              bookWidth,
-              bookHeight,
-              clientX,
-              clientY,
-              bookTop,
-              bookLeft
-            );
-            console.log("corner", corner);
+            const direction = getDirByPoint(isLeft);
+            api.start((i) => {
+              if (idx !== i) {
+                return;
+              }
+              return {
+                ...from({ immediate: false }),
+                x,
+                y,
+                direction,
+              };
+            });
 
             return;
           }
 
-          const progress = Helper.getProgress(clientX, !isLeft, bookRef);
-          if (progress > 10 && !isHover) {
+          const progress = Helper.getProgress(x, !isLeft, bookRef);
+          if (progress > 10 || !isHover) {
+            resetLocation(idx);
             return;
           }
 
@@ -230,12 +292,12 @@ export const usePageFlip = ({
             memo,
             tap,
           } = params;
-          console.log("dragging", tap);
 
           if (tap) {
             return;
           }
-          setIsDrag(true);
+
+          setStatus({ ...INITIAL_STATUS, isDrag: true });
 
           const dir = xDir < 0 ? -1 : 1;
 
@@ -270,9 +332,7 @@ export const usePageFlip = ({
       },
       {
         drag: { filterTaps: true, bounds: bookRef, capture: true },
-        eventOptions: { passive: true },
-        hover: { mouseOnly: true, enabled: false },
-        move: { enabled: false },
+        eventOptions: { passive: true, precision: 0.0001 },
       }
     ),
     []
