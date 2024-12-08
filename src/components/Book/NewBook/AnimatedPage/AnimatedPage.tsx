@@ -11,9 +11,8 @@ interface IProps {
   pages: JSX.Element[];
   x: SpringValue<number>;
   y: SpringValue<number>;
-  r: SpringValue<number>;
-  direction: SpringValue<FlipDirection>;
   progress: SpringValue<number>;
+  direction: SpringValue<FlipDirection>;
   bind: (...args: unknown[]) => ReactDOMAttributes;
   i: number;
   pageWidth: number;
@@ -22,18 +21,17 @@ interface IProps {
 const AnimatedPage: React.FC<IProps> = ({
   pageNum,
   isRtl,
-  i,
   isSinglePage,
   pages,
   bind,
   x,
   progress,
-  pageWidth,
   direction,
+  i,
+  pageWidth,
 }) => {
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
   const hasShadow = Helper.isHardPage(pageNum, pages.length);
-
   const backPageNum = Helper.getHiddenPageNum(
     pageNum,
     isSinglePage,
@@ -49,56 +47,41 @@ const AnimatedPage: React.FC<IProps> = ({
   );
   const adjustOrigin = pageNum === pages.length - 1 || pageNum === 1;
 
-  // Front Page Style
-  const frontStyle = {
-    display: to([progress], (progress) => (progress < 50 ? "block" : "none")),
-    transformOrigin: Helper.getOrigin(isLeftPage, pageWidth),
-    clipPath: "none",
-    transform: to([x, progress, direction], (x, progress, direction) => {
-      const angle = Helper.getAngle(
-        isRtl,
-        progress as number,
-        direction as FlipDirection
-      );
-
-      return `translate3d(${
-        isRtl ? x : -(x as number)
-      }px, 0px, 0px) rotateY(${angle}deg)`;
-    }),
-  };
-
-  // Back Page Style
-  const backStyle = {
-    display: to([progress], (progress) => (progress >= 50 ? "block" : "none")),
-    zIndex: progress.to((progress) => (progress > 50 ? 6 : 3)),
-    transformOrigin: Helper.getOrigin(adjustOrigin ? isRtl : !isRtl, pageWidth),
-    transform: to([progress, direction], (progress, direction) => {
-      const angle = Helper.getAngle(
-        isRtl,
-        progress as number,
-        direction as FlipDirection,
-        true
-      );
-      return `translate3d(0px, 0px, 0px) rotateY(${!progress || angle}deg)`;
-    }),
-  };
-
-  const shadowStyle = {
-    display: progress.to((progress) => (progress > 0 ? "block" : "none")),
-    width: progress.to((progress) =>
-      Helper.getShadowWidth(progress, pageWidth)
+  // Styles for Front and Back Pages
+  const getPageStyle = (isFront: boolean) => ({
+    display: progress.to((p) =>
+      (isFront ? p < 50 : p >= 50) ? "block" : "none"
     ),
+    transformOrigin: Helper.getOrigin(
+      isFront ? isLeftPage : adjustOrigin === isRtl,
+      pageWidth
+    ),
+    transform: getHardPageTransform(x, progress, direction, isRtl, isFront),
+    zIndex: isFront ? undefined : progress.to((p) => (p > 50 ? 6 : 3)),
+  });
+
+  // Front Page Style
+
+  // Shadow Styles
+  const shadowStyle = {
+    display: progress.to((p) => (p > 0 ? "block" : "none")),
+    width: progress.to((p) => Helper.getShadowWidth(p, pageWidth)),
   };
+
+  const shadowTransform = (inner = false) =>
+    to([progress, direction], (p, dir) =>
+      Helper.getShadowTransform(p as number, dir as FlipDirection, isRtl, inner)
+    );
 
   return (
     <>
       <animated.div
-        key={`page-front-${pageNum}`}
         {...bind(i)}
+        key={`page-front-${pageNum}`}
         className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
           isSinglePage ? styles.onePage : ""
         }`}
-        style={frontStyle}
+        style={getPageStyle(true)}
       >
         {pages[pageNum]}
       </animated.div>
@@ -108,7 +91,7 @@ const AnimatedPage: React.FC<IProps> = ({
         className={`${styles.page} ${
           adjustOrigin === isRtl ? "" : styles.right
         } ${isSinglePage ? styles.onePage : ""}`}
-        style={backStyle}
+        style={getPageStyle(false)}
       >
         {pages[backPageNum]}
       </animated.div>
@@ -124,47 +107,87 @@ const AnimatedPage: React.FC<IProps> = ({
       )}
 
       {hasShadow && (
-        <animated.div
-          className={`${styles.shadow} ${isSinglePage ? styles.onePage : ""}`}
-          style={{
-            ...shadowStyle,
-            background: progress.to((progress) =>
-              Helper.getShadowBackground(progress)
-            ),
-            transform: to([progress, direction], (progress, direction) =>
-              Helper.getShadowTransform(
-                progress as number,
-                direction as FlipDirection,
-                isRtl
-              )
-            ),
-          }}
-        />
-      )}
-
-      {hasShadow && (
-        <animated.div
-          className={`${styles.shadow} ${styles.inner} ${
-            isSinglePage ? styles.onePage : ""
-          }`}
-          style={{
-            ...shadowStyle,
-            background: progress.to((progress) =>
-              Helper.getShadowBackground(progress, true)
-            ),
-            transform: to([progress, direction], (progress, direction) =>
-              Helper.getShadowTransform(
-                progress as number,
-                direction as FlipDirection,
-                isRtl,
-                true
-              )
-            ),
-          }}
-        />
+        <>
+          <animated.div
+            className={`${styles.shadow} ${isSinglePage ? styles.onePage : ""}`}
+            style={{
+              ...shadowStyle,
+              background: progress.to((p) => Helper.getShadowBackground(p)),
+              transform: shadowTransform(),
+            }}
+          />
+          <animated.div
+            className={`${styles.shadow} ${styles.inner} ${
+              isSinglePage ? styles.onePage : ""
+            }`}
+            style={{
+              ...shadowStyle,
+              background: progress.to((p) =>
+                Helper.getShadowBackground(p, true)
+              ),
+              transform: shadowTransform(true),
+            }}
+          />
+        </>
       )}
     </>
   );
 };
 
 export default AnimatedPage;
+
+// Helper Functions
+function getFrontTransform(
+  x: SpringValue<number>,
+  progress: SpringValue<number>,
+  direction: SpringValue<FlipDirection>,
+  isRtl: boolean
+) {
+  return to(
+    [x, progress, direction],
+    (x, p, dir) =>
+      `translate3d(${isRtl ? x : -x}px, 0, 0) rotateY(${Helper.getAngle(
+        isRtl,
+        p as number,
+        dir as FlipDirection
+      )}deg)`
+  );
+}
+
+function getBackTransform(
+  progress: SpringValue<number>,
+  direction: SpringValue<FlipDirection>,
+  isRtl: boolean
+) {
+  return to(
+    [progress, direction],
+    (p, dir) =>
+      `translate3d(0, 0, 0) rotateY(${Helper.getAngle(
+        isRtl,
+        p as number,
+        dir as FlipDirection,
+        true
+      )}deg)`
+  );
+}
+
+function getHardPageTransform(
+  x: SpringValue<number>,
+  progress: SpringValue<number>,
+  direction: SpringValue<FlipDirection>,
+  isRtl: boolean,
+  isFront: boolean
+) {
+  return to(
+    [x, progress, direction],
+    (x, p, dir) =>
+      `translate3d(${
+        !isFront ? 0 : isRtl ? x : -x
+      }px, 0, 0) rotateY(${Helper.getAngle(
+        isRtl,
+        p as number,
+        dir as FlipDirection,
+        !isFront
+      )}deg)`
+  );
+}

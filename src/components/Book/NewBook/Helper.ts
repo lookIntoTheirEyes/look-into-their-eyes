@@ -414,7 +414,7 @@ function getHoverCorner(
   bookTop: number,
   bookLeft: number
 ): string | null {
-  const maxDistance = 100;
+  const maxDistance = 200;
 
   const localX = x - bookLeft;
   const localY = y - bookTop;
