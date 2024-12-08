@@ -31,12 +31,9 @@
   left: 50%;
   transform-origin: 0px 0px;
   height: 100%;
-  z-index: 4;
+  z-index: 10;
+
   &.onePage {
     left: 0;
-  }
-
-  &.inner {
-    z-index: 5;
   }
 }
