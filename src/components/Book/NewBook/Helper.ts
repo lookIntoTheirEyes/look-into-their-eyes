@@ -406,6 +406,46 @@ function getProgress(
   );
 }
 
+function getHoverCorner(
+  bookWidth: number,
+  bookHeight: number,
+  x: number,
+  y: number,
+  bookTop: number,
+  bookLeft: number
+): string | null {
+  const maxDistance = 100;
+
+  const localX = x - bookLeft;
+  const localY = y - bookTop;
+
+  if (
+    localX < 0 ||
+    localY < 0 ||
+    localX > bookWidth ||
+    localY > bookHeight ||
+    (localX > maxDistance &&
+      localX < bookWidth - maxDistance &&
+      localY > maxDistance &&
+      localY < bookHeight - maxDistance)
+  ) {
+    return null; // Not in any corner
+  }
+
+  // Determine the corner
+  const isTop = localY <= maxDistance;
+  const isBottom = localY >= bookHeight - maxDistance;
+  const isLeft = localX <= maxDistance;
+  const isRight = localX >= bookWidth - maxDistance;
+
+  if (isTop && isLeft) return "top-left";
+  if (isTop && isRight) return "top-right";
+  if (isBottom && isLeft) return "bottom-left";
+  if (isBottom && isRight) return "bottom-right";
+
+  return null; // Not in any corner
+}
+
 const Helper = {
   handleNull,
   GetCordsFromTwoPoint,
@@ -418,7 +458,6 @@ const Helper = {
   GetAngleBetweenTwoLine,
   LimitPointToCircle,
   isLeftPage,
-
   getXClickLocation,
   getActionByClick,
   getHiddenPageNum,
@@ -430,6 +469,7 @@ const Helper = {
   isHardPage,
   getDirection,
   getProgress,
+  getHoverCorner,
 };
 
 export default Helper;

@@ -28,9 +28,10 @@ export const usePageFlip = ({
   const [isDrag, setIsDrag] = useState(false);
   const [isHover, setIsHover] = useState(false);
   const book = bookRef.current?.getBoundingClientRect();
-  const pageWidth = (book?.width ?? 0) / (isSinglePage ? 1 : 2);
+  const bookWidth = book?.width ?? 0;
+  const bookHeight = book?.height ?? 0;
+  const pageWidth = bookWidth / (isSinglePage ? 1 : 2);
   const bookLeft = book?.left ?? 0;
-  const bookTop = book?.top ?? 0;
 
   const from = useCallback(
     ({
@@ -138,28 +139,25 @@ export const usePageFlip = ({
     [api, from]
   );
 
-  const handleHardPageHover = useCallback((x: number, idx: number) => {
-    const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
-    const progress = Helper.getProgress(x, !isLeft, bookRef);
-    if (progress > 10 && !isHover) {
-      return;
-    }
-
-    const dir = isLeft
-      ? isRtl
-        ? FlipDirection.FORWARD
-        : FlipDirection.BACK
-      : isRtl
-      ? FlipDirection.BACK
-      : FlipDirection.FORWARD;
-    if (progress > 10) {
-      handleDragEnd(progress, idx, dir, false);
-      setIsHover(false);
-    } else {
-      setIsHover(true);
-      animateDrag(idx, progress, dir);
-    }
-  }, []);
+  const handleHardPageHover = useCallback(
+    (isLeft: boolean, progress: number, idx: number) => {
+      const dir = isLeft
+        ? isRtl
+          ? FlipDirection.FORWARD
+          : FlipDirection.BACK
+        : isRtl
+        ? FlipDirection.BACK
+        : FlipDirection.FORWARD;
+      if (progress > 10) {
+        handleDragEnd(0, idx, dir, false);
+        setIsHover(false);
+      } else {
+        setIsHover(true);
+        animateDrag(idx, progress, dir);
+      }
+    },
+    []
+  );
 
   const bind = useCallback(
     useGesture(
@@ -170,36 +168,33 @@ export const usePageFlip = ({
           }
           const {
             args: [idx],
-            event: { clientX },
+            event: { clientX, clientY },
           } = params;
 
           const isHardPage = Helper.isHardPage(currentPage + idx, totalPages);
+          const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
           if (!isHardPage) {
+            const book = bookRef.current?.getBoundingClientRect();
+            const bookTop = book?.top ?? 0;
+            const corner = Helper.getHoverCorner(
+              bookWidth,
+              bookHeight,
+              clientX,
+              clientY,
+              bookTop,
+              bookLeft
+            );
+            console.log("corner", corner);
+
             return;
           }
 
-          const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
           const progress = Helper.getProgress(clientX, !isLeft, bookRef);
           if (progress > 10 && !isHover) {
             return;
           }
 
-          // handleHardPageHover(clientX, idx)
-
-          const dir = isLeft
-            ? isRtl
-              ? FlipDirection.FORWARD
-              : FlipDirection.BACK
-            : isRtl
-            ? FlipDirection.BACK
-            : FlipDirection.FORWARD;
-          if (progress > 10) {
-            handleDragEnd(0, idx, dir, false);
-            setIsHover(false);
-          } else {
-            setIsHover(true);
-            animateDrag(idx, progress, dir);
-          }
+          handleHardPageHover(isLeft, progress, idx);
         },
 
         onClick: (params) => {
@@ -214,7 +209,7 @@ export const usePageFlip = ({
             isLeft,
             pageWidth / 2,
             bookLeft,
-            book?.width ?? 0
+            bookWidth
           );
           const action = Helper.getActionByClick(clickLocation, isRtl);
           if (!action) {
