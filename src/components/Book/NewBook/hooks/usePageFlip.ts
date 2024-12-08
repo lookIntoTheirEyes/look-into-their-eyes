@@ -211,7 +211,7 @@ export const usePageFlip = ({
     { drag: { filterTaps: true, bounds: bookRef } }
   );
 
-  return { props, bind, api };
+  return { props, bind, api, animateNextPage };
 };
 
 function getDirection(isRtl: boolean, xDir: number) {

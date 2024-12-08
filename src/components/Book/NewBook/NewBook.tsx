@@ -10,6 +10,7 @@ import Controls from "../Controls/Controls";
 import AnimatedPage from "./AnimatedPage/AnimatedPage";
 
 import styles from "./NewBook.module.css";
+import { FlipDirection } from "./model";
 
 interface BookProps {
   text: {
@@ -66,7 +67,7 @@ const NewBook: React.FC<BookProps> = ({
   const isFirstPage = currentPage === 0;
   const isLastPage = currentPage === totalPages - 1;
 
-  const { props, bind } = usePageFlip({
+  const { props, bind, animateNextPage } = usePageFlip({
     isRtl,
     onNextPage: handleNextPage,
     onPrevPage: handlePrevPage,
@@ -113,9 +114,17 @@ const NewBook: React.FC<BookProps> = ({
         })}
       </div>
       <Controls
-        flipPage={(dir) =>
-          dir === "next" ? handleNextPage() : handlePrevPage()
-        }
+        flipPage={(dir) => {
+          const direction =
+            dir === "next" ? FlipDirection.FORWARD : FlipDirection.BACK;
+          const idx =
+            isFirstPage || isLastPage
+              ? 0
+              : direction === FlipDirection.BACK
+              ? 0
+              : 1;
+          animateNextPage(idx, direction);
+        }}
         pageCount={totalPages}
         currPage={currentPage + 1}
         actions={text}
