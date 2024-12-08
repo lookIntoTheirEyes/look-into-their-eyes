@@ -5,7 +5,8 @@ import {
   Rect,
   Segment,
 } from "./model";
-import { BookStyle } from "./hooks/useBookStyle";
+import FlipCalculation from "./FlipCalculation";
+import { RefObject } from "react";
 
 /**
  * A class containing helping mathematical methods
@@ -264,10 +265,6 @@ function handleNull(point: Point) {
   return point;
 }
 
-function isLeftPageByClick(x: number, left: number, pageWidth: number) {
-  return x >= left && x <= left + pageWidth;
-}
-
 const getXClickLocation = (
   x: number,
   isLeftPage: boolean,
@@ -381,6 +378,34 @@ function getShadowBackground(progress: number, isInner = false) {
       rgba(0, 0, 0, 0) 100%)`;
 }
 
+function isHardPage(pageNum: number, totalPages: number) {
+  return pageNum >= totalPages - 2 || pageNum < 2;
+}
+
+function getDirection(isRtl: boolean, xDir: number) {
+  if (isRtl) {
+    return xDir < 0 ? FlipDirection.BACK : FlipDirection.FORWARD;
+  }
+  return xDir < 0 ? FlipDirection.FORWARD : FlipDirection.BACK;
+}
+
+function getProgress(
+  x: number,
+  isRightPage: boolean,
+  bookRef: RefObject<HTMLDivElement>
+) {
+  const bookBounds = bookRef.current?.getBoundingClientRect();
+  const bookLeft = bookBounds?.x ?? 0;
+  const bookWidth = bookBounds?.width ?? 0;
+
+  return FlipCalculation.getFlippingProgress(
+    x,
+    isRightPage,
+    bookLeft,
+    bookWidth
+  );
+}
+
 const Helper = {
   handleNull,
   GetCordsFromTwoPoint,
@@ -393,7 +418,7 @@ const Helper = {
   GetAngleBetweenTwoLine,
   LimitPointToCircle,
   isLeftPage,
-  isLeftPageByClick,
+
   getXClickLocation,
   getActionByClick,
   getHiddenPageNum,
@@ -402,6 +427,9 @@ const Helper = {
   getShadowWidth,
   getShadowTransform,
   getShadowBackground,
+  isHardPage,
+  getDirection,
+  getProgress,
 };
 
 export default Helper;

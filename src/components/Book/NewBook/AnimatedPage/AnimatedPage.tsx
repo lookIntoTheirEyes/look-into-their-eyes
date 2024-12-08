@@ -32,7 +32,7 @@ const AnimatedPage: React.FC<IProps> = ({
   direction,
 }) => {
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
-  const hasShadow = pageNum >= pages.length - 2 || pageNum < 2;
+  const hasShadow = Helper.isHardPage(pageNum, pages.length);
 
   const backPageNum = Helper.getHiddenPageNum(
     pageNum,

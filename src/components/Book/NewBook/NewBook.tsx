@@ -72,9 +72,9 @@ const NewBook: React.FC<BookProps> = ({
     onNextPage: handleNextPage,
     onPrevPage: handlePrevPage,
     bookRef,
-    isFirstPage,
-    isLastPage,
+    currentPage,
     isSinglePage,
+    totalPages,
   });
 
   return (
