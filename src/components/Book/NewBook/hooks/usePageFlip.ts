@@ -3,6 +3,7 @@ import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
 import FlipCalculation from "../FlipCalculation";
 import { FlipDirection } from "../model";
+import Helper from "../Helper";
 
 interface UsePageFlipParams {
   isRtl: boolean;
@@ -27,8 +28,8 @@ export const usePageFlip = ({
 }: UsePageFlipParams) => {
   const book = bookRef.current?.getBoundingClientRect();
   const pageWidth = (book?.width ?? 0) / (isSinglePage ? 1 : 2);
-  const bookLeft = (book?.left ?? 0) / 2;
-  const bookTop = (book?.top ?? 0) / 2;
+  const bookLeft = book?.left ?? 0;
+  const bookTop = book?.top ?? 0;
 
   const from = useCallback(
     ({
@@ -63,6 +64,35 @@ export const usePageFlip = ({
     from: from(),
   }));
 
+  const animateNextPage = (idx: number, direction: FlipDirection) => {
+    api.start((i) => {
+      if (i !== idx) {
+        return;
+      }
+
+      return {
+        immediate: false,
+        progress: 100,
+        config: { duration: ANIMATION_DURATION },
+        direction,
+        onRest: () => {
+          if (direction === FlipDirection.BACK) {
+            onPrevPage();
+          } else {
+            onNextPage();
+          }
+          api.start(() => {
+            return {
+              ...from({ immediate: false }),
+              direction,
+              config: { duration: 0 },
+            };
+          });
+        },
+      };
+    });
+  };
+
   const handleDragEnd = useCallback(
     (
       progress: number,
@@ -82,29 +112,7 @@ export const usePageFlip = ({
           };
         });
       } else {
-        api.start((i) => {
-          if (i !== idx) {
-            return;
-          }
-          return {
-            immediate: false,
-            progress: 100,
-            config: { duration: ANIMATION_DURATION },
-            onRest: () => {
-              if (direction === FlipDirection.BACK) {
-                onPrevPage();
-              } else {
-                onNextPage();
-              }
-              api.start(() => {
-                return {
-                  ...from({ immediate: false }),
-                  config: { duration: 0 },
-                };
-              });
-            },
-          };
-        });
+        animateNextPage(idx, direction);
       }
     },
     [api, from, onNextPage, onPrevPage]
@@ -112,6 +120,29 @@ export const usePageFlip = ({
 
   const bind = useGesture(
     {
+      onClick: (params) => {
+        const {
+          args: [idx],
+          event: { clientX },
+        } = params;
+
+        const isLeft = Helper.isLeftPageByClick(clientX, bookLeft, pageWidth);
+        const clickLocation = Helper.getXClickLocation(
+          clientX,
+          isLeft,
+          pageWidth / 2,
+          bookLeft,
+          book?.width ?? 0
+        );
+        const action = Helper.getActionByClick(clickLocation, isRtl);
+        if (!action) {
+          return;
+        }
+        const direction =
+          action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
+
+        animateNextPage(idx, direction);
+      },
       onDrag: (params) => {
         const {
           down,
@@ -122,10 +153,13 @@ export const usePageFlip = ({
           memo,
           tap,
         } = params;
+        if (tap) {
+          return;
+        }
 
         const dir = xDir < 0 ? -1 : 1;
 
-        if ((!dir && down) || tap) {
+        if (!dir && down) {
           return memo;
         }
 

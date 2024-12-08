@@ -1,6 +1,6 @@
 export const FlipDirection = {
-  FORWARD: 1,
-  BACK: 2,
+  FORWARD: "FORWARD",
+  BACK: "BACK",
 } as const;
 
 export type FlipDirection = (typeof FlipDirection)[keyof typeof FlipDirection];

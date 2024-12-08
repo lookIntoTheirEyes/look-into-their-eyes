@@ -2,6 +2,7 @@ import { animated, SpringValue, to } from "@react-spring/web";
 import { ReactDOMAttributes } from "@use-gesture/react/dist/declarations/src/types";
 import styles from "./AnimatedPage.module.css";
 import { FlipDirection } from "../model";
+import Helper from "../Helper";
 
 interface IProps {
   pageNum: number;
@@ -30,17 +31,17 @@ const AnimatedPage: React.FC<IProps> = ({
   pageWidth,
   direction,
 }) => {
-  const isLeftPage = getIsLeftPage(pageNum, isRtl);
+  const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
   const hasShadow = pageNum >= pages.length - 2 || pageNum < 2;
 
-  const backPageNum = getHiddenPageNum(
+  const backPageNum = Helper.getHiddenPageNum(
     pageNum,
     isSinglePage,
     isLeftPage,
     isRtl,
     true
   );
-  const belowPageNum = getHiddenPageNum(
+  const belowPageNum = Helper.getHiddenPageNum(
     pageNum,
     isSinglePage,
     isLeftPage,
@@ -51,11 +52,18 @@ const AnimatedPage: React.FC<IProps> = ({
   // Front Page Style
   const frontStyle = {
     display: to([progress], (progress) => (progress < 50 ? "block" : "none")),
-    transformOrigin: getOrigin(isLeftPage, pageWidth),
+    transformOrigin: Helper.getOrigin(isLeftPage, pageWidth),
     clipPath: "none",
     transform: to([x, progress, direction], (x, progress, direction) => {
-      const angle = getAngle(isRtl, progress, direction as FlipDirection);
-      return `translate3d(${isRtl ? x : -x}px, 0px, 0px) rotateY(${angle}deg)`;
+      const angle = Helper.getAngle(
+        isRtl,
+        progress as number,
+        direction as FlipDirection
+      );
+
+      return `translate3d(${
+        isRtl ? x : -(x as number)
+      }px, 0px, 0px) rotateY(${angle}deg)`;
     }),
   };
 
@@ -63,16 +71,23 @@ const AnimatedPage: React.FC<IProps> = ({
   const backStyle = {
     display: to([progress], (progress) => (progress >= 50 ? "block" : "none")),
     zIndex: progress.to((progress) => (progress > 50 ? 6 : 3)),
-    transformOrigin: getOrigin(adjustOrigin ? isRtl : !isRtl, pageWidth),
-    transform: to([x, progress, direction], (x, progress, direction) => {
-      const angle = getAngle(isRtl, progress, direction as FlipDirection, true);
+    transformOrigin: Helper.getOrigin(adjustOrigin ? isRtl : !isRtl, pageWidth),
+    transform: to([progress, direction], (progress, direction) => {
+      const angle = Helper.getAngle(
+        isRtl,
+        progress as number,
+        direction as FlipDirection,
+        true
+      );
       return `translate3d(0px, 0px, 0px) rotateY(${!progress || angle}deg)`;
     }),
   };
 
   const shadowStyle = {
     display: progress.to((progress) => (progress > 0 ? "block" : "none")),
-    width: progress.to((progress) => getShadowWidth(progress, pageWidth)),
+    width: progress.to((progress) =>
+      Helper.getShadowWidth(progress, pageWidth)
+    ),
   };
 
   return (
@@ -114,10 +129,14 @@ const AnimatedPage: React.FC<IProps> = ({
           style={{
             ...shadowStyle,
             background: progress.to((progress) =>
-              getShadowBackground(progress)
+              Helper.getShadowBackground(progress)
             ),
             transform: to([progress, direction], (progress, direction) =>
-              getShadowTransform(progress, direction as FlipDirection, isRtl)
+              Helper.getShadowTransform(
+                progress as number,
+                direction as FlipDirection,
+                isRtl
+              )
             ),
           }}
         />
@@ -131,11 +150,11 @@ const AnimatedPage: React.FC<IProps> = ({
           style={{
             ...shadowStyle,
             background: progress.to((progress) =>
-              getShadowBackground(progress, true)
+              Helper.getShadowBackground(progress, true)
             ),
             transform: to([progress, direction], (progress, direction) =>
-              getShadowTransform(
-                progress,
+              Helper.getShadowTransform(
+                progress as number,
                 direction as FlipDirection,
                 isRtl,
                 true
@@ -149,81 +168,3 @@ const AnimatedPage: React.FC<IProps> = ({
 };
 
 export default AnimatedPage;
-
-// Helper Functions
-function getIsLeftPage(pageNum: number, isRtl: boolean) {
-  return isRtl ? pageNum % 2 === 0 : pageNum % 2 === 1;
-}
-
-function getHiddenPageNum(
-  pageNum: number,
-  isSinglePage: boolean,
-  isLeftPage: boolean,
-  isRtl: boolean,
-  isBack = false
-) {
-  const factor = isBack ? 1 : 2;
-  return !isRtl
-    ? isSinglePage || isLeftPage
-      ? pageNum - factor
-      : pageNum + factor
-    : isSinglePage || isLeftPage
-    ? pageNum + factor
-    : pageNum - factor;
-}
-
-function getAngle(
-  isRtl: boolean,
-  progress: number,
-  direction: FlipDirection,
-  isBack = false
-): number {
-  const baseAngle =
-    (-90 * (200 - progress * 2)) / 100 +
-    (direction === (isRtl ? FlipDirection.FORWARD : FlipDirection.BACK)
-      ? 360
-      : 0);
-
-  const normalizedAngle = Math.abs((baseAngle - 180) % 360);
-
-  return isBack ? normalizedAngle - 180 : normalizedAngle;
-}
-
-function getOrigin(condition: boolean, pageWidth: number) {
-  return condition ? `${pageWidth}px 0px` : "0px 0px";
-}
-
-function getShadowWidth(progress: number, pageWidth: number) {
-  let width = Math.abs(((100 - progress * 2) * (2.5 * pageWidth)) / 100 + 20);
-
-  if (width > pageWidth) width = pageWidth;
-  return width;
-}
-
-function getShadowTransform(
-  progress: number,
-  direction: FlipDirection,
-  isRtl = false,
-  isInner = false
-) {
-  const flipCondition =
-    (direction === (isRtl ? FlipDirection.BACK : FlipDirection.FORWARD) &&
-      progress > 50) ||
-    (direction === (isRtl ? FlipDirection.FORWARD : FlipDirection.BACK) &&
-      progress <= 50);
-  const val = `translate3d(0, 0, 0)${
-    flipCondition !== isInner ? " rotateY(180deg)" : ""
-  }`;
-
-  return val;
-}
-
-function getShadowBackground(progress: number, isInner = false) {
-  const opacity = (100 - progress) / 100;
-
-  return `linear-gradient(${isInner ? "to right" : "to left"}, 
-      rgba(0, 0, 0, ${
-        isInner && progress < 50 ? Math.abs(1 - opacity) : opacity
-      }) 5%, 
-      rgba(0, 0, 0, 0) 100%)`;
-}

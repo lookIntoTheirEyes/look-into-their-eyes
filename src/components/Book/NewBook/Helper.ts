@@ -1,4 +1,10 @@
-import { PageMouseLocation, Point, Rect, Segment } from "./model";
+import {
+  FlipDirection,
+  PageMouseLocation,
+  Point,
+  Rect,
+  Segment,
+} from "./model";
 import { BookStyle } from "./hooks/useBookStyle";
 
 /**
@@ -258,27 +264,122 @@ function handleNull(point: Point) {
   return point;
 }
 
-const isLeftPage = (x: number, bookStyle: BookStyle) => {
-  const pageWidth = bookStyle.width / 2;
-  return x >= bookStyle.left && x <= bookStyle.left + pageWidth;
-};
+function isLeftPageByClick(x: number, left: number, pageWidth: number) {
+  return x >= left && x <= left + pageWidth;
+}
 
 const getXClickLocation = (
   x: number,
   isLeftPage: boolean,
   dragThreshold: number,
-  bookStyle: BookStyle
+  left: number,
+  bookWidth: number
 ): PageMouseLocation => {
   if (isLeftPage) {
-    return x <= bookStyle.left + dragThreshold
-      ? "leftPageLeft"
-      : "leftPageRight";
+    return x <= left + dragThreshold ? "leftPageLeft" : "leftPageRight";
   }
 
-  return bookStyle.left + bookStyle.width - x <= dragThreshold
+  return left + bookWidth - x <= dragThreshold
     ? "rightPageRight"
     : "rightPageLeft";
 };
+
+function getActionByClick(clickLocation: PageMouseLocation, isRtl: boolean) {
+  if (clickLocation === "leftPageRight" || clickLocation === "rightPageLeft") {
+    return;
+  }
+
+  if (isRtl) {
+    if (clickLocation === "leftPageLeft") {
+      return "next";
+    } else {
+      return "prev";
+    }
+  } else {
+    if (clickLocation === "leftPageLeft") {
+      return "prev";
+    } else {
+      return "next";
+    }
+  }
+}
+
+function isLeftPage(pageNum: number, isRtl: boolean) {
+  return isRtl ? pageNum % 2 === 0 : pageNum % 2 === 1;
+}
+
+function getHiddenPageNum(
+  pageNum: number,
+  isSinglePage: boolean,
+  isLeftPage: boolean,
+  isRtl: boolean,
+  isBack = false
+) {
+  const factor = isBack ? 1 : 2;
+  return !isRtl
+    ? isSinglePage || isLeftPage
+      ? pageNum - factor
+      : pageNum + factor
+    : isSinglePage || isLeftPage
+    ? pageNum + factor
+    : pageNum - factor;
+}
+
+function getAngle(
+  isRtl: boolean,
+  progress: number,
+  direction: FlipDirection | undefined,
+  isBack = false
+): number {
+  const baseAngle =
+    (-90 * (200 - progress * 2)) / 100 +
+    (direction === (isRtl ? FlipDirection.FORWARD : FlipDirection.BACK)
+      ? 360
+      : 0);
+
+  const normalizedAngle = Math.abs((baseAngle - 180) % 360);
+
+  return isBack ? normalizedAngle - 180 : normalizedAngle;
+}
+
+function getOrigin(condition: boolean, pageWidth: number) {
+  return condition ? `${pageWidth}px 0px` : "0px 0px";
+}
+
+function getShadowWidth(progress: number, pageWidth: number) {
+  let width = Math.abs(((100 - progress * 2) * (2.5 * pageWidth)) / 100 + 20);
+
+  if (width > pageWidth) width = pageWidth;
+  return width;
+}
+
+function getShadowTransform(
+  progress: number,
+  direction: FlipDirection,
+  isRtl = false,
+  isInner = false
+) {
+  const flipCondition =
+    (direction === (isRtl ? FlipDirection.BACK : FlipDirection.FORWARD) &&
+      progress > 50) ||
+    (direction === (isRtl ? FlipDirection.FORWARD : FlipDirection.BACK) &&
+      progress <= 50);
+  const val = `translate3d(0, 0, 0)${
+    flipCondition !== isInner ? " rotateY(180deg)" : ""
+  }`;
+
+  return val;
+}
+
+function getShadowBackground(progress: number, isInner = false) {
+  const opacity = (100 - progress) / 100;
+
+  return `linear-gradient(${isInner ? "to right" : "to left"}, 
+      rgba(0, 0, 0, ${
+        isInner && progress < 50 ? Math.abs(1 - opacity) : opacity
+      }) 5%, 
+      rgba(0, 0, 0, 0) 100%)`;
+}
 
 const Helper = {
   handleNull,
@@ -292,7 +393,15 @@ const Helper = {
   GetAngleBetweenTwoLine,
   LimitPointToCircle,
   isLeftPage,
+  isLeftPageByClick,
   getXClickLocation,
+  getActionByClick,
+  getHiddenPageNum,
+  getAngle,
+  getOrigin,
+  getShadowWidth,
+  getShadowTransform,
+  getShadowBackground,
 };
 
 export default Helper;
