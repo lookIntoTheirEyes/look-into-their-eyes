@@ -320,9 +320,5 @@ function isMoveAllowed(
     return false;
   }
 
-  if ((currentPage % 2 === 1) === (direction === FlipDirection.FORWARD)) {
-    return false;
-  }
-
-  return true;
+  return !((currentPage % 2 === 1) === (direction === FlipDirection.FORWARD));
 }
