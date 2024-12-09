@@ -63,7 +63,8 @@ const AnimatedPage: React.FC<IProps> = ({
       direction,
       isLeftPage,
       isFront,
-      pageWidth
+      pageWidth,
+      isRtl
     ),
     clipPath: to([x, y], (x, y) =>
       getCorner(bookRef, x as number, y as number)
@@ -144,14 +145,20 @@ function getHardPageTransform(
   direction: SpringValue<FlipDirection>,
   isLeftPage: boolean,
   isFront: boolean,
-  pageWidth: number
+  pageWidth: number,
+  isRtl: boolean
 ) {
   return to([x, progress, direction], (x, p, dir) => {
     const progress = p as number;
+
     const angle = Helper.getAngle(
       isLeftPage,
       progress,
-      dir as FlipDirection,
+      (isRtl
+        ? dir
+        : dir === FlipDirection.FORWARD
+        ? FlipDirection.BACK
+        : FlipDirection.FORWARD) as FlipDirection,
       !isFront
     );
 
