@@ -1,12 +1,13 @@
-.page {
+.pageWrapper {
   position: absolute;
   top: 0;
   left: 0;
   width: 50%;
   height: 100%;
   touch-action: none;
-  z-index: 5;
+  /* transform-style: preserve-3d; */
   user-select: none;
+
   &.onePage {
     width: 100%;
   }
@@ -14,14 +15,16 @@
   &.right:not(.onePage) {
     left: 50%;
   }
+}
 
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   &.below {
     z-index: 4;
-    width: 50%;
-
-    &.right:not(.onePage) {
-      left: 50%;
-    }
   }
 }
 

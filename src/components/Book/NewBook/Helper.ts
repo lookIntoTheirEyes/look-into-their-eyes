@@ -323,24 +323,28 @@ function getHiddenPageNum(
 }
 
 function getAngle(
-  isRtl: boolean,
+  isLeft: boolean,
   progress: number,
   direction: FlipDirection | undefined,
   isBack = false
 ): number {
-  const baseAngle =
-    (-90 * (200 - progress * 2)) / 100 +
-    (direction === (isRtl ? FlipDirection.FORWARD : FlipDirection.BACK)
+  const baseAngle = (-90 * (200 - progress * 2)) / 100;
+
+  const angleOffset =
+    direction === (isLeft ? FlipDirection.FORWARD : FlipDirection.BACK)
       ? 360
-      : 0);
+      : 0;
 
-  const normalizedAngle = Math.abs((baseAngle - 180) % 360);
+  const baseWithOffset = baseAngle + angleOffset;
+  const normalizedAngle = Math.abs((baseWithOffset - 180) % 360);
 
-  return isBack ? normalizedAngle - 180 : normalizedAngle;
+  return isBack ? normalizedAngle : normalizedAngle;
 }
 
-function getOrigin(condition: boolean, pageWidth: number) {
-  return condition ? `${pageWidth}px 0px` : "0px 0px";
+function getOrigin(isLeftPage: boolean, progress: number, pageWidth: number) {
+  const isPastHalf = progress >= 50;
+  const needsOffset = isPastHalf !== isLeftPage;
+  return needsOffset ? `${pageWidth}px 0px` : "0px 0px";
 }
 
 function getShadowWidth(progress: number, pageWidth: number) {

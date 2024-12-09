@@ -13,7 +13,6 @@ interface IProps {
   y: SpringValue<number>;
   progress: SpringValue<number>;
   direction: SpringValue<FlipDirection>;
-
   bind: (...args: unknown[]) => ReactDOMAttributes;
   i: number;
   pageWidth: number;
@@ -55,15 +54,20 @@ const AnimatedPage: React.FC<IProps> = ({
     display: progress.to((p) =>
       (isFront ? p < 50 : p >= 50) ? "block" : "none"
     ),
-    transformOrigin: Helper.getOrigin(
-      isFront ? isLeftPage : adjustOrigin === isRtl,
+    transformOrigin: progress.to((p) =>
+      Helper.getOrigin(isLeftPage, p, pageWidth)
+    ),
+    transform: getHardPageTransform(
+      x,
+      progress,
+      direction,
+      isLeftPage,
+      isFront,
       pageWidth
     ),
     clipPath: to([x, y], (x, y) =>
       getCorner(bookRef, x as number, y as number)
     ),
-    // `polygon(50% 0%, 100% 38%, 100% 100%, 0 100%, 0 0)`,
-    transform: getHardPageTransform(x, progress, direction, isRtl, isFront),
     zIndex: isFront ? 10 : progress.to((p) => (p > 50 ? 6 : 3)),
   });
 
@@ -81,45 +85,48 @@ const AnimatedPage: React.FC<IProps> = ({
   return (
     <>
       <animated.div
+        className={`
+        ${styles.pageWrapper} 
+        ${isLeftPage ? "" : styles.right} 
+        ${isSinglePage ? styles.onePage : ""}
+      `}
         {...bind(i)}
-        key={`page-front-${pageNum}`}
-        className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
-          isSinglePage ? styles.onePage : ""
-        }`}
-        style={getPageStyle(true)}
+        style={{ zIndex: progress.to((p) => (p > 50 ? 16 : 15)) }}
       >
-        {pages[pageNum]}
-      </animated.div>
-
-      <animated.div
-        key={`page-back-${backPageNum}`}
-        className={`${styles.page} ${
-          adjustOrigin === isRtl ? "" : styles.right
-        } ${isSinglePage ? styles.onePage : ""}`}
-        style={getPageStyle(false)}
-      >
-        {pages[backPageNum]}
-      </animated.div>
-
-      {belowPageNum > 0 && belowPageNum < pages.length - 1 && (
         <animated.div
-          className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
-            styles.below
-          } ${isSinglePage ? styles.onePage : ""}`}
-          // style={{ zIndex: 10 }}
+          key={`page-front-${pageNum}`}
+          className={`${styles.page}`}
+          style={getPageStyle(true)}
         >
-          {pages[belowPageNum]}
+          {pages[pageNum]}
         </animated.div>
-      )}
 
+        <animated.div
+          key={`page-back-${backPageNum}`}
+          className={`${styles.page} ${
+            adjustOrigin === isRtl ? "" : styles.right
+          }`}
+          style={getPageStyle(false)}
+        >
+          {pages[backPageNum]}
+        </animated.div>
+
+        {belowPageNum > 0 && belowPageNum < pages.length - 1 && (
+          <animated.div
+            className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
+              styles.below
+            }`}
+          >
+            {pages[belowPageNum]}
+          </animated.div>
+        )}
+      </animated.div>
       {isHardPage && (
         <>
           {[false, true].map((isInner) => (
             <animated.div
               key={isInner ? "inner-shadow" : "outer-shadow"}
-              className={`${styles.shadow} ${
-                isSinglePage ? styles.onePage : ""
-              }`}
+              className={`${styles.shadow}`}
               style={getShadowStyle(isInner)}
             />
           ))}
@@ -135,19 +142,30 @@ function getHardPageTransform(
   x: SpringValue<number>,
   progress: SpringValue<number>,
   direction: SpringValue<FlipDirection>,
-  isRtl: boolean,
-  isFront: boolean
+  isLeftPage: boolean,
+  isFront: boolean,
+  pageWidth: number
 ) {
-  return to(
-    [x, progress, direction],
-    (x, p, dir) =>
-      `translate3d(0, 0, 0) rotateY(${Helper.getAngle(
-        isRtl,
-        p as number,
-        dir as FlipDirection,
-        !isFront
-      )}deg)`
-  );
+  return to([x, progress, direction], (x, p, dir) => {
+    const progress = p as number;
+    const angle = Helper.getAngle(
+      isLeftPage,
+      progress,
+      dir as FlipDirection,
+      !isFront
+    );
+
+    const shouldFlip = progress >= 50 && !isFront;
+
+    const translateX =
+      progress >= 50 ? (isLeftPage ? pageWidth : -pageWidth) : 0;
+
+    return `
+      translate3d(${translateX}px, 0, 0)
+      rotateY(${angle}deg)
+      ${shouldFlip ? "scaleX(-1)" : ""}
+    `;
+  });
 }
 
 function getCorner(
