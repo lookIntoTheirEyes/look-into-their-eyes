@@ -18,6 +18,7 @@ const ANIMATION_DURATION = 500;
 const INITIAL_STATUS = {
   isHover: false,
   isDrag: false,
+  isAnimating: false,
 };
 
 export const usePageFlip = ({
@@ -29,10 +30,8 @@ export const usePageFlip = ({
   currentPage,
   totalPages,
 }: UsePageFlipParams) => {
-  const [{ isHover, isDrag }, setStatus] = useState({
-    isHover: false,
-    isDrag: false,
-  });
+  const [{ isHover, isDrag, isAnimating }, setStatus] =
+    useState(INITIAL_STATUS);
   const book = bookRef.current?.getBoundingClientRect();
   const bookWidth = book?.width ?? 0;
   const pageWidth = bookWidth / (isSinglePage ? 1 : 2);
@@ -60,7 +59,6 @@ export const usePageFlip = ({
           tension: 200,
           friction: 25,
           duration: 0,
-          // easing: easings.steps(5),
         },
       };
     },
@@ -87,9 +85,7 @@ export const usePageFlip = ({
   const animateNextPage = useCallback(
     (idx: number, direction: FlipDirection) => {
       api.start((i) => {
-        if (i !== idx) {
-          return;
-        }
+        if (i !== idx) return;
 
         return {
           immediate: false,
@@ -103,16 +99,14 @@ export const usePageFlip = ({
               onNextPage();
             }
 
-            api.start(() => {
-              return {
-                ...from({ immediate: false }),
-                direction,
-                config: { duration: 0 },
-                onRest: () => {
-                  setStatus(INITIAL_STATUS);
-                },
-              };
-            });
+            api.start(() => ({
+              ...from({ immediate: false }),
+              direction,
+              config: { duration: 0 },
+              onRest: () => {
+                setStatus(INITIAL_STATUS);
+              },
+            }));
           },
         };
       });
@@ -121,26 +115,18 @@ export const usePageFlip = ({
   );
 
   const handleDragEnd = useCallback(
-    (
-      progress: number,
-      idx: number,
-      direction: FlipDirection,
-      isDrag = true
-    ) => {
+    (progress: number, idx: number, direction: FlipDirection) => {
+      setStatus((prev) => ({ ...prev, isAnimating: true }));
       if (progress < 50) {
         api.start((i) => {
-          if (idx !== i) {
-            return;
-          }
+          if (idx !== i) return;
 
           return {
             immediate: false,
             progress: 0,
             config: { duration: ANIMATION_DURATION },
             onRest: () => {
-              if (isDrag) {
-                setStatus(INITIAL_STATUS);
-              }
+              setStatus(INITIAL_STATUS);
             },
           };
         });
@@ -154,9 +140,7 @@ export const usePageFlip = ({
   const animateDrag = useCallback(
     (idx: number, progress: number, direction: FlipDirection) => {
       api.start((i) => {
-        if (idx !== i) {
-          return;
-        }
+        if (idx !== i) return;
         return {
           ...from(),
           immediate: true,
@@ -172,8 +156,7 @@ export const usePageFlip = ({
     (isLeft: boolean, progress: number, idx: number) => {
       const dir = getDirByPoint(isLeft);
       if (progress > 10) {
-        handleDragEnd(0, idx, dir, false);
-        setStatus(INITIAL_STATUS);
+        handleDragEnd(0, idx, dir);
       } else {
         animateDrag(idx, progress, dir);
       }
@@ -184,11 +167,12 @@ export const usePageFlip = ({
   const resetLocation = useCallback(
     (idx: number) => {
       api.start((i) => {
-        if (idx !== i) {
-          return;
-        }
+        if (idx !== i) return;
         return {
           ...from({ immediate: false }),
+          onRest: () => {
+            setStatus(INITIAL_STATUS);
+          },
         };
       });
     },
@@ -198,17 +182,13 @@ export const usePageFlip = ({
   const bind = useGesture(
     {
       onMouseLeave: ({ args: [idx] }) => {
-        if (isDrag || !isHover) {
-          return;
-        }
+        if (isDrag || !isHover || isAnimating) return;
 
-        setStatus(INITIAL_STATUS);
         resetLocation(idx);
       },
+
       onMouseMove: (params) => {
-        if (isDrag) {
-          return;
-        }
+        if (isDrag || isAnimating) return;
 
         const {
           args: [idx],
@@ -224,9 +204,7 @@ export const usePageFlip = ({
         if (!isHardPage) {
           const direction = getDirByPoint(isLeft);
           api.start((i) => {
-            if (idx !== i) {
-              return;
-            }
+            if (idx !== i) return;
             return {
               ...from({ immediate: false }),
               x,
@@ -234,7 +212,6 @@ export const usePageFlip = ({
               direction,
             };
           });
-
           return;
         }
 
@@ -248,6 +225,8 @@ export const usePageFlip = ({
       },
 
       onClick: (params) => {
+        if (isAnimating) return;
+
         const {
           args: [idx],
           event: { clientX },
@@ -262,16 +241,19 @@ export const usePageFlip = ({
           bookWidth
         );
         const action = Helper.getActionByClick(clickLocation, isRtl);
-        if (!action) {
-          return;
-        }
+        if (!action) return;
+
         const direction =
           action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
-        setStatus({ ...INITIAL_STATUS, isDrag: true });
-
+        setStatus({ isHover: false, isDrag: true, isAnimating: true });
         animateNextPage(idx, direction);
       },
+
       onDrag: (params) => {
+        console.log("isAnimating", isAnimating);
+
+        if (isAnimating) return;
+
         const {
           down,
           args: [idx],
@@ -281,29 +263,20 @@ export const usePageFlip = ({
           tap,
         } = params;
 
-        if (tap) {
-          return;
-        }
+        if (tap) return;
 
         setStatus({ ...INITIAL_STATUS, isDrag: true });
 
         const dir = xDir < 0 ? -1 : 1;
 
-        if (!dir && down) {
-          return memo;
-        }
+        if (!dir && down) return memo;
 
         if (!memo) {
-          if (!xDir) {
-            return;
-          }
+          if (!xDir) return;
 
           const direction = Helper.getDirection(isRtl, xDir);
-          if (
-            (currentPage === totalPages - 1 &&
-              direction === FlipDirection.FORWARD) ||
-            (currentPage === 0 && direction === FlipDirection.BACK)
-          ) {
+
+          if (!isMoveAllowed(currentPage + idx, totalPages, direction, isRtl)) {
             return;
           }
           const isLeftPage = Helper.isLeftPage(currentPage + idx, isRtl);
@@ -333,3 +306,37 @@ export const usePageFlip = ({
 
   return { props, bind, api, animateNextPage };
 };
+
+function isMoveAllowed(
+  currentPage: number,
+  totalPages: number,
+  direction: FlipDirection,
+  isRtl: boolean
+) {
+  if (
+    (currentPage === totalPages - 1 && direction === FlipDirection.FORWARD) ||
+    (currentPage === 0 && direction === FlipDirection.BACK)
+  ) {
+    return false;
+  }
+
+  const isOddPage = currentPage % 2 === 1;
+
+  if (isRtl && isOddPage && direction === FlipDirection.FORWARD) {
+    return false;
+  }
+
+  if (isRtl && !isOddPage && direction === FlipDirection.BACK) {
+    return false;
+  }
+
+  if (!isRtl && isOddPage && direction === FlipDirection.FORWARD) {
+    return false;
+  }
+
+  if (!isRtl && !isOddPage && direction === FlipDirection.BACK) {
+    return false;
+  }
+
+  return true;
+}
