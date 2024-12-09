@@ -86,7 +86,7 @@ export const usePageFlip = ({
 
         return {
           ...getSpringConfig({ startX: lastX }), // Add lastX here
-          immediate: false,
+
           progress: 100,
           config: { duration: ANIMATION_DURATION },
           direction,
@@ -97,14 +97,17 @@ export const usePageFlip = ({
               onNextPage();
             }
 
-            api.start(() => ({
-              ...getSpringConfig({ immediate: false, startX: lastX }),
-              direction,
-              config: { duration: 0 },
-              onRest: () => {
-                setStatus({ ...INITIAL_STATUS, lastX });
-              },
-            }));
+            api.start((i) => {
+              if (i !== idx) return;
+              return {
+                ...getSpringConfig({ immediate: true, startX: lastX }),
+                direction,
+                config: { duration: 0 },
+                onRest: () => {
+                  setStatus({ ...INITIAL_STATUS, lastX });
+                },
+              };
+            });
           },
         };
       });
@@ -135,11 +138,17 @@ export const usePageFlip = ({
   );
 
   const animateDrag = useCallback(
-    (idx: number, progress: number, direction: FlipDirection, x: number) => {
+    (
+      idx: number,
+      progress: number,
+      direction: FlipDirection,
+      x: number,
+      isDrag = true
+    ) => {
       api.start((i) => {
         if (idx !== i) return;
         return {
-          ...getSpringConfig({ direction, immediate: true, startX: x }),
+          ...getSpringConfig({ direction, immediate: isDrag, startX: x }),
           progress,
           direction,
         };
@@ -154,18 +163,18 @@ export const usePageFlip = ({
       if (progress > 10) {
         handleDragEnd(0, idx, dir, x);
       } else {
-        animateDrag(idx, progress, dir, x);
+        animateDrag(idx, progress, dir, x, false);
       }
     },
     [animateDrag, getDirByPoint, handleDragEnd]
   );
 
   const resetLocation = useCallback(
-    (idx: number) => {
+    (idx: number, direction: FlipDirection) => {
       api.start((i) => {
         if (idx !== i) return;
         return {
-          ...getSpringConfig({ immediate: false }),
+          ...getSpringConfig({ direction }),
           onRest: () => {
             setStatus({ ...INITIAL_STATUS });
           },
@@ -179,7 +188,9 @@ export const usePageFlip = ({
     {
       onMouseLeave: ({ args: [idx] }) => {
         if (isDrag || !isHover) return;
-        resetLocation(idx);
+        const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
+        const direction = getDirByPoint(isLeft);
+        resetLocation(idx, direction);
       },
 
       onMouseMove: (params) => {
@@ -191,32 +202,33 @@ export const usePageFlip = ({
         } = params;
 
         if (!isHover) {
-          setStatus((prev) => ({ ...prev, isHover: true }));
+          setStatus((prev) => ({ ...prev, isDrag: false, isHover: true }));
         }
 
         const isHardPage = Helper.isHardPage(currentPage + idx, totalPages);
         const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
+        const direction = getDirByPoint(isLeft);
+        const progress = Helper.getProgress(x, !isLeft, bookRef);
+
+        if (progress > 10 || !isHover) {
+          resetLocation(idx, direction);
+          return;
+        }
+
         if (!isHardPage) {
-          const direction = getDirByPoint(isLeft);
           api.start((i) => {
             if (idx !== i) return;
             return {
-              ...getSpringConfig({ immediate: false }),
+              ...getSpringConfig({ direction }),
               x,
               y,
-              direction,
+              progress,
             };
           });
           return;
         }
 
-        const progress = Helper.getProgress(x, !isLeft, bookRef);
-        if (progress > 10 || !isHover) {
-          resetLocation(idx);
-          return;
-        }
-
-        handleHardPageHover(isLeft, progress, idx, x);
+        handleHardPageHover(isLeft, progress, idx, 0); // Changed x to 0
       },
 
       onClick: (params) => {
@@ -256,7 +268,7 @@ export const usePageFlip = ({
 
         if (tap) return;
 
-        setStatus({ ...INITIAL_STATUS, isDrag: true, lastX: px });
+        setStatus({ isHover: false, isDrag: true, lastX: px });
 
         const dir = xDir < 0 ? -1 : 1;
 

@@ -57,18 +57,23 @@ const AnimatedPage: React.FC<IProps> = ({
     transformOrigin: progress.to((p) =>
       Helper.getOrigin(isLeftPage, p, pageWidth)
     ),
-    transform: getHardPageTransform(
-      x,
-      progress,
-      direction,
-      isLeftPage,
-      isFront,
-      pageWidth,
-      isRtl
+    transform: isHardPage
+      ? getHardPageTransform(
+          x,
+          progress,
+          direction,
+          isLeftPage,
+          isFront,
+          pageWidth,
+          isRtl
+        )
+      : "",
+    clipPath: to([x, y, progress], (x, y, p) =>
+      !isHardPage && p > 0
+        ? getCorner(bookRef, x as number, y as number, pageWidth)
+        : "none"
     ),
-    clipPath: to([x, y], (x, y) =>
-      getCorner(bookRef, x as number, y as number, pageWidth)
-    ),
+
     zIndex: isFront ? 3 : progress.to((p) => (p > 50 ? 4 : 2)),
   });
 
@@ -190,6 +195,9 @@ function getCorner(
   const localX = clientX - bookLeft;
   const localY = clientY - bookTop;
   const corner = Helper.getHoverCorner(bookWidth, bookHeight, localX, localY);
+  console.log("getCorner", corner);
+  // console.log("getCorner", localX);
+  // console.log("getCorner", localY);
 
   if (corner === "none") return "none";
 
