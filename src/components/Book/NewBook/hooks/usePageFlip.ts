@@ -278,7 +278,7 @@ export const usePageFlip = ({
           if (!xDir) return;
 
           const direction = Helper.getDirection(isRtl, xDir);
-          if (!isMoveAllowed(currentPage + idx, totalPages, direction, isRtl)) {
+          if (!isMoveAllowed(currentPage + idx, totalPages, direction)) {
             return;
           }
 
@@ -311,8 +311,7 @@ export const usePageFlip = ({
 function isMoveAllowed(
   currentPage: number,
   totalPages: number,
-  direction: FlipDirection,
-  isRtl: boolean
+  direction: FlipDirection
 ) {
   if (
     (currentPage === totalPages - 1 && direction === FlipDirection.FORWARD) ||
@@ -321,21 +320,7 @@ function isMoveAllowed(
     return false;
   }
 
-  const isOddPage = currentPage % 2 === 1;
-
-  if (isRtl && isOddPage && direction === FlipDirection.FORWARD) {
-    return false;
-  }
-
-  if (isRtl && !isOddPage && direction === FlipDirection.BACK) {
-    return false;
-  }
-
-  if (!isRtl && isOddPage && direction === FlipDirection.FORWARD) {
-    return false;
-  }
-
-  if (!isRtl && !isOddPage && direction === FlipDirection.BACK) {
+  if ((currentPage % 2 === 1) === (direction === FlipDirection.FORWARD)) {
     return false;
   }
 
