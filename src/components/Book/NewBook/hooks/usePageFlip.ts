@@ -102,7 +102,7 @@ export const usePageFlip = ({
             } else {
               onNextPage();
             }
-            setStatus(INITIAL_STATUS);
+
             api.start(() => {
               return {
                 ...from({ immediate: false }),
@@ -198,7 +198,10 @@ export const usePageFlip = ({
   const bind = useGesture(
     {
       onMouseLeave: ({ args: [idx], event: { clientX, clientY } }) => {
-        console.log("mouse leave", isHover);
+        if (isDrag || !isHover) {
+          return;
+        }
+
         const book = bookRef.current?.getBoundingClientRect();
 
         const bookTop = book?.top ?? 0;
@@ -215,10 +218,9 @@ export const usePageFlip = ({
           localY
         );
 
-        if (!isHover || corner) {
+        if (corner) {
           return;
         }
-        console.log("corner", corner);
 
         setStatus(INITIAL_STATUS);
         resetLocation(idx);
@@ -227,7 +229,6 @@ export const usePageFlip = ({
         if (isDrag) {
           return;
         }
-        console.log("hovering");
 
         const {
           args: [idx],
@@ -286,6 +287,7 @@ export const usePageFlip = ({
         }
         const direction =
           action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
+        setStatus({ ...INITIAL_STATUS, isDrag: true });
 
         animateNextPage(idx, direction);
       },
@@ -295,7 +297,6 @@ export const usePageFlip = ({
           args: [idx],
           _direction: [xDir],
           xy: [px],
-          initial,
           memo,
           tap,
         } = params;

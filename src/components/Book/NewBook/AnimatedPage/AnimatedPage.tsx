@@ -68,7 +68,7 @@ const AnimatedPage: React.FC<IProps> = ({
     clipPath: to([x, y], (x, y) =>
       getCorner(bookRef, x as number, y as number)
     ),
-    zIndex: isFront ? 10 : progress.to((p) => (p > 50 ? 6 : 3)),
+    zIndex: isFront ? 3 : progress.to((p) => (p > 50 ? 4 : 2)),
   });
 
   const getShadowStyle = (inner = false) => ({
@@ -91,7 +91,7 @@ const AnimatedPage: React.FC<IProps> = ({
         ${isSinglePage ? styles.onePage : ""}
       `}
         {...bind(i)}
-        style={{ zIndex: progress.to((p) => (p > 50 ? 16 : 15)) }}
+        style={{ zIndex: progress.to((p) => (p > 50 ? 9 : !p ? 6 : 8)) }}
       >
         <animated.div
           key={`page-front-${pageNum}`}
