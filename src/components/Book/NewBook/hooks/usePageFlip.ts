@@ -67,42 +67,58 @@ export const usePageFlip = ({
     []
   );
 
+  const getDirByPoint = useCallback(
+    (isLeft: boolean) => {
+      return isLeft
+        ? isRtl
+          ? FlipDirection.FORWARD
+          : FlipDirection.BACK
+        : isRtl
+        ? FlipDirection.BACK
+        : FlipDirection.FORWARD;
+    },
+    [isRtl]
+  );
+
   const [props, api] = useSprings(2, () => ({
     from: from(),
   }));
 
-  const animateNextPage = (idx: number, direction: FlipDirection) => {
-    api.start((i) => {
-      if (i !== idx) {
-        return;
-      }
+  const animateNextPage = useCallback(
+    (idx: number, direction: FlipDirection) => {
+      api.start((i) => {
+        if (i !== idx) {
+          return;
+        }
 
-      return {
-        immediate: false,
-        progress: 100,
-        config: { duration: ANIMATION_DURATION },
-        direction,
-        onRest: () => {
-          if (direction === FlipDirection.BACK) {
-            onPrevPage();
-          } else {
-            onNextPage();
-          }
-          setStatus(INITIAL_STATUS);
-          api.start(() => {
-            return {
-              ...from({ immediate: false }),
-              direction,
-              config: { duration: 0 },
-              onRest: () => {
-                setStatus(INITIAL_STATUS);
-              },
-            };
-          });
-        },
-      };
-    });
-  };
+        return {
+          immediate: false,
+          progress: 100,
+          config: { duration: ANIMATION_DURATION },
+          direction,
+          onRest: () => {
+            if (direction === FlipDirection.BACK) {
+              onPrevPage();
+            } else {
+              onNextPage();
+            }
+            setStatus(INITIAL_STATUS);
+            api.start(() => {
+              return {
+                ...from({ immediate: false }),
+                direction,
+                config: { duration: 0 },
+                onRest: () => {
+                  setStatus(INITIAL_STATUS);
+                },
+              };
+            });
+          },
+        };
+      });
+    },
+    [api, from, onPrevPage, onNextPage]
+  );
 
   const handleDragEnd = useCallback(
     (
@@ -122,7 +138,9 @@ export const usePageFlip = ({
             progress: 0,
             config: { duration: ANIMATION_DURATION },
             onRest: () => {
-              isDrag && setStatus(INITIAL_STATUS);
+              if (isDrag) {
+                setStatus(INITIAL_STATUS);
+              }
             },
           };
         });
@@ -130,7 +148,7 @@ export const usePageFlip = ({
         animateNextPage(idx, direction);
       }
     },
-    [api, from, onNextPage, onPrevPage]
+    [animateNextPage, api]
   );
 
   const animateDrag = useCallback(
@@ -160,182 +178,169 @@ export const usePageFlip = ({
         animateDrag(idx, progress, dir);
       }
     },
-    []
+    [animateDrag, getDirByPoint, handleDragEnd]
   );
 
-  const resetLocation = useCallback((idx: number) => {
-    api.start((i) => {
-      if (idx !== i) {
-        return;
-      }
-      return {
-        ...from({ immediate: false }),
-      };
-    });
-  }, []);
-
-  const getDirByPoint = useCallback(
-    (isLeft: boolean) => {
-      return isLeft
-        ? isRtl
-          ? FlipDirection.FORWARD
-          : FlipDirection.BACK
-        : isRtl
-        ? FlipDirection.BACK
-        : FlipDirection.FORWARD;
+  const resetLocation = useCallback(
+    (idx: number) => {
+      api.start((i) => {
+        if (idx !== i) {
+          return;
+        }
+        return {
+          ...from({ immediate: false }),
+        };
+      });
     },
-    [isRtl]
+    [api, from]
   );
 
-  const bind = useCallback(
-    useGesture(
-      {
-        onMouseLeave: ({ args: [idx], event: { clientX, clientY } }) => {
-          console.log("mouse leave", isHover);
-          const book = bookRef.current?.getBoundingClientRect();
+  const bind = useGesture(
+    {
+      onMouseLeave: ({ args: [idx], event: { clientX, clientY } }) => {
+        console.log("mouse leave", isHover);
+        const book = bookRef.current?.getBoundingClientRect();
 
-          const bookTop = book?.top ?? 0;
-          const bookWidth = book?.width ?? 0;
-          const bookHeight = book?.height ?? 0;
-          const bookLeft = book?.left ?? 0;
+        const bookTop = book?.top ?? 0;
+        const bookWidth = book?.width ?? 0;
+        const bookHeight = book?.height ?? 0;
+        const bookLeft = book?.left ?? 0;
 
-          const localX = clientX - bookLeft;
-          const localY = clientY - bookTop;
-          const corner = Helper.getHoverCorner(
-            bookWidth,
-            bookHeight,
-            localX,
-            localY
-          );
+        const localX = clientX - bookLeft;
+        const localY = clientY - bookTop;
+        const corner = Helper.getHoverCorner(
+          bookWidth,
+          bookHeight,
+          localX,
+          localY
+        );
 
-          if (!isHover || corner) {
-            return;
-          }
-          console.log("corner", corner);
+        if (!isHover || corner) {
+          return;
+        }
+        console.log("corner", corner);
 
-          setStatus(INITIAL_STATUS);
-          resetLocation(idx);
-        },
-        onMouseMove: (params) => {
-          if (isDrag) {
-            return;
-          }
-          console.log("hovering");
+        setStatus(INITIAL_STATUS);
+        resetLocation(idx);
+      },
+      onMouseMove: (params) => {
+        if (isDrag) {
+          return;
+        }
+        console.log("hovering");
 
-          const {
-            args: [idx],
-            event: { clientX: x, clientY: y },
-          } = params;
+        const {
+          args: [idx],
+          event: { clientX: x, clientY: y },
+        } = params;
 
-          if (!isHover) {
-            setStatus((prev) => ({ ...prev, isHover: true }));
-          }
+        if (!isHover) {
+          setStatus((prev) => ({ ...prev, isHover: true }));
+        }
 
-          const isHardPage = Helper.isHardPage(currentPage + idx, totalPages);
-          const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
-          if (!isHardPage) {
-            const direction = getDirByPoint(isLeft);
-            api.start((i) => {
-              if (idx !== i) {
-                return;
-              }
-              return {
-                ...from({ immediate: false }),
-                x,
-                y,
-                direction,
-              };
-            });
-
-            return;
-          }
-
-          const progress = Helper.getProgress(x, !isLeft, bookRef);
-          if (progress > 10 || !isHover) {
-            resetLocation(idx);
-            return;
-          }
-
-          handleHardPageHover(isLeft, progress, idx);
-        },
-
-        onClick: (params) => {
-          const {
-            args: [idx],
-            event: { clientX },
-          } = params;
-
-          const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
-          const clickLocation = Helper.getXClickLocation(
-            clientX,
-            isLeft,
-            pageWidth / 2,
-            bookLeft,
-            bookWidth
-          );
-          const action = Helper.getActionByClick(clickLocation, isRtl);
-          if (!action) {
-            return;
-          }
-          const direction =
-            action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
-
-          animateNextPage(idx, direction);
-        },
-        onDrag: (params) => {
-          const {
-            down,
-            args: [idx],
-            _direction: [xDir],
-            xy: [px],
-            initial,
-            memo,
-            tap,
-          } = params;
-
-          if (tap) {
-            return;
-          }
-
-          setStatus({ ...INITIAL_STATUS, isDrag: true });
-
-          const dir = xDir < 0 ? -1 : 1;
-
-          if (!dir && down) {
-            return memo;
-          }
-
-          if (!memo) {
-            if (!xDir) {
+        const isHardPage = Helper.isHardPage(currentPage + idx, totalPages);
+        const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
+        if (!isHardPage) {
+          const direction = getDirByPoint(isLeft);
+          api.start((i) => {
+            if (idx !== i) {
               return;
             }
-
-            const direction = Helper.getDirection(isRtl, xDir);
-            const isLeftPage = Helper.isLeftPage(currentPage + idx, isRtl);
-
             return {
+              ...from({ immediate: false }),
+              x,
+              y,
               direction,
-              isLeftPage,
             };
-          }
+          });
 
-          const progress = Helper.getProgress(px, !memo.isLeftPage, bookRef);
+          return;
+        }
 
-          if (!down) {
-            handleDragEnd(progress, idx, memo.direction);
-          } else {
-            animateDrag(idx, progress, memo.direction);
-          }
+        const progress = Helper.getProgress(x, !isLeft, bookRef);
+        if (progress > 10 || !isHover) {
+          resetLocation(idx);
+          return;
+        }
 
-          return memo;
-        },
+        handleHardPageHover(isLeft, progress, idx);
       },
-      {
-        drag: { filterTaps: true, bounds: bookRef, capture: true },
-        eventOptions: { passive: true, precision: 0.0001 },
-      }
-    ),
-    []
+
+      onClick: (params) => {
+        const {
+          args: [idx],
+          event: { clientX },
+        } = params;
+
+        const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
+        const clickLocation = Helper.getXClickLocation(
+          clientX,
+          isLeft,
+          pageWidth / 2,
+          bookLeft,
+          bookWidth
+        );
+        const action = Helper.getActionByClick(clickLocation, isRtl);
+        if (!action) {
+          return;
+        }
+        const direction =
+          action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
+
+        animateNextPage(idx, direction);
+      },
+      onDrag: (params) => {
+        const {
+          down,
+          args: [idx],
+          _direction: [xDir],
+          xy: [px],
+          initial,
+          memo,
+          tap,
+        } = params;
+
+        if (tap) {
+          return;
+        }
+
+        setStatus({ ...INITIAL_STATUS, isDrag: true });
+
+        const dir = xDir < 0 ? -1 : 1;
+
+        if (!dir && down) {
+          return memo;
+        }
+
+        if (!memo) {
+          if (!xDir) {
+            return;
+          }
+
+          const direction = Helper.getDirection(isRtl, xDir);
+          const isLeftPage = Helper.isLeftPage(currentPage + idx, isRtl);
+
+          return {
+            direction,
+            isLeftPage,
+          };
+        }
+
+        const progress = Helper.getProgress(px, !memo.isLeftPage, bookRef);
+
+        if (!down) {
+          handleDragEnd(progress, idx, memo.direction);
+        } else {
+          animateDrag(idx, progress, memo.direction);
+        }
+
+        return memo;
+      },
+    },
+    {
+      drag: { filterTaps: true, bounds: bookRef, capture: true },
+      eventOptions: { passive: true, precision: 0.0001 },
+    }
   );
 
   return { props, bind, api, animateNextPage };

@@ -328,17 +328,16 @@ function getAngle(
   direction: FlipDirection | undefined,
   isBack = false
 ): number {
-  const baseAngle = (-90 * (200 - progress * 2)) / 100;
+  const baseAngle = ((isLeft ? -1 : 1) * 90 * (200 - progress * 2)) / 100;
 
-  const angleOffset =
-    direction === (isLeft ? FlipDirection.FORWARD : FlipDirection.BACK)
+  const withOffset =
+    baseAngle +
+    (direction === (isLeft ? FlipDirection.FORWARD : FlipDirection.BACK)
       ? 360
-      : 0;
+      : 0);
 
-  const baseWithOffset = baseAngle + angleOffset;
-  const normalizedAngle = Math.abs((baseWithOffset - 180) % 360);
-
-  return isBack ? normalizedAngle : normalizedAngle;
+  const normalized = Math.abs((withOffset - 180) % 360);
+  return isBack ? normalized - 360 : normalized;
 }
 
 function getOrigin(isLeftPage: boolean, progress: number, pageWidth: number) {
