@@ -81,7 +81,7 @@ export const usePageFlip = ({
   );
 
   const [props, api] = useSprings(2, () => ({
-    from: from(),
+    to: from(),
   }));
 
   const animateNextPage = useCallback(
@@ -319,6 +319,13 @@ export const usePageFlip = ({
           }
 
           const direction = Helper.getDirection(isRtl, xDir);
+          if (
+            (currentPage === totalPages - 1 &&
+              direction === FlipDirection.FORWARD) ||
+            (currentPage === 0 && direction === FlipDirection.BACK)
+          ) {
+            return;
+          }
           const isLeftPage = Helper.isLeftPage(currentPage + idx, isRtl);
 
           return {
