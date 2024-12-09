@@ -67,7 +67,7 @@ const AnimatedPage: React.FC<IProps> = ({
       isRtl
     ),
     clipPath: to([x, y], (x, y) =>
-      getCorner(bookRef, x as number, y as number)
+      getCorner(bookRef, x as number, y as number, pageWidth)
     ),
     zIndex: isFront ? 3 : progress.to((p) => (p > 50 ? 4 : 2)),
   });
@@ -174,54 +174,103 @@ function getHardPageTransform(
     `;
   });
 }
-
 function getCorner(
   bookRef: React.RefObject<HTMLDivElement>,
   clientX: number,
-  clientY: number
+  clientY: number,
+  pageWidth: number
 ) {
   const book = bookRef.current?.getBoundingClientRect();
-
-  const bookTop = book?.top ?? 0;
-  const bookWidth = book?.width ?? 0;
-  const bookHeight = book?.height ?? 0;
-  const bookLeft = book?.left ?? 0;
+  if (!book) return "none";
+  const bookTop = book.top;
+  const bookWidth = book.width;
+  const bookHeight = book.height;
+  const bookLeft = book.left;
 
   const localX = clientX - bookLeft;
   const localY = clientY - bookTop;
   const corner = Helper.getHoverCorner(bookWidth, bookHeight, localX, localY);
 
-  const poli = getClipPathForCorner(
+  if (corner === "none") return "none";
+
+  // Calculate distance based on corner
+  const cornerDistance = getCornerDistance(
     corner,
-    bookWidth,
-    bookHeight,
     localX,
-    localY
+    localY,
+    pageWidth,
+    book.height
   );
+  const cornerSize = Math.min(cornerDistance, pageWidth * 0.3);
 
-  return poli;
+  if (cornerSize < 20) return "none";
+
+  return getPolygonForCorner(corner, cornerSize, pageWidth, book.height);
 }
-function getClipPathForCorner(
-  corner: string | null,
-  bookWidth: number,
-  bookHeight: number,
-  localX: number,
-  localY: number
-): string {
-  // Adjust clipping dynamically based on localX and localY
-  const xPercent = (localX / bookWidth) * 100;
-  const yPercent = (localY / bookHeight) * 100;
 
+function getCornerDistance(
+  corner: string,
+  x: number,
+  y: number,
+  pageWidth: number,
+  pageHeight: number
+): number {
   switch (corner) {
-    case "top-left":
-      return `polygon(${xPercent}% 0%, 100% 0, 100% 100%, 0 100%, 0 ${yPercent}%)`;
     case "top-right":
-      return `polygon(0% 0%, ${xPercent}% ${yPercent}%, 100% 100%, 0 100%, 0 0)`;
-    case "bottom-left":
-      return `polygon(0 0, 100% 0, 100% 100%, ${xPercent}% 100%, 0 ${yPercent}%)`;
+      return Math.sqrt(Math.pow(pageWidth - x, 2) + Math.pow(y, 2));
+    case "top-left":
+      return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     case "bottom-right":
-      return `polygon(0 0, 100% 0, 100% ${yPercent}%, ${xPercent}% 100%, 0 100%)`;
+      return Math.sqrt(
+        Math.pow(pageWidth - x, 2) + Math.pow(pageHeight - y, 2)
+      );
+    case "bottom-left":
+      return Math.sqrt(Math.pow(x, 2) + Math.pow(pageHeight - y, 2));
     default:
-      return "";
+      return 0;
+  }
+}
+
+function getPolygonForCorner(
+  corner: string,
+  size: number,
+  pageWidth: number,
+  pageHeight: number
+): string {
+  switch (corner) {
+    case "top-right":
+      return `polygon(
+        ${pageWidth - size}px 0,
+        ${pageWidth}px ${size}px,
+        ${pageWidth}px 100%,
+        0 100%,
+        0 0
+      )`;
+    case "top-left":
+      return `polygon(
+        0 ${size}px,
+        ${size}px 0,
+        ${pageWidth}px 0,
+        ${pageWidth}px 100%,
+        0 100%
+      )`;
+    case "bottom-right":
+      return `polygon(
+        0 0,
+        ${pageWidth}px 0,
+        ${pageWidth}px ${pageHeight - size}px,
+        ${pageWidth - size}px ${pageHeight}px,
+        0 ${pageHeight}px
+      )`;
+    case "bottom-left":
+      return `polygon(
+        0 0,
+        ${pageWidth}px 0,
+        ${pageWidth}px ${pageHeight}px,
+        ${size}px ${pageHeight}px,
+        0 ${pageHeight - size}px
+      )`;
+    default:
+      return "none";
   }
 }

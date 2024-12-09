@@ -414,7 +414,7 @@ function getHoverCorner(
   bookHeight: number,
   localX: number,
   localY: number
-): string | null {
+) {
   const maxDistance = 200;
 
   if (
@@ -427,10 +427,9 @@ function getHoverCorner(
       localY > maxDistance &&
       localY < bookHeight - maxDistance)
   ) {
-    return null; // Not in any corner
+    return "none";
   }
 
-  // Determine the corner
   const isTop = localY <= maxDistance;
   const isBottom = localY >= bookHeight - maxDistance;
   const isLeft = localX <= maxDistance;
@@ -441,7 +440,7 @@ function getHoverCorner(
   if (isBottom && isLeft) return "bottom-left";
   if (isBottom && isRight) return "bottom-right";
 
-  return null; // Not in any corner
+  return "none";
 }
 
 const Helper = {

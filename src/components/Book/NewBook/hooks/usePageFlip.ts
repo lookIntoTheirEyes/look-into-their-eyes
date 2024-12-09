@@ -197,28 +197,8 @@ export const usePageFlip = ({
 
   const bind = useGesture(
     {
-      onMouseLeave: ({ args: [idx], event: { clientX, clientY } }) => {
+      onMouseLeave: ({ args: [idx] }) => {
         if (isDrag || !isHover) {
-          return;
-        }
-
-        const book = bookRef.current?.getBoundingClientRect();
-
-        const bookTop = book?.top ?? 0;
-        const bookWidth = book?.width ?? 0;
-        const bookHeight = book?.height ?? 0;
-        const bookLeft = book?.left ?? 0;
-
-        const localX = clientX - bookLeft;
-        const localY = clientY - bookTop;
-        const corner = Helper.getHoverCorner(
-          bookWidth,
-          bookHeight,
-          localX,
-          localY
-        );
-
-        if (corner) {
           return;
         }
 
