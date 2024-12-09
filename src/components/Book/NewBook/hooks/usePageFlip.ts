@@ -85,6 +85,7 @@ export const usePageFlip = ({
         if (i !== idx) return;
 
         return {
+          ...getSpringConfig({ startX: lastX }), // Add lastX here
           immediate: false,
           progress: 100,
           config: { duration: ANIMATION_DURATION },
