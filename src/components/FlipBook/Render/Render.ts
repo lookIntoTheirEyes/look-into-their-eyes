@@ -232,7 +232,7 @@ export abstract class Render {
       left =
         orientation === Orientation.PORTRAIT
           ? middlePoint.x - pageWidth / 2 - pageWidth
-          : middlePoint.x - pageWidth;
+          : middlePoint.x - pageWidth - (this.app.getSettings().rtl ? 1 : 0);
     } else {
       if (blockWidth < pageWidth * 2) {
         if (this.app.getSettings().usePortrait) {
