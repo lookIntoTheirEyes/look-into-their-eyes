@@ -35,7 +35,7 @@ const StoryModal: React.FC<IStoryModalProps> = async ({
           ))}
         </div>
         <div className={styles.text}>
-          <TextAnimationContainer text={longDescription} />
+          <TextAnimationContainer text={longDescription || ""} />
         </div>
       </ModalClient>
     );
