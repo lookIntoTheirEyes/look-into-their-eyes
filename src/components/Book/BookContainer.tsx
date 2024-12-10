@@ -5,6 +5,7 @@ import { Page as BookPage } from "@/lib/model/book";
 
 interface IBookProps {
   rtl: boolean;
+  isMobile: boolean;
   tableOfContentsTitle?: string;
   Pages: JSX.Element[];
   Front: JSX.Element;
@@ -16,6 +17,7 @@ interface IBookProps {
 
 const BookContainer: React.FC<IBookProps> = ({
   rtl,
+  isMobile,
   tableOfContentsTitle,
   Pages,
   pagesContent,
@@ -47,6 +49,7 @@ const BookContainer: React.FC<IBookProps> = ({
           toc,
         }}
         rtl={rtl}
+        isMobile={isMobile}
         actions={{
           next,
           previous,

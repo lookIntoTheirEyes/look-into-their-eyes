@@ -11,16 +11,17 @@ export interface TableOfContentsPageProps {
   pagesAmount: number;
   goToPage: (pageNum: number) => void;
   rtl: boolean;
+  isMobile: boolean;
   noContentAmount: number;
 }
 
 const TableOfContentsContainer = forwardRef<
   HTMLDivElement,
   TableOfContentsPageProps
->(({ rtl, toc, goToPage, noContentAmount }, ref) => {
+>(({ rtl, toc, goToPage, noContentAmount, isMobile }, ref) => {
   const getPageNum = (i: number) => i + noContentAmount;
   return (
-    <Page rtl={rtl} pageNum={2} ref={ref}>
+    <Page isMobile={isMobile} rtl={rtl} pageNum={2} ref={ref}>
       <TableOfContents
         title={toc.title}
         rtl={rtl}

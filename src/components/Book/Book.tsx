@@ -21,6 +21,7 @@ interface BookProps extends BookActions {
     };
   };
   noContentAmount: number;
+  isMobile: boolean;
 }
 
 const Book: React.FC<BookProps> = ({
@@ -28,6 +29,7 @@ const Book: React.FC<BookProps> = ({
   book: { Pages, Front, Back, toc },
   actions,
   noContentAmount,
+  isMobile,
 }) => {
   const pagesAmount = Pages.length + noContentAmount;
 
@@ -39,6 +41,7 @@ const Book: React.FC<BookProps> = ({
       <TableOfContentsContainer
         noContentAmount={noContentAmount}
         rtl={rtl}
+        isMobile={isMobile}
         goToPage={goToPage}
         pagesAmount={pagesAmount}
         toc={toc!}

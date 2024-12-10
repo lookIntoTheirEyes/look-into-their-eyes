@@ -20,7 +20,6 @@ interface HeaderProps {
     families: string;
   };
   logoText: string;
-
   isMobile: boolean;
 }
 

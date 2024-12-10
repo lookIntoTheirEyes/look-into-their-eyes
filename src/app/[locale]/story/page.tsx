@@ -6,6 +6,7 @@ import { getAllPages, getHero } from "@/lib/utils/heroesService";
 import Page from "@/components/Book/Page/Page";
 import PageContent from "@/components/Book/Page/PageContent/PageContent";
 import PageCover from "@/components/Book/PageCover/PageCover";
+import { cookies } from "next/headers";
 
 interface IProps extends ILanguageProps {
   searchParams: Promise<SearchParams>;
@@ -39,16 +40,22 @@ export async function generateMetadata(props: IProps) {
 
 const BookComponent: React.FC<IProps> = async (props) => {
   const { locale } = await props.params;
+  const isMobile = (await cookies()).get("isMobile")?.value === "true";
   const t = await getTranslations("Book");
 
   const bookPages = getAllPages(locale);
   const rtl = locale === Language.he;
   const noContentPages = 3;
 
-  const pageNum = (i: number) => i + 1 + noContentPages - 1 - 1;
+  const pageNum = (i: number) => i + 1 + noContentPages - 1;
 
   const Pages = structuredClone(bookPages).map((content, i) => (
-    <Page rtl={rtl} key={content.title} pageNum={pageNum(i)}>
+    <Page
+      isMobile={isMobile}
+      rtl={rtl}
+      key={content.title}
+      pageNum={pageNum(i)}
+    >
       <PageContent
         cta={t("common.pageCta")}
         details={content}
@@ -76,6 +83,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
   return (
     <BookContainer
       rtl={rtl}
+      isMobile={isMobile}
       tableOfContentsTitle={t("story.tableOfContents")}
       Pages={Pages}
       Front={Front}

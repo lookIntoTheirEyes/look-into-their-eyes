@@ -11,11 +11,13 @@ interface IProps {
   noCommentsText: string;
   newPath: Pathnames;
   rtl: boolean;
+  isMobile: boolean;
 }
 
 const UsersBook: React.FC<IProps> = ({
   title,
   rtl,
+  isMobile,
   newText,
   newPath,
   noCommentsText,
@@ -51,6 +53,7 @@ const UsersBook: React.FC<IProps> = ({
       pagesContent={pagesContent}
       Pages={Pages}
       rtl={rtl}
+      isMobile={isMobile}
       Front={Front}
       noContentAmount={1}
     >

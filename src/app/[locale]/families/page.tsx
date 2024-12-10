@@ -1,10 +1,12 @@
 import UsersBook from "@/components/UsersBook/UsersBook";
 import { ILanguageProps, Language } from "@/lib/model/language";
 import { getTranslations } from "next-intl/server";
+import { cookies } from "next/headers";
 
 const Families: React.FC<ILanguageProps> = async (props) => {
   const { locale } = await props.params;
   const rtl = locale === Language.he;
+  const isMobile = (await cookies()).get("isMobile")?.value === "true";
 
   const t = await getTranslations("Book");
   const title = t("families.front.title");
@@ -20,6 +22,7 @@ const Families: React.FC<ILanguageProps> = async (props) => {
       newText={newText}
       title={title}
       rtl={rtl}
+      isMobile={isMobile}
       noCommentsText={noCommentsText}
     />
   );

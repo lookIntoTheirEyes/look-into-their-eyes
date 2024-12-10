@@ -37,7 +37,7 @@ const PageContent: React.FC<PageProps> = ({
         <>
           {chapter && (
             <h2 className='pageHeader'>{`${chapter} ${
-              pageNum - 1
+              pageNum - 2
             } - ${title}`}</h2>
           )}
           {imageUrl && (

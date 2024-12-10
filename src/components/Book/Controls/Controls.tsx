@@ -22,18 +22,23 @@ export default function Controls({
   return (
     <div className={styles.controls}>
       {
-        <StyledButton isDisabled={currPage === 1} onClick={handleClick}>
+        <StyledButton
+          className={styles.height}
+          isDisabled={currPage === 1}
+          onClick={handleClick}
+        >
           {previous}
         </StyledButton>
       }
 
-      <div className={styles.pageCount}>
+      <div className={`${styles.pageCount} ${styles.height}`}>
         <span>{currPage}</span>
         <span>/</span>
         <span>{pageCount}</span>
       </div>
       {
         <StyledButton
+          className={styles.height}
           isDisabled={currPage === pageCount}
           onClick={() => flipPage("next")}
         >
