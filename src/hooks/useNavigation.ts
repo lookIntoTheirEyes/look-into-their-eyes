@@ -62,9 +62,12 @@ export const useBookNavigation = (pagesAmount: number) => {
   }, [page, queryParamPage, updateUrlWithSearchParams]);
 
   useEffect(() => {
-    const pageFlip = pageFlipRef.current;
+    const pageFlip = pageFlipRef.current?.pageFlip();
     return () => {
-      pageFlip?.pageFlip()?.destroy();
+      if (pageFlip) {
+        pageFlip.getRender().destroy();
+        pageFlip.destroy();
+      }
     };
   }, []);
 

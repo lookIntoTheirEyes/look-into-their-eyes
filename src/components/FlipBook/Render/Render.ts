@@ -18,15 +18,10 @@ type Shadow = {
 };
 
 type AnimationProcess = {
-  /** List of frames in playback order. Each frame is a function. */
   frames: FrameAction[];
-  /** Total animation duration */
   duration: number;
-  /** Animation duration of one frame */
   durationFrame: number;
-  /** Сallback at the end of the animation */
   onAnimateEnd: AnimationSuccessAction;
-  /** Animation start time (Global Timer) */
   startedAt: number;
 };
 
@@ -52,44 +47,66 @@ export abstract class Render {
   protected pageRect!: RectPoints;
   private boundsRect!: PageRect;
   protected timer = 0;
+  private animationFrameId: number | null = null;
+  private needRender: boolean = false;
 
   protected constructor(app: PageFlip, setting: FlipSetting) {
     this.setting = setting;
     this.app = app;
+    this.render = this.render.bind(this);
   }
 
   protected abstract drawFrame(): void;
 
   public abstract reload(): void;
 
-  private render(timer: number): void {
+  private render(time: number): void {
+    this.timer = time;
+    let needNext = false;
+
     if (this.animation !== null) {
-      // Find current frame of animation
-      const frameIndex = Math.round(
-        (timer - this.animation.startedAt) / this.animation.durationFrame
+      const frameIndex = Math.min(
+        Math.floor(
+          (time - this.animation.startedAt) / this.animation.durationFrame
+        ),
+        this.animation.frames.length - 1
       );
 
-      if (frameIndex < this.animation.frames.length) {
-        this.animation.frames[frameIndex]();
-      } else {
-        this.animation.onAnimateEnd();
+      this.animation.frames[frameIndex]();
+
+      if (time >= this.animation.startedAt + this.animation.duration) {
+        const onEnd = this.animation.onAnimateEnd;
         this.animation = null;
+        this.needRender = true;
+        onEnd();
+      } else {
+        needNext = true;
       }
     }
 
-    this.timer = timer;
-    this.drawFrame();
+    if (this.needRender) {
+      this.drawFrame();
+      this.needRender = false;
+      needNext = true;
+    }
+
+    if (needNext) {
+      this.animationFrameId = requestAnimationFrame(this.render);
+    } else {
+      this.animationFrameId = null;
+    }
+  }
+
+  private startRenderLoop(): void {
+    if (this.animationFrameId === null) {
+      this.animationFrameId = requestAnimationFrame(this.render);
+    }
   }
 
   public start(): void {
     this.update();
-
-    const loop = (timer: number): void => {
-      this.render(timer);
-      requestAnimationFrame(loop);
-    };
-
-    requestAnimationFrame(loop);
+    this.needRender = true;
+    this.startRenderLoop();
   }
 
   public startAnimation(
@@ -97,7 +114,7 @@ export abstract class Render {
     duration: number,
     onAnimateEnd: AnimationSuccessAction
   ): void {
-    this.finishAnimation(); // finish the previous animation process
+    this.finishAnimation();
 
     this.animation = {
       frames,
@@ -106,18 +123,18 @@ export abstract class Render {
       onAnimateEnd,
       startedAt: this.timer,
     };
+
+    this.startRenderLoop();
   }
 
   public finishAnimation(): void {
     if (this.animation !== null) {
       this.animation.frames[this.animation.frames.length - 1]();
-
-      if (this.animation.onAnimateEnd !== null) {
-        this.animation.onAnimateEnd();
-      }
+      this.animation.onAnimateEnd();
     }
-
     this.animation = null;
+    this.needRender = true;
+    this.startRenderLoop();
   }
 
   public update(): void {
@@ -127,11 +144,17 @@ export abstract class Render {
     if (this.orientation !== orientation) {
       this.orientation = orientation;
       this.app.updateOrientation(orientation);
+      this.needRender = true;
     }
 
     if (this.rtl !== rtl) {
       this.rtl = rtl;
       this.app.updateRTL(rtl);
+      this.needRender = true;
+    }
+
+    if (this.needRender) {
+      this.startRenderLoop();
     }
   }
 
@@ -145,25 +168,26 @@ export abstract class Render {
     };
 
     const ratio = this.setting.width / this.setting.height;
-
     let pageWidth = this.setting.width;
     let pageHeight = this.setting.height;
-
     let left = middlePoint.x - pageWidth;
 
     if (this.setting.size === SizeType.STRETCH) {
       if (
         blockWidth < this.setting.minWidth * 2 &&
         this.app.getSettings().usePortrait
-      )
+      ) {
         orientation = Orientation.PORTRAIT;
+      }
 
       pageWidth =
         orientation === Orientation.PORTRAIT
           ? this.getBlockWidth()
           : this.getBlockWidth() / 2;
 
-      if (pageWidth > this.setting.maxWidth) pageWidth = this.setting.maxWidth;
+      if (pageWidth > this.setting.maxWidth) {
+        pageWidth = this.setting.maxWidth;
+      }
 
       pageHeight = pageWidth / ratio;
       if (pageHeight > this.getBlockHeight()) {
@@ -189,7 +213,7 @@ export abstract class Render {
       top: middlePoint.y - pageHeight / 2,
       width: pageWidth * 2,
       height: pageHeight,
-      pageWidth: pageWidth,
+      pageWidth,
     };
 
     return orientation;
@@ -213,10 +237,15 @@ export abstract class Render {
       direction,
       progress: progress * 2,
     };
+
+    this.needRender = true;
+    this.startRenderLoop();
   }
 
   public clearShadow(): void {
     this.shadow = null;
+    this.needRender = true;
+    this.startRenderLoop();
   }
 
   public getBlockWidth(): number {
@@ -232,8 +261,9 @@ export abstract class Render {
   }
 
   public getRect(): PageRect {
-    if (this.boundsRect === null) this.calculateBoundsRect();
-
+    if (!this.boundsRect) {
+      this.calculateBoundsRect();
+    }
     return this.boundsRect;
   }
 
@@ -247,6 +277,8 @@ export abstract class Render {
 
   public setPageRect(pageRect: RectPoints): void {
     this.pageRect = pageRect;
+    this.needRender = true;
+    this.startRenderLoop();
   }
 
   public setDirection(direction: FlipDirection): void {
@@ -255,42 +287,47 @@ export abstract class Render {
 
   public setRightPage(page: HTMLPage | null): void {
     if (page !== null) page.setOrientation(PageOrientation.RIGHT);
-
     this.rightPage = page;
+    this.needRender = true;
+    this.startRenderLoop();
   }
 
   public setLeftPage(page: HTMLPage | null): void {
     if (page !== null) page.setOrientation(PageOrientation.LEFT);
-
     this.leftPage = page;
+    this.needRender = true;
+    this.startRenderLoop();
   }
 
   public setBottomPage(page: HTMLPage | null): void {
-    if (page !== null)
+    if (page !== null) {
       page.setOrientation(
         this.direction === FlipDirection.BACK
           ? PageOrientation.LEFT
           : PageOrientation.RIGHT
       );
-
+    }
     this.bottomPage = page;
+    this.needRender = true;
+    this.startRenderLoop();
   }
 
   public setFlippingPage(page: HTMLPage | null): void {
-    if (page !== null)
+    if (page !== null) {
       page.setOrientation(
         this.direction === FlipDirection.FORWARD &&
           this.orientation !== Orientation.PORTRAIT
           ? PageOrientation.LEFT
           : PageOrientation.RIGHT
       );
-
+    }
     this.flippingPage = page;
+    this.needRender = true;
+    this.startRenderLoop();
   }
 
   public convertToBook(pos: Point): Point {
     const rect = this.getRect();
-
     return {
       x: pos.x - rect.left,
       y: pos.y - rect.top,
@@ -299,7 +336,6 @@ export abstract class Render {
 
   public convertToPage(pos: Point, direction?: FlipDirection): Point {
     if (!direction) direction = this.direction;
-
     const rect = this.getRect();
     const x =
       direction === FlipDirection.FORWARD
@@ -311,15 +347,10 @@ export abstract class Render {
       y: pos.y - rect.top,
     };
   }
-  public getRTL(): boolean {
-    return this.rtl;
-  }
 
   public convertToGlobal(pos: Point, direction?: FlipDirection): Point {
     if (!direction) direction = this.direction;
-
     const rect = this.getRect();
-
     const x =
       direction === FlipDirection.FORWARD
         ? pos.x + rect.left + rect.width / 2
@@ -329,5 +360,18 @@ export abstract class Render {
       x,
       y: pos.y + rect.top,
     };
+  }
+
+  public destroy(): void {
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+    this.animation = null;
+    this.shadow = null;
+    // Add these:
+    this.needRender = false;
+    this.boundsRect = null!;
+    this.pageRect = null!;
   }
 }
