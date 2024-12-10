@@ -22,6 +22,7 @@ interface BookProps extends BookActions {
   };
   noContentAmount: number;
   isMobile: boolean;
+  children?: React.ReactNode;
 }
 
 const Book: React.FC<BookProps> = ({
@@ -30,6 +31,7 @@ const Book: React.FC<BookProps> = ({
   actions,
   noContentAmount,
   isMobile,
+  children,
 }) => {
   const pagesAmount = Pages.length + noContentAmount;
 
@@ -58,6 +60,7 @@ const Book: React.FC<BookProps> = ({
 
   return (
     <div className={styles.storyContainer}>
+      {children}
       <FlipBook
         ref={pageFlipRef}
         startPage={currPage - 1}

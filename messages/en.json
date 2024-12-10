@@ -47,6 +47,7 @@
       "genericFormMessage_2": "With great appreciation, the \"Look Them in the Eyes\" team.",
       "error_1": "It seems like we encountered an error.",
       "error_2": "Please try again later.",
+      "error_3": "You can also send us your message at ",
       "no_comments_1": "Unfortunately, no one has ",
       "no_comments_3": "yet, go ahead and be the first one!"
     },
@@ -78,6 +79,7 @@
         "success_1": "Our team carefully reviews everything you shared before publishing it on the website.",
         "success_2": "Following a thorough review by our team, we will notify you of the results via email to the address provided.",
         "success_3": "If you have any questions, feel free to contact us at:",
+
         "no_comments_2": "shared"
       }
     },
@@ -98,7 +100,6 @@
         "success_1": "Our team carefully reviews all comments before they are published on the website.",
         "success_2": "Following a thorough review by our team, we will notify you of the results via email to the address provided.",
         "success_3": "If you have any questions, feel free to contact us at:",
-        "error_3": "You can also send us your message at ",
         "no_comments_2": "commented"
       }
     }

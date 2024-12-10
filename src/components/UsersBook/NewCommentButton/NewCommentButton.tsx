@@ -17,7 +17,9 @@ const NewCommentButton: React.FC<{
   };
   return (
     <StyledButton
-      className={pad ? styles.button : ""}
+      className={`${pad ? styles.button : ""} ${
+        !pad ? styles.marginBottom : ""
+      } `}
       center={!pad}
       onClick={handleClick}
     >

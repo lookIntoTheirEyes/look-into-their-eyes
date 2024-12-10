@@ -39,24 +39,23 @@ const BookContainer: React.FC<IBookProps> = ({
   const previous = t("common.previous");
 
   return (
-    <>
+    <Book
+      book={{
+        Front,
+        Back,
+        Pages,
+        toc,
+      }}
+      rtl={rtl}
+      isMobile={isMobile}
+      actions={{
+        next,
+        previous,
+      }}
+      noContentAmount={noContentAmount}
+    >
       {children}
-      <Book
-        book={{
-          Front,
-          Back,
-          Pages,
-          toc,
-        }}
-        rtl={rtl}
-        isMobile={isMobile}
-        actions={{
-          next,
-          previous,
-        }}
-        noContentAmount={noContentAmount}
-      />
-    </>
+    </Book>
   );
 };
 
