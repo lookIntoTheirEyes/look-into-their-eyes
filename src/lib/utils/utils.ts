@@ -22,8 +22,11 @@ export function getRoute(
   return { href, name };
 }
 
-export function getImageUrl(url: string) {
+export function getImageUrl(url?: string) {
   const imageUrl = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  if (!url) {
+    return "";
+  }
 
   return `https://res.cloudinary.com/${imageUrl}/image/upload/${url}`;
 }

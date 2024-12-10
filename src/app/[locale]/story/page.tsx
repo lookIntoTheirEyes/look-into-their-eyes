@@ -43,7 +43,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
   const isMobile = (await cookies()).get("isMobile")?.value === "true";
   const t = await getTranslations("Book");
 
-  const bookPages = getAllPages(locale);
+  const bookPages = getAllPages(locale, "heroes");
   const rtl = locale === Language.he;
   const noContentPages = 3;
 

@@ -12,6 +12,7 @@ interface PageProps {
   details: Page;
   cta?: string;
   title?: string;
+  isStory?: boolean;
 }
 
 const PageContent: React.FC<PageProps> = ({
@@ -19,6 +20,7 @@ const PageContent: React.FC<PageProps> = ({
   details,
   cta,
   title: chapter,
+  isStory = true,
 }) => {
   const router = useRouter();
 
@@ -31,15 +33,13 @@ const PageContent: React.FC<PageProps> = ({
     );
   };
 
+  const pageTitle = isStory ? `${chapter} ${pageNum - 2} - ${title}` : title;
+
   return (
     <>
       {Object.keys(details).length && (
         <>
-          {chapter && (
-            <h2 className='pageHeader'>{`${chapter} ${
-              pageNum - 2
-            } - ${title}`}</h2>
-          )}
+          {chapter && <h2 className='pageHeader'>{pageTitle}</h2>}
           {imageUrl && (
             <div className={styles.imageSection}>
               <div className={styles.pageImage}>
@@ -52,9 +52,11 @@ const PageContent: React.FC<PageProps> = ({
               <TextAnimationContainer text={description} />
             </div>
           )}
-          <StyledButton onClick={handleClick} className={styles.button}>
-            {cta}
-          </StyledButton>
+          {cta && (
+            <StyledButton onClick={handleClick} className={styles.button}>
+              {cta}
+            </StyledButton>
+          )}
         </>
       )}
     </>
