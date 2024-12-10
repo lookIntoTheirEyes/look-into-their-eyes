@@ -61,10 +61,13 @@ export class HTMLRender extends Render {
     let innerShadowSize =
       ((100 - progress) * (2.5 * rect.pageWidth)) / 100 + 20;
     if (innerShadowSize > rect.pageWidth) innerShadowSize = rect.pageWidth;
+    const { rtl, startZIndex } = this.getSettings();
 
     let newStyle = `
       display: block;
-      z-index: ${(this.getSettings().startZIndex + 5).toString(10)};
+      z-index: ${(
+        startZIndex + (rtl && this.orientation === Orientation.PORTRAIT ? 3 : 5)
+      ).toString(10)};
       width: ${innerShadowSize}px;
       height: ${rect.height}px;
       background: linear-gradient(to right,
@@ -96,9 +99,13 @@ export class HTMLRender extends Render {
     let shadowSize = ((100 - progress) * (2.5 * rect.pageWidth)) / 100 + 20;
     if (shadowSize > rect.pageWidth) shadowSize = rect.pageWidth;
 
+    const { rtl, startZIndex } = this.getSettings();
+
     let newStyle = `
       display: block;
-      z-index: ${(this.getSettings().startZIndex + 4).toString(10)};
+      z-index: ${(
+        startZIndex + (rtl && this.orientation === Orientation.PORTRAIT ? 3 : 4)
+      ).toString(10)};
       width: ${shadowSize}px;
       height: ${rect.height}px;
       background: linear-gradient(to left, rgba(0, 0, 0, ${
