@@ -415,59 +415,58 @@ function getCorner(
   y: number,
   isLeftPage: boolean,
   bookRect: Rect,
-  threshold: number = 150
+  threshold?: number
 ): Corner {
   const localX = x - bookRect.left;
   const localY = y - bookRect.top;
-
-  // Get page boundaries
   const pageWidth = bookRect.width / 2;
 
-  if (!isLeftPage) {
-    // Top right corner
-    if (
-      localX >= pageWidth - threshold &&
-      localX <= bookRect.width &&
-      localY >= 0 &&
-      localY <= threshold
-    ) {
-      return "top-right";
-    }
+  if (threshold !== undefined) {
+    if (!isLeftPage) {
+      if (
+        localX >= pageWidth - threshold &&
+        localX <= bookRect.width &&
+        localY >= 0 &&
+        localY <= threshold
+      ) {
+        return "top-right";
+      }
 
-    // Bottom right corner
-    if (
-      localX >= pageWidth - threshold &&
-      localX <= bookRect.width &&
-      localY >= bookRect.height - threshold &&
-      localY <= bookRect.height
-    ) {
-      return "bottom-right";
-    }
-  }
-  // For left page, check against the left half of the book
-  else {
-    // Top left corner
-    if (
-      localX >= 0 &&
-      localX <= threshold &&
-      localY >= 0 &&
-      localY <= threshold
-    ) {
-      return "top-left";
-    }
+      if (
+        localX >= pageWidth - threshold &&
+        localX <= bookRect.width &&
+        localY >= bookRect.height - threshold &&
+        localY <= bookRect.height
+      ) {
+        return "bottom-right";
+      }
+    } else {
+      if (
+        localX >= 0 &&
+        localX <= threshold &&
+        localY >= 0 &&
+        localY <= threshold
+      ) {
+        return "top-left";
+      }
 
-    // Bottom left corner
-    if (
-      localX >= 0 &&
-      localX <= threshold &&
-      localY >= bookRect.height - threshold &&
-      localY <= bookRect.height
-    ) {
-      return "bottom-left";
+      if (
+        localX >= 0 &&
+        localX <= threshold &&
+        localY >= bookRect.height - threshold &&
+        localY <= bookRect.height
+      ) {
+        return "bottom-left";
+      }
     }
+    return "none";
   }
 
-  return "none";
+  if (isLeftPage) {
+    return localY < bookRect.height / 2 ? "top-left" : "bottom-left";
+  } else {
+    return localY < bookRect.height / 2 ? "top-right" : "bottom-right";
+  }
 }
 
 const Helper = {

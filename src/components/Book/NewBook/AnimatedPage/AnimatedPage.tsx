@@ -166,92 +166,71 @@ function getClipPath(
   bookRef: React.RefObject<HTMLDivElement>
 ): string {
   const bookRect = bookRef.current?.getBoundingClientRect();
-  if (!bookRect) {
-    return "none";
-  }
+  if (!bookRect) return "none";
 
-  // Convert to local coordinates and percentages
-  const x = ((cursorX - bookRect.left) / (bookRect.width / 2)) * 100;
-  const y = ((cursorY - bookRect.top) / bookRect.height) * 100;
+  // Convert to local coordinates
+  const localX = cursorX - bookRect.left;
+  const localY = cursorY - bookRect.top;
 
-  // Get corner coordinates in percentages
-  let cornerX: number, cornerY: number;
+  // Convert to percentages relative to page (not book)
+  const pageWidth = bookRect.width / 2;
+  const x = (localX / pageWidth) * 100;
+  const y = (localY / bookRect.height) * 100;
 
-  switch (corner) {
-    case "top-left":
-      cornerX = 0;
-      cornerY = 0;
-      break;
-    case "top-right":
-      cornerX = 100;
-      cornerY = 0;
-      break;
-    case "bottom-left":
-      cornerX = 0;
-      cornerY = 100;
-      break;
-    case "bottom-right":
-      cornerX = 100;
-      cornerY = 100;
-      break;
-    default:
-      return "none";
-  }
-
-  // Calculate angle between corner and cursor
-  const angle = Math.atan2(y - cornerY, x - cornerX);
-
-  // Generate clip points based on corner
-  const points: string[] = [];
+  // Calculate fold line angle and intersection
+  let foldX = x;
+  let foldY = y;
 
   switch (corner) {
     case "top-left": {
-      const intersectY = Math.min(Math.max(y, 0), 100);
-      points.push(
-        "50% 0%", // Top middle
-        "100% 0%", // Top right
-        "100% 100%", // Bottom right
-        "0% 100%", // Bottom left
-        `0% ${intersectY}%` // Intersection point
-      );
-      break;
+      // Constrain fold line between 0-100%
+      foldY = Math.max(0, Math.min(100, y));
+      // Page should remain fully visible until cursor moves beyond page width
+      foldX = Math.min(100, Math.max(0, x));
+      return `polygon(
+        50% 0%,
+        100% 0%,
+        100% 100%,
+        0% 100%,
+        0% ${foldY}%
+      )`;
     }
     case "top-right": {
-      const intersectY = Math.min(Math.max(y, 0), 100);
-      points.push(
-        "0% 0%", // Top left
-        "50% 0%", // Top middle
-        `100% ${intersectY}%`, // Intersection point
-        "100% 100%", // Bottom right
-        "0% 100%" // Bottom left
-      );
-      break;
+      foldY = Math.max(0, Math.min(100, y));
+      foldX = Math.min(200, Math.max(100, x));
+      return `polygon(
+        0% 0%,
+        50% 0%,
+        100% ${foldY}%,
+        100% 100%,
+        0% 100%
+      )`;
     }
     case "bottom-right": {
-      const intersectX = Math.min(Math.max(x, 0), 100);
-      points.push(
-        "0% 0%", // Top left
-        "100% 0%", // Top right
-        `100% ${y}%`, // Intersection point
-        `${intersectX}% 100%`, // Bottom intersection
-        "0% 100%" // Bottom left
-      );
-      break;
+      foldY = Math.max(0, Math.min(100, y));
+      foldX = Math.min(200, Math.max(100, x));
+      return `polygon(
+        0% 0%,
+        100% 0%,
+        100% ${foldY}%,
+        ${Math.min(100, foldX)}% 100%,
+        0% 100%
+      )`;
     }
     case "bottom-left": {
-      const intersectX = Math.min(Math.max(x, 0), 100);
-      points.push(
-        "0% 0%", // Top left
-        "100% 0%", // Top right
-        "100% 100%", // Bottom right
-        `${intersectX}% 100%`, // Bottom intersection
-        `0% ${y}%` // Side intersection
-      );
-      break;
+      foldY = Math.max(0, Math.min(100, y));
+      foldX = Math.min(100, Math.max(0, x));
+      return `polygon(
+        0% 0%,
+        100% 0%,
+        100% 100%,
+        ${foldX}% 100%,
+        0% ${foldY}%
+      )`;
     }
+    default:
+      return "none";
   }
-
-  return `polygon(${points.join(", ")})`;
 }
 
 function getSoftPageStyle(
@@ -266,47 +245,43 @@ function getSoftPageStyle(
 ) {
   return {
     clipPath: to([corner, x, y], (c, xVal, yVal) =>
-      getClipPath(c as Corner, xVal as number, yVal as number, bookRef)
+      isFront
+        ? getClipPath(c as Corner, xVal as number, yVal as number, bookRef)
+        : "none"
     ),
     transform: to([corner, x, y, progress], (c, xVal, yVal, p) => {
-      if (!c) return "none";
-      const bookRect = bookRef.current?.getBoundingClientRect();
-      if (!bookRect) return "none";
+      // console.log("transform corner", c);
+      // console.log("transform bookref", bookRef.current);
 
-      // Set transform origin based on corner
-      const origin = {
-        "top-left": "0% 0%",
-        "top-right": "100% 0%",
-        "bottom-left": "0% 100%",
-        "bottom-right": "100% 100%",
-      }[c];
+      if (c === "none" || !bookRef.current || isFront) return "none";
+      const bookRect = bookRef.current.getBoundingClientRect();
 
-      // Calculate angle
-      const localX = (xVal as number) - bookRect.left;
-      const localY = (yVal as number) - bookRect.top;
-      let angle = 0;
+      const localX = xVal - bookRect.left;
+      const localY = yVal - bookRect.top;
+      // console.log("xVal", xVal);
+      // console.log("localX", localX);
 
-      switch (c) {
-        case "top-left":
-          angle = Math.atan2(localY, localX);
-          break;
-        case "top-right":
-          angle = Math.atan2(localY, localX - pageWidth);
-          break;
-        case "bottom-left":
-          angle = Math.atan2(localY - bookRect.height, localX);
-          break;
-        case "bottom-right":
-          angle = Math.atan2(localY - bookRect.height, localX - pageWidth);
-          break;
-      }
+      // const backAngle = angle + (c.includes("right") ? Math.PI : -Math.PI);
+      // const progress = Math.min(100, Math.max(0, p));
+      // const rotateY = progress >= 50 ? 180 : 0;
+      // console.log("transform back", localX - pageWidth);
 
-      return `
-        transform-origin: ${origin}
-        rotate(${angle}rad)
-      `;
+      return transformSoftBack(localX - pageWidth);
+
+      // Get corner base position
+    }),
+    zIndex: progress.to((p) => {
+      if (isFront) return 3;
+      return p > 0 ? 4 : 2;
     }),
   };
+}
+
+function transformSoftBack(x: number) {
+  // console.log("transformSoftBack", x);
+
+  // 'display: block; z-index: 35; left: 0px; top: 0px; width: 595.069px; height: 779px; transform-origin: 0px 0px; clip-path: polygon(0px 0px, 101.244px -6.03961e-14px, -3.19744e-14px 80.8385px); transform: translate3d(1111.45px, 99px, 0px) rotate(-1.78172rad);'
+  return `translate3d(${x}px, 500px, 0px) rotate(-3rad)`;
 }
 
 // function calculateIntersectPoint(pos: Point,pageWidth:number,pageHeight:number,corner:Corner) {

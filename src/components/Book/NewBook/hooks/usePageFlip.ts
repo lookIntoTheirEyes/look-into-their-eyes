@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useState } from "react";
+import { RefObject, useCallback, useRef, useState } from "react";
 import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
 import { Corner, FlipDirection } from "../model";
@@ -15,12 +15,6 @@ interface UsePageFlipParams {
 }
 const ANIMATION_DURATION = 500;
 
-const INITIAL_STATUS = {
-  isHover: false,
-  isDrag: false,
-  lastX: 0,
-};
-
 export const usePageFlip = ({
   isRtl,
   onNextPage,
@@ -30,7 +24,8 @@ export const usePageFlip = ({
   currentPage,
   totalPages,
 }: UsePageFlipParams) => {
-  const [{ isHover, isDrag, lastX }, setStatus] = useState(INITIAL_STATUS);
+  const status = useRef<"" | "drag" | "hover" | "animation">("");
+  const [lastX, setX] = useState(0);
   const bookRect = bookRef.current?.getBoundingClientRect();
   const bookWidth = bookRect?.width ?? 0;
   const pageWidth = bookWidth / (isSinglePage ? 1 : 2);
@@ -86,6 +81,7 @@ export const usePageFlip = ({
     (idx: number, direction: FlipDirection, corner: Corner) => {
       api.start((i) => {
         if (i !== idx) return;
+        status.current = "animation";
 
         return {
           ...getSpringConfig({ startX: lastX, corner }), // Add lastX here
@@ -102,12 +98,14 @@ export const usePageFlip = ({
 
             api.start((i) => {
               if (i !== idx) return;
+              status.current = "";
+
               return {
                 ...getSpringConfig({ immediate: true, startX: lastX }),
                 direction,
                 config: { duration: 0 },
                 onRest: () => {
-                  setStatus({ ...INITIAL_STATUS, lastX });
+                  setX(lastX);
                 },
               };
             });
@@ -129,6 +127,7 @@ export const usePageFlip = ({
       if (progress < 50) {
         api.start((i) => {
           if (idx !== i) return;
+          status.current = "animation";
 
           return {
             immediate: false,
@@ -136,7 +135,8 @@ export const usePageFlip = ({
             config: { duration: ANIMATION_DURATION },
             corner: "none",
             onRest: () => {
-              setStatus({ ...INITIAL_STATUS, lastX: x });
+              status.current = "";
+              setX(x);
             },
           };
         });
@@ -201,7 +201,8 @@ export const usePageFlip = ({
         return {
           ...getSpringConfig({ direction }),
           onRest: () => {
-            setStatus({ ...INITIAL_STATUS });
+            status.current = "";
+            setX(0);
           },
         };
       });
@@ -212,22 +213,22 @@ export const usePageFlip = ({
   const bind = useGesture(
     {
       onMouseLeave: ({ args: [idx] }) => {
-        if (isDrag || !isHover) return;
+        if (status.current !== "hover") return;
         const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
         const direction = getDirByPoint(isLeft);
         resetLocation(idx, direction);
       },
 
       onMouseMove: (params) => {
-        if (isDrag) return;
+        if (status.current === "drag" || status.current === "animation") return;
 
         const {
           args: [idx],
           event: { clientX: x, clientY: y },
         } = params;
 
-        if (!isHover) {
-          setStatus((prev) => ({ ...prev, isDrag: false, isHover: true }));
+        if (status.current !== "hover") {
+          status.current = "hover";
         }
 
         const isHardPage = Helper.isHardPage(currentPage + idx, totalPages);
@@ -235,7 +236,7 @@ export const usePageFlip = ({
         const direction = getDirByPoint(isLeft);
         const progress = Helper.getProgress(x, !isLeft, bookRef);
 
-        if (progress > 10 || !isHover) {
+        if (progress > 10 || status.current !== "hover") {
           resetLocation(idx, direction);
           return;
         }
@@ -243,7 +244,7 @@ export const usePageFlip = ({
         if (!isHardPage) {
           const bookRect = bookRef.current?.getBoundingClientRect();
 
-          const corner = Helper.getCorner(x, y, isLeft, bookRect!);
+          const corner = Helper.getCorner(x, y, isLeft, bookRect!, 150);
 
           api.start((i) => {
             if (idx !== i) return;
@@ -261,7 +262,7 @@ export const usePageFlip = ({
       },
 
       onClick: (params) => {
-        if (isDrag) return;
+        if (status.current === "drag" || status.current !== "animation") return;
 
         const {
           args: [idx],
@@ -290,7 +291,7 @@ export const usePageFlip = ({
 
         const direction =
           action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
-        setStatus((prev) => ({ ...prev, isHover: false, isDrag: true }));
+
         animateNextPage(idx, direction, corner);
       },
 
@@ -305,9 +306,10 @@ export const usePageFlip = ({
           offset,
         } = params;
 
-        if (tap) return;
+        if (tap || status.current === "animation") return;
+        status.current = "drag";
 
-        setStatus({ isHover: false, isDrag: true, lastX: px });
+        setX(px);
 
         const dir = xDir < 0 ? -1 : 1;
 
