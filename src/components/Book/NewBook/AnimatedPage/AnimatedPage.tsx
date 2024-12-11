@@ -63,7 +63,16 @@ const AnimatedPage: React.FC<IProps> = ({
           isRtl,
           isFront
         )
-      : getSoftPageStyle(x, y, corner, progress, bookRef, pageWidth);
+      : getSoftPageStyle(
+          x,
+          y,
+          corner,
+          progress,
+          direction,
+          bookRef,
+          pageWidth,
+          isFront
+        );
   };
 
   const getShadowStyle = (inner = false) => {
@@ -150,48 +159,99 @@ function getHardShadowStyle(
   };
 }
 
-function getPolygonForCorner(
-  corner: string,
-  size: number,
-  pageWidth: number,
-  pageHeight: number
+function getClipPath(
+  corner: Corner,
+  cursorX: number,
+  cursorY: number,
+  bookRef: React.RefObject<HTMLDivElement>
 ): string {
+  const bookRect = bookRef.current?.getBoundingClientRect();
+  if (!bookRect) {
+    return "none";
+  }
+
+  // Convert to local coordinates and percentages
+  const x = ((cursorX - bookRect.left) / (bookRect.width / 2)) * 100;
+  const y = ((cursorY - bookRect.top) / bookRect.height) * 100;
+
+  // Get corner coordinates in percentages
+  let cornerX: number, cornerY: number;
+
   switch (corner) {
-    case "top-right":
-      return `polygon(
-        ${pageWidth - size}px 0,
-        ${pageWidth}px ${size}px,
-        ${pageWidth}px 100%,
-        0 100%,
-        0 0
-      )`;
     case "top-left":
-      return `polygon(
-        0 ${size}px,
-        ${size}px 0,
-        ${pageWidth}px 0,
-        ${pageWidth}px 100%,
-        0 100%
-      )`;
-    case "bottom-right":
-      return `polygon(
-        0 0,
-        ${pageWidth}px 0,
-        ${pageWidth}px ${pageHeight - size}px,
-        ${pageWidth - size}px ${pageHeight}px,
-        0 ${pageHeight}px
-      )`;
+      cornerX = 0;
+      cornerY = 0;
+      break;
+    case "top-right":
+      cornerX = 100;
+      cornerY = 0;
+      break;
     case "bottom-left":
-      return `polygon(
-        0 0,
-        ${pageWidth}px 0,
-        ${pageWidth}px ${pageHeight}px,
-        ${size}px ${pageHeight}px,
-        0 ${pageHeight - size}px
-      )`;
+      cornerX = 0;
+      cornerY = 100;
+      break;
+    case "bottom-right":
+      cornerX = 100;
+      cornerY = 100;
+      break;
     default:
       return "none";
   }
+
+  // Calculate angle between corner and cursor
+  const angle = Math.atan2(y - cornerY, x - cornerX);
+
+  // Generate clip points based on corner
+  const points: string[] = [];
+
+  switch (corner) {
+    case "top-left": {
+      const intersectY = Math.min(Math.max(y, 0), 100);
+      points.push(
+        "50% 0%", // Top middle
+        "100% 0%", // Top right
+        "100% 100%", // Bottom right
+        "0% 100%", // Bottom left
+        `0% ${intersectY}%` // Intersection point
+      );
+      break;
+    }
+    case "top-right": {
+      const intersectY = Math.min(Math.max(y, 0), 100);
+      points.push(
+        "0% 0%", // Top left
+        "50% 0%", // Top middle
+        `100% ${intersectY}%`, // Intersection point
+        "100% 100%", // Bottom right
+        "0% 100%" // Bottom left
+      );
+      break;
+    }
+    case "bottom-right": {
+      const intersectX = Math.min(Math.max(x, 0), 100);
+      points.push(
+        "0% 0%", // Top left
+        "100% 0%", // Top right
+        `100% ${y}%`, // Intersection point
+        `${intersectX}% 100%`, // Bottom intersection
+        "0% 100%" // Bottom left
+      );
+      break;
+    }
+    case "bottom-left": {
+      const intersectX = Math.min(Math.max(x, 0), 100);
+      points.push(
+        "0% 0%", // Top left
+        "100% 0%", // Top right
+        "100% 100%", // Bottom right
+        `${intersectX}% 100%`, // Bottom intersection
+        `0% ${y}%` // Side intersection
+      );
+      break;
+    }
+  }
+
+  return `polygon(${points.join(", ")})`;
 }
 
 function getSoftPageStyle(
@@ -199,32 +259,123 @@ function getSoftPageStyle(
   y: SpringValue<number>,
   corner: SpringValue<Corner>,
   progress: SpringValue<number>,
+  direction: SpringValue<FlipDirection>,
   bookRef: React.RefObject<HTMLDivElement>,
-  pageWidth: number
+  pageWidth: number,
+  isFront: boolean
 ) {
   return {
-    clipPath: to([corner], (c) => {
-      console.log("clipPath", c);
+    clipPath: to([corner, x, y], (c, xVal, yVal) =>
+      getClipPath(c as Corner, xVal as number, yVal as number, bookRef)
+    ),
+    transform: to([corner, x, y, progress], (c, xVal, yVal, p) => {
+      if (!c) return "none";
+      const bookRect = bookRef.current?.getBoundingClientRect();
+      if (!bookRect) return "none";
 
-      return getClipPath(c);
+      // Set transform origin based on corner
+      const origin = {
+        "top-left": "0% 0%",
+        "top-right": "100% 0%",
+        "bottom-left": "0% 100%",
+        "bottom-right": "100% 100%",
+      }[c];
+
+      // Calculate angle
+      const localX = (xVal as number) - bookRect.left;
+      const localY = (yVal as number) - bookRect.top;
+      let angle = 0;
+
+      switch (c) {
+        case "top-left":
+          angle = Math.atan2(localY, localX);
+          break;
+        case "top-right":
+          angle = Math.atan2(localY, localX - pageWidth);
+          break;
+        case "bottom-left":
+          angle = Math.atan2(localY - bookRect.height, localX);
+          break;
+        case "bottom-right":
+          angle = Math.atan2(localY - bookRect.height, localX - pageWidth);
+          break;
+      }
+
+      return `
+        transform-origin: ${origin}
+        rotate(${angle}rad)
+      `;
     }),
   };
 }
 
-function getClipPath(corner: Corner) {
-  switch (corner) {
-    case "top-left":
-      return `polygon(50% 0%, 100% 0, 100% 100%, 0 100%, 0 45%)`;
-    case "top-right":
-      return `polygon(50% 0%, 100% 49%, 100% 100%, 0 100%, 0 0)`;
-    case "bottom-right":
-      return `polygon(100% 71%, 73% 100%, 0 100%, 0 0, 100% 0)`;
-    case "bottom-left":
-      return `polygon(100% 100%, 41% 100%, 0 65%, 0 0, 100% 0)`;
-    default:
-      return "none";
-  }
-}
+// function calculateIntersectPoint(pos: Point,pageWidth:number,pageHeight:number,corner:Corner) {
+//   const boundRect: Rect = {
+//     left: -1,
+//     top: -1,
+//     width: pageWidth + 2,
+//     height: pageHeight + 2,
+//   };
+
+//   if (corner === 'top-left' || corner === 'top-right') {
+//     const topIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
+//       boundRect,
+//       [pos, this.rect.topRight],
+//       [
+//         { x: 0, y: 0 },
+//         { x: pageWidth, y: 0 },
+//       ]
+//     );
+
+//     const sideIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
+//       boundRect,
+//       [pos, this.rect.bottomLeft],
+//       [
+//         { x: pageWidth, y: 0 },
+//         { x: pageWidth, y: pageHeight },
+//       ]
+//     );
+
+//     const bottomIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
+//       boundRect,
+//       [this.rect.bottomLeft, this.rect.bottomRight],
+//       [
+//         { x: 0, y: pageHeight },
+//         { x: pageWidth, y:pageHeight },
+//       ]
+//     );
+//     return {
+//       topIntersectPoint,bottomIntersectPoint,sideIntersectPoint}
+//   } else {
+//     const topIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
+//       boundRect,
+//       [this.rect.topLeft, this.rect.topRight],
+//       [
+//         { x: 0, y: 0 },
+//         { x: pageWidth, y: 0 },
+//       ]
+//     );
+
+//     const sideIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
+//       boundRect,
+//       [pos, this.rect.topLeft],
+//       [
+//         { x: pageWidth, y: 0 },
+//         { x: pageWidth, y: pageHeight },
+//       ]
+//     );
+
+//     const bottomIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
+//       boundRect,
+//       [this.rect.bottomLeft, this.rect.bottomRight],
+//       [
+//         { x: 0, y: pageHeight },
+//         { x: pageWidth, y: pageHeight },
+//       ]
+//     );
+//     return {topIntersectPoint,bottomIntersectPoint,sideIntersectPoint}
+//   }
+// }
 
 function getHardPageStyle(
   x: SpringValue<number>,
