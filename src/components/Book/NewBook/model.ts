@@ -67,3 +67,10 @@ export type PageMouseLocation =
   | "leftPageRight"
   | "rightPageLeft"
   | "rightPageRight";
+
+export type Corner =
+  | "top-left"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-right"
+  | "none";

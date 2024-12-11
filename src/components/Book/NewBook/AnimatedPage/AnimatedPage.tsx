@@ -1,7 +1,7 @@
 import { animated, SpringValue, to } from "@react-spring/web";
 import { ReactDOMAttributes } from "@use-gesture/react/dist/declarations/src/types";
 import styles from "./AnimatedPage.module.css";
-import { FlipDirection } from "../model";
+import { Corner, FlipDirection } from "../model";
 import Helper from "../Helper";
 
 interface IProps {
@@ -13,6 +13,7 @@ interface IProps {
   y: SpringValue<number>;
   progress: SpringValue<number>;
   direction: SpringValue<FlipDirection>;
+  corner: SpringValue<Corner>;
   bind: (...args: unknown[]) => ReactDOMAttributes;
   i: number;
   pageWidth: number;
@@ -32,6 +33,7 @@ const AnimatedPage: React.FC<IProps> = ({
   i,
   pageWidth,
   bookRef,
+  corner,
 }) => {
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
   const isHardPage = Helper.isHardPage(pageNum, pages.length);
@@ -61,7 +63,7 @@ const AnimatedPage: React.FC<IProps> = ({
           isRtl,
           isFront
         )
-      : {};
+      : getSoftPageStyle(x, y, corner, progress, bookRef, pageWidth);
   };
 
   const getShadowStyle = (inner = false) => {
@@ -146,6 +148,82 @@ function getHardShadowStyle(
       Helper.getShadowTransform(p as number, dir as FlipDirection, isRtl, inner)
     ),
   };
+}
+
+function getPolygonForCorner(
+  corner: string,
+  size: number,
+  pageWidth: number,
+  pageHeight: number
+): string {
+  switch (corner) {
+    case "top-right":
+      return `polygon(
+        ${pageWidth - size}px 0,
+        ${pageWidth}px ${size}px,
+        ${pageWidth}px 100%,
+        0 100%,
+        0 0
+      )`;
+    case "top-left":
+      return `polygon(
+        0 ${size}px,
+        ${size}px 0,
+        ${pageWidth}px 0,
+        ${pageWidth}px 100%,
+        0 100%
+      )`;
+    case "bottom-right":
+      return `polygon(
+        0 0,
+        ${pageWidth}px 0,
+        ${pageWidth}px ${pageHeight - size}px,
+        ${pageWidth - size}px ${pageHeight}px,
+        0 ${pageHeight}px
+      )`;
+    case "bottom-left":
+      return `polygon(
+        0 0,
+        ${pageWidth}px 0,
+        ${pageWidth}px ${pageHeight}px,
+        ${size}px ${pageHeight}px,
+        0 ${pageHeight - size}px
+      )`;
+    default:
+      return "none";
+  }
+}
+
+function getSoftPageStyle(
+  x: SpringValue<number>,
+  y: SpringValue<number>,
+  corner: SpringValue<Corner>,
+  progress: SpringValue<number>,
+  bookRef: React.RefObject<HTMLDivElement>,
+  pageWidth: number
+) {
+  return {
+    clipPath: to([corner], (c) => {
+      console.log("clipPath", c);
+
+      return getClipPath(c);
+    }),
+  };
+}
+
+function getClipPath(corner: Corner) {
+  switch (corner) {
+    case "top-left":
+      return `polygon(50% 0%, 100% 0, 100% 100%, 0 100%, 0 45%)`;
+    case "top-right":
+      return `polygon(50% 0%, 100% 49%, 100% 100%, 0 100%, 0 0)`;
+    case "bottom-right":
+      return `polygon(100% 71%, 73% 100%, 0 100%, 0 0, 100% 0)`;
+    case "bottom-left":
+      return `polygon(100% 100%, 41% 100%, 0 65%, 0 0, 100% 0)`;
+    default:
+      return "none";
+  }
 }
 
 function getHardPageStyle(

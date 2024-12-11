@@ -1,4 +1,5 @@
 import {
+  Corner,
   FlipDirection,
   PageMouseLocation,
   Point,
@@ -409,36 +410,62 @@ function getProgress(
   );
 }
 
-function getHoverCorner(
-  bookWidth: number,
-  bookHeight: number,
-  localX: number,
-  localY: number
-) {
-  const maxDistance = 200;
+function getCorner(
+  x: number,
+  y: number,
+  isLeftPage: boolean,
+  bookRect: Rect,
+  threshold: number = 150
+): Corner {
+  const localX = x - bookRect.left;
+  const localY = y - bookRect.top;
 
-  if (
-    localX < 0 ||
-    localY < 0 ||
-    localX > bookWidth ||
-    localY > bookHeight ||
-    (localX > maxDistance &&
-      localX < bookWidth - maxDistance &&
-      localY > maxDistance &&
-      localY < bookHeight - maxDistance)
-  ) {
-    return "none";
+  // Get page boundaries
+  const pageWidth = bookRect.width / 2;
+
+  if (!isLeftPage) {
+    // Top right corner
+    if (
+      localX >= pageWidth - threshold &&
+      localX <= bookRect.width &&
+      localY >= 0 &&
+      localY <= threshold
+    ) {
+      return "top-right";
+    }
+
+    // Bottom right corner
+    if (
+      localX >= pageWidth - threshold &&
+      localX <= bookRect.width &&
+      localY >= bookRect.height - threshold &&
+      localY <= bookRect.height
+    ) {
+      return "bottom-right";
+    }
   }
+  // For left page, check against the left half of the book
+  else {
+    // Top left corner
+    if (
+      localX >= 0 &&
+      localX <= threshold &&
+      localY >= 0 &&
+      localY <= threshold
+    ) {
+      return "top-left";
+    }
 
-  const isTop = localY <= maxDistance;
-  const isBottom = localY >= bookHeight - maxDistance;
-  const isLeft = localX <= maxDistance;
-  const isRight = localX >= bookWidth - maxDistance;
-
-  if (isTop && isLeft) return "top-left";
-  if (isTop && isRight) return "top-right";
-  if (isBottom && isLeft) return "bottom-left";
-  if (isBottom && isRight) return "bottom-right";
+    // Bottom left corner
+    if (
+      localX >= 0 &&
+      localX <= threshold &&
+      localY >= bookRect.height - threshold &&
+      localY <= bookRect.height
+    ) {
+      return "bottom-left";
+    }
+  }
 
   return "none";
 }
@@ -466,7 +493,7 @@ const Helper = {
   isHardPage,
   getDirection,
   getProgress,
-  getHoverCorner,
+  getCorner,
 };
 
 export default Helper;

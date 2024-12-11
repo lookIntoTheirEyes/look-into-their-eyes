@@ -1,7 +1,7 @@
 import { RefObject, useCallback, useState } from "react";
 import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
-import { FlipDirection } from "../model";
+import { Corner, FlipDirection } from "../model";
 import Helper from "../Helper";
 
 interface UsePageFlipParams {
@@ -31,20 +31,22 @@ export const usePageFlip = ({
   totalPages,
 }: UsePageFlipParams) => {
   const [{ isHover, isDrag, lastX }, setStatus] = useState(INITIAL_STATUS);
-  const book = bookRef.current?.getBoundingClientRect();
-  const bookWidth = book?.width ?? 0;
+  const bookRect = bookRef.current?.getBoundingClientRect();
+  const bookWidth = bookRect?.width ?? 0;
   const pageWidth = bookWidth / (isSinglePage ? 1 : 2);
-  const bookLeft = book?.left ?? 0;
+  const bookLeft = bookRect?.left ?? 0;
 
   const getSpringConfig = useCallback(
     ({
       direction = FlipDirection.FORWARD,
       immediate = false,
       startX,
+      corner = "none",
     }: {
       direction?: FlipDirection;
       immediate?: boolean;
       startX?: number;
+      corner?: Corner;
     }) => ({
       x: startX ?? 0,
       y: 0,
@@ -53,6 +55,7 @@ export const usePageFlip = ({
       progress: 0,
       immediate,
       direction,
+      corner,
       config: {
         tension: 200,
         friction: 25,
@@ -80,12 +83,12 @@ export const usePageFlip = ({
   }));
 
   const animateNextPage = useCallback(
-    (idx: number, direction: FlipDirection) => {
+    (idx: number, direction: FlipDirection, corner: Corner) => {
       api.start((i) => {
         if (i !== idx) return;
 
         return {
-          ...getSpringConfig({ startX: lastX }), // Add lastX here
+          ...getSpringConfig({ startX: lastX, corner }), // Add lastX here
 
           progress: 100,
           config: { duration: ANIMATION_DURATION },
@@ -116,7 +119,13 @@ export const usePageFlip = ({
   );
 
   const handleDragEnd = useCallback(
-    (progress: number, idx: number, direction: FlipDirection, x: number) => {
+    (
+      progress: number,
+      idx: number,
+      direction: FlipDirection,
+      x: number,
+      corner: Corner
+    ) => {
       if (progress < 50) {
         api.start((i) => {
           if (idx !== i) return;
@@ -125,13 +134,14 @@ export const usePageFlip = ({
             immediate: false,
             progress: 0,
             config: { duration: ANIMATION_DURATION },
+            corner: "none",
             onRest: () => {
               setStatus({ ...INITIAL_STATUS, lastX: x });
             },
           };
         });
       } else {
-        animateNextPage(idx, direction);
+        animateNextPage(idx, direction, corner);
       }
     },
     [animateNextPage, api]
@@ -144,14 +154,21 @@ export const usePageFlip = ({
       direction: FlipDirection,
       x: number,
       y: number,
+      corner: Corner,
       isDrag = true
     ) => {
       api.start((i) => {
         if (idx !== i) return;
         return {
-          ...getSpringConfig({ direction, immediate: isDrag, startX: x }),
+          ...getSpringConfig({
+            direction,
+            immediate: isDrag,
+            startX: x,
+            corner,
+          }),
           progress,
           direction,
+          y,
         };
       });
     },
@@ -159,12 +176,19 @@ export const usePageFlip = ({
   );
 
   const handleHardPageHover = useCallback(
-    (isLeft: boolean, progress: number, idx: number, x: number, y: number) => {
+    (
+      isLeft: boolean,
+      progress: number,
+      idx: number,
+      x: number,
+      y: number,
+      corner: Corner
+    ) => {
       const dir = getDirByPoint(isLeft);
       if (progress > 10) {
-        handleDragEnd(0, idx, dir, x);
+        handleDragEnd(0, idx, dir, x, corner);
       } else {
-        animateDrag(idx, progress, dir, x, y, false);
+        animateDrag(idx, progress, dir, x, y, corner, false);
       }
     },
     [animateDrag, getDirByPoint, handleDragEnd]
@@ -217,10 +241,14 @@ export const usePageFlip = ({
         }
 
         if (!isHardPage) {
+          const bookRect = bookRef.current?.getBoundingClientRect();
+
+          const corner = Helper.getCorner(x, y, isLeft, bookRect!);
+
           api.start((i) => {
             if (idx !== i) return;
             return {
-              ...getSpringConfig({ direction }),
+              ...getSpringConfig({ direction, corner }),
               x,
               y,
               progress,
@@ -229,7 +257,7 @@ export const usePageFlip = ({
           return;
         }
 
-        handleHardPageHover(isLeft, progress, idx, 0, 0); // Changed x to 0
+        handleHardPageHover(isLeft, progress, idx, 0, 0, "none"); // Changed x to 0
       },
 
       onClick: (params) => {
@@ -237,7 +265,7 @@ export const usePageFlip = ({
 
         const {
           args: [idx],
-          event: { clientX },
+          event: { clientX, clientY },
         } = params;
 
         const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
@@ -251,10 +279,19 @@ export const usePageFlip = ({
         const action = Helper.getActionByClick(clickLocation, isRtl);
         if (!action) return;
 
+        const bookRect = bookRef.current?.getBoundingClientRect();
+
+        const corner = Helper.getCorner(
+          clientX,
+          clientY + scrollY,
+          isLeft,
+          bookRect!
+        );
+
         const direction =
           action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
         setStatus((prev) => ({ ...prev, isHover: false, isDrag: true }));
-        animateNextPage(idx, direction);
+        animateNextPage(idx, direction, corner);
       },
 
       onDrag: (params) => {
@@ -269,7 +306,6 @@ export const usePageFlip = ({
         } = params;
 
         if (tap) return;
-        // console.log("drag", params.xy, offset);
 
         setStatus({ isHover: false, isDrag: true, lastX: px });
 
@@ -285,18 +321,24 @@ export const usePageFlip = ({
             return;
           }
 
+          const isLeftPage = Helper.isLeftPage(currentPage + idx, isRtl);
+          const bookRect = bookRef.current?.getBoundingClientRect();
+
+          const corner = Helper.getCorner(px, py, isLeftPage, bookRect!);
+
           return {
             direction,
-            isLeftPage: Helper.isLeftPage(currentPage + idx, isRtl),
+            isLeftPage,
+            corner,
           };
         }
 
         const progress = Helper.getProgress(px, !memo.isLeftPage, bookRef);
 
         if (!down) {
-          handleDragEnd(progress, idx, memo.direction, px);
+          handleDragEnd(progress, idx, memo.direction, px, memo.corner);
         } else {
-          animateDrag(idx, progress, memo.direction, px, py);
+          animateDrag(idx, progress, memo.direction, px, py, memo.corner);
         }
 
         return memo;

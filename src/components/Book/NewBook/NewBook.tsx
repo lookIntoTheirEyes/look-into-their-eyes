@@ -88,7 +88,7 @@ const NewBook: React.FC<BookProps> = ({
         }}
         className={styles.book}
       >
-        {props.map(({ x, y, r, progress, direction }, i) => {
+        {props.map(({ x, y, r, progress, direction, corner }, i) => {
           const shouldRender =
             !i || (!isSinglePage && !isFirstPage && !isLastPage);
 
@@ -102,6 +102,7 @@ const NewBook: React.FC<BookProps> = ({
                 i={i}
                 x={x}
                 y={y}
+                corner={corner}
                 // r={r}
                 direction={direction}
                 progress={progress}
@@ -124,7 +125,14 @@ const NewBook: React.FC<BookProps> = ({
               : direction === FlipDirection.BACK
               ? 0
               : 1;
-          animateNextPage(idx, direction);
+
+          animateNextPage(
+            idx,
+            direction,
+            (direction === FlipDirection.FORWARD) === !isRtl
+              ? "top-right"
+              : "top-left"
+          );
         }}
         pageCount={totalPages}
         currPage={currentPage + 1}
