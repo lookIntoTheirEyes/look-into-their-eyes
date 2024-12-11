@@ -256,32 +256,71 @@ function getSoftPageStyle(
       if (c === "none" || !bookRef.current || isFront) return "none";
       const bookRect = bookRef.current.getBoundingClientRect();
 
-      const localX = xVal - bookRect.left;
-      const localY = yVal - bookRect.top;
+      const localX = (xVal as number) - bookRect.left;
+      const localY = (yVal as number) - bookRect.top;
       // console.log("xVal", xVal);
-      // console.log("localX", localX);
 
-      // const backAngle = angle + (c.includes("right") ? Math.PI : -Math.PI);
-      // const progress = Math.min(100, Math.max(0, p));
-      // const rotateY = progress >= 50 ? 180 : 0;
-      // console.log("transform back", localX - pageWidth);
-
-      return transformSoftBack(localX - pageWidth);
+      return transformSoftBack(
+        localX - pageWidth + 100,
+        localY - bookRect.height + 100,
+        c as Corner,
+        pageWidth,
+        bookRect.height
+      );
 
       // Get corner base position
     }),
-    zIndex: progress.to((p) => {
+    zIndex: to([progress, corner], (p, corner) => {
       if (isFront) return 3;
-      return p > 0 ? 4 : 2;
+      return (p as number) > 0 && (corner as Corner) !== "none" ? 4 : 2;
     }),
   };
 }
 
-function transformSoftBack(x: number) {
+function transformSoftBack(
+  x: number,
+  y: number,
+  c: Corner,
+  pageWidth: number,
+  pageHeight: number
+) {
   // console.log("transformSoftBack", x);
 
+  let cornerX: number, cornerY: number;
+  let origin: string;
+
+  switch (c) {
+    case "top-left":
+      cornerX = 0;
+      cornerY = 0;
+      origin = "0 0";
+      break;
+    case "top-right":
+      cornerX = pageWidth;
+      cornerY = 0;
+      origin = "100% 0";
+      break;
+    case "bottom-left":
+      cornerX = 0;
+      cornerY = pageHeight;
+      origin = "0 100%";
+      break;
+    case "bottom-right":
+      cornerX = pageWidth;
+      cornerY = pageHeight;
+      origin = "100% 100%";
+      break;
+    default:
+      return "none";
+  }
+
+  // Calculate fold angle
+  const angle = Math.atan2(x - cornerY, y - cornerX);
+  const backAngle = angle + (c.includes("right") ? -Math.PI : Math.PI);
+  console.log("backAngle", backAngle);
+
   // 'display: block; z-index: 35; left: 0px; top: 0px; width: 595.069px; height: 779px; transform-origin: 0px 0px; clip-path: polygon(0px 0px, 101.244px -6.03961e-14px, -3.19744e-14px 80.8385px); transform: translate3d(1111.45px, 99px, 0px) rotate(-1.78172rad);'
-  return `translate3d(${x}px, 500px, 0px) rotate(-3rad)`;
+  return `translate3d(${x}px, ${y}px, 0px) rotate(${backAngle}rad)`;
 }
 
 // function calculateIntersectPoint(pos: Point,pageWidth:number,pageHeight:number,corner:Corner) {
