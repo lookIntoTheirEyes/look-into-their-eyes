@@ -50,43 +50,25 @@ const AnimatedPage: React.FC<IProps> = ({
   );
   const adjustOrigin = pageNum === pages.length - 1 || pageNum === 1;
 
-  const getPageStyle = (isFront: boolean) => ({
-    display: progress.to((p) =>
-      (isFront ? p < 50 : p >= 50) ? "block" : "none"
-    ),
-    transformOrigin: progress.to((p) =>
-      Helper.getOrigin(isLeftPage, p, pageWidth)
-    ),
-    transform: isHardPage
-      ? getHardPageTransform(
+  const getPageStyle = (isFront: boolean) => {
+    return isHardPage
+      ? getHardPageStyle(
           x,
           progress,
           direction,
-          isLeftPage,
-          isFront,
           pageWidth,
-          isRtl
+          isLeftPage,
+          isRtl,
+          isFront
         )
-      : "",
-    clipPath: to([x, y, progress], (x, y, p) =>
-      !isHardPage && p > 0
-        ? getCorner(bookRef, x as number, y as number, pageWidth)
-        : "none"
-    ),
+      : {};
+  };
 
-    zIndex: isFront ? 3 : progress.to((p) => (p > 50 ? 4 : 2)),
-  });
-
-  const getShadowStyle = (inner = false) => ({
-    display: progress.to((p) => (p > 0 ? "block" : "none")),
-    width: progress.to((p) => Helper.getShadowWidth(p, pageWidth)),
-    background: progress.to((p: number) =>
-      Helper.getShadowBackground(p, inner)
-    ),
-    transform: to([progress, direction], (p, dir) =>
-      Helper.getShadowTransform(p as number, dir as FlipDirection, isRtl, inner)
-    ),
-  });
+  const getShadowStyle = (inner = false) => {
+    return isHardPage
+      ? getHardShadowStyle(progress, direction, pageWidth, isRtl, inner)
+      : undefined;
+  };
 
   return (
     <>
@@ -109,7 +91,7 @@ const AnimatedPage: React.FC<IProps> = ({
 
         <animated.div
           key={`page-back-${backPageNum}`}
-          className={`${styles.page} ${
+          className={`${styles.page} ${styles.back} ${
             adjustOrigin === isRtl ? "" : styles.right
           }`}
           style={getPageStyle(false)}
@@ -127,22 +109,73 @@ const AnimatedPage: React.FC<IProps> = ({
           </animated.div>
         )}
       </animated.div>
-      {isHardPage && (
+
+      {
         <>
           {[false, true].map((isInner) => (
             <animated.div
               key={isInner ? "inner-shadow" : "outer-shadow"}
-              className={`${styles.shadow}`}
+              className={`${styles.shadow} ${
+                isSinglePage ? styles.onePage : ""
+              }`}
               style={getShadowStyle(isInner)}
             />
           ))}
         </>
-      )}
+      }
     </>
   );
 };
 
 export default AnimatedPage;
+
+function getHardShadowStyle(
+  progress: SpringValue<number>,
+  direction: SpringValue<FlipDirection>,
+  pageWidth: number,
+  isRtl: boolean,
+  inner = false
+) {
+  return {
+    display: progress.to((p) => (p > 0 ? "block" : "none")),
+    width: progress.to((p) => Helper.getShadowWidth(p, pageWidth)),
+    background: progress.to((p: number) =>
+      Helper.getShadowBackground(p, inner)
+    ),
+    transform: to([progress, direction], (p, dir) =>
+      Helper.getShadowTransform(p as number, dir as FlipDirection, isRtl, inner)
+    ),
+  };
+}
+
+function getHardPageStyle(
+  x: SpringValue<number>,
+  progress: SpringValue<number>,
+  direction: SpringValue<FlipDirection>,
+  pageWidth: number,
+  isLeftPage: boolean,
+  isRtl: boolean,
+  isFront: boolean
+) {
+  return {
+    display: progress.to((p) =>
+      (isFront ? p < 50 : p >= 50) ? "block" : "none"
+    ),
+    transformOrigin: progress.to((p) =>
+      Helper.getOrigin(isLeftPage, p, pageWidth)
+    ),
+    transform: getHardPageTransform(
+      x,
+      progress,
+      direction,
+      isLeftPage,
+      isFront,
+      pageWidth,
+      isRtl
+    ),
+    zIndex: isFront ? 3 : progress.to((p) => (p > 50 ? 4 : 2)),
+  };
+}
 
 function getHardPageTransform(
   x: SpringValue<number>,
@@ -178,107 +211,4 @@ function getHardPageTransform(
       ${shouldFlip ? "scaleX(-1)" : ""}
     `;
   });
-}
-function getCorner(
-  bookRef: React.RefObject<HTMLDivElement>,
-  clientX: number,
-  clientY: number,
-  pageWidth: number
-) {
-  const book = bookRef.current?.getBoundingClientRect();
-  if (!book) return "none";
-  const bookTop = book.top;
-  const bookWidth = book.width;
-  const bookHeight = book.height;
-  const bookLeft = book.left;
-
-  const localX = clientX - bookLeft;
-  const localY = clientY - bookTop;
-  const corner = Helper.getHoverCorner(bookWidth, bookHeight, localX, localY);
-  console.log("getCorner", corner);
-  // console.log("getCorner", localX);
-  // console.log("getCorner", localY);
-
-  if (corner === "none") return "none";
-
-  // Calculate distance based on corner
-  const cornerDistance = getCornerDistance(
-    corner,
-    localX,
-    localY,
-    pageWidth,
-    book.height
-  );
-  const cornerSize = Math.min(cornerDistance, pageWidth * 0.3);
-
-  if (cornerSize < 20) return "none";
-
-  return getPolygonForCorner(corner, cornerSize, pageWidth, book.height);
-}
-
-function getCornerDistance(
-  corner: string,
-  x: number,
-  y: number,
-  pageWidth: number,
-  pageHeight: number
-): number {
-  switch (corner) {
-    case "top-right":
-      return Math.sqrt(Math.pow(pageWidth - x, 2) + Math.pow(y, 2));
-    case "top-left":
-      return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-    case "bottom-right":
-      return Math.sqrt(
-        Math.pow(pageWidth - x, 2) + Math.pow(pageHeight - y, 2)
-      );
-    case "bottom-left":
-      return Math.sqrt(Math.pow(x, 2) + Math.pow(pageHeight - y, 2));
-    default:
-      return 0;
-  }
-}
-
-function getPolygonForCorner(
-  corner: string,
-  size: number,
-  pageWidth: number,
-  pageHeight: number
-): string {
-  switch (corner) {
-    case "top-right":
-      return `polygon(
-        ${pageWidth - size}px 0,
-        ${pageWidth}px ${size}px,
-        ${pageWidth}px 100%,
-        0 100%,
-        0 0
-      )`;
-    case "top-left":
-      return `polygon(
-        0 ${size}px,
-        ${size}px 0,
-        ${pageWidth}px 0,
-        ${pageWidth}px 100%,
-        0 100%
-      )`;
-    case "bottom-right":
-      return `polygon(
-        0 0,
-        ${pageWidth}px 0,
-        ${pageWidth}px ${pageHeight - size}px,
-        ${pageWidth - size}px ${pageHeight}px,
-        0 ${pageHeight}px
-      )`;
-    case "bottom-left":
-      return `polygon(
-        0 0,
-        ${pageWidth}px 0,
-        ${pageWidth}px ${pageHeight}px,
-        ${size}px ${pageHeight}px,
-        0 ${pageHeight - size}px
-      )`;
-    default:
-      return "none";
-  }
 }

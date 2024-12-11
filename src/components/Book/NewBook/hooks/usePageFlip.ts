@@ -143,6 +143,7 @@ export const usePageFlip = ({
       progress: number,
       direction: FlipDirection,
       x: number,
+      y: number,
       isDrag = true
     ) => {
       api.start((i) => {
@@ -158,12 +159,12 @@ export const usePageFlip = ({
   );
 
   const handleHardPageHover = useCallback(
-    (isLeft: boolean, progress: number, idx: number, x: number) => {
+    (isLeft: boolean, progress: number, idx: number, x: number, y: number) => {
       const dir = getDirByPoint(isLeft);
       if (progress > 10) {
         handleDragEnd(0, idx, dir, x);
       } else {
-        animateDrag(idx, progress, dir, x, false);
+        animateDrag(idx, progress, dir, x, y, false);
       }
     },
     [animateDrag, getDirByPoint, handleDragEnd]
@@ -228,7 +229,7 @@ export const usePageFlip = ({
           return;
         }
 
-        handleHardPageHover(isLeft, progress, idx, 0); // Changed x to 0
+        handleHardPageHover(isLeft, progress, idx, 0, 0); // Changed x to 0
       },
 
       onClick: (params) => {
@@ -261,12 +262,14 @@ export const usePageFlip = ({
           down,
           args: [idx],
           _direction: [xDir],
-          xy: [px],
+          xy: [px, py],
           memo,
           tap,
+          offset,
         } = params;
 
         if (tap) return;
+        // console.log("drag", params.xy, offset);
 
         setStatus({ isHover: false, isDrag: true, lastX: px });
 
@@ -293,7 +296,7 @@ export const usePageFlip = ({
         if (!down) {
           handleDragEnd(progress, idx, memo.direction, px);
         } else {
-          animateDrag(idx, progress, memo.direction, px);
+          animateDrag(idx, progress, memo.direction, px, py);
         }
 
         return memo;
