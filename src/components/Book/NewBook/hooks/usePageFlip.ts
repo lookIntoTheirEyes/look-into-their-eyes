@@ -262,7 +262,7 @@ export const usePageFlip = ({
       },
 
       onClick: (params) => {
-        if (status.current === "drag" || status.current !== "animation") return;
+        if (status.current === "drag" || status.current === "animation") return;
 
         const {
           args: [idx],
