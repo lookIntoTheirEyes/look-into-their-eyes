@@ -1,7 +1,7 @@
 import { RefObject, useCallback, useRef, useState } from "react";
 import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
-import { Corner, FlipDirection, Point, RectPoints } from "../model";
+import { Corner, FlipCorner, FlipDirection, Point, RectPoints } from "../model";
 import Helper from "../Helper";
 import FlipCalculation from "../FlipCalculation";
 
@@ -27,6 +27,7 @@ export interface ICalc {
     bottomIntersectPoint: Point;
     sideIntersectPoint: Point;
   };
+  localPos: Point;
 }
 
 export const usePageFlip = ({
@@ -53,6 +54,7 @@ export const usePageFlip = ({
       corner = "none",
       calc = {
         pos: initialPoint,
+        localPos: initialPoint,
         angle: 0,
         rect: {
           topLeft: initialPoint,
@@ -196,7 +198,6 @@ export const usePageFlip = ({
       y,
       corner,
       isDrag = true,
-
       calc,
     }: {
       idx: number;
@@ -206,7 +207,6 @@ export const usePageFlip = ({
       y: number;
       corner: Corner;
       isDrag?: boolean;
-
       calc?: ICalc;
     }) => {
       api.start((i) => {
@@ -507,28 +507,29 @@ function getCalc({
   left: number;
   width: number;
   top: number;
-}) {
+}): ICalc {
   const pos = FlipCalculation.convertToPage({ x, y }, direction, {
     left,
     width,
     top,
   });
 
-  const calculations = FlipCalculation.getAngleAndPosition(
+  const calculations = FlipCalculation.getAnglePositionAndRect(
     pos,
     pageWidth,
     height,
-    corner
+    corner,
+    direction
   );
 
-  const intersectPoints = FlipCalculation.calculateIntersectPoint(
-    calculations.pos,
+  const intersectPoints = FlipCalculation.calculateIntersectPoint({
+    pos: calculations.pos,
     pageWidth,
-    height,
-    corner,
-    calculations.rect
-  );
-  return { ...calculations, intersectPoints };
+    pageHeight: height,
+    corner: corner.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
+    rect: calculations.rect,
+  });
+  return { ...calculations, intersectPoints, localPos: pos };
 }
 
 function getPageProps({

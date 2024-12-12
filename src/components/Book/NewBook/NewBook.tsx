@@ -42,6 +42,7 @@ const NewBook: React.FC<BookProps> = ({
   text,
 }) => {
   const bookRef = useRef<HTMLDivElement>(null);
+
   const { bookStyle, bookContainerRef, isSinglePage } = useBookStyle();
 
   const {
