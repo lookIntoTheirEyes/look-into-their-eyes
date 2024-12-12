@@ -1,8 +1,9 @@
 import { RefObject, useCallback, useRef, useState } from "react";
 import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
-import { Corner, FlipDirection } from "../model";
+import { Corner, FlipDirection, Point, RectPoints } from "../model";
 import Helper from "../Helper";
+import FlipCalculation from "../FlipCalculation";
 
 interface UsePageFlipParams {
   isRtl: boolean;
@@ -14,6 +15,19 @@ interface UsePageFlipParams {
   isSinglePage: boolean;
 }
 const ANIMATION_DURATION = 500;
+
+const initialPoint = { x: 0, y: 0 };
+
+export interface ICalc {
+  pos: Point;
+  angle: number;
+  rect: RectPoints;
+  intersectPoints: {
+    topIntersectPoint: Point;
+    bottomIntersectPoint: Point;
+    sideIntersectPoint: Point;
+  };
+}
 
 export const usePageFlip = ({
   isRtl,
@@ -37,11 +51,27 @@ export const usePageFlip = ({
       immediate = false,
       startX,
       corner = "none",
+      calc = {
+        pos: initialPoint,
+        angle: 0,
+        rect: {
+          topLeft: initialPoint,
+          topRight: initialPoint,
+          bottomLeft: initialPoint,
+          bottomRight: initialPoint,
+        },
+        intersectPoints: {
+          topIntersectPoint: initialPoint,
+          bottomIntersectPoint: initialPoint,
+          sideIntersectPoint: initialPoint,
+        },
+      },
     }: {
       direction?: FlipDirection;
       immediate?: boolean;
       startX?: number;
       corner?: Corner;
+      calc?: ICalc;
     }) => ({
       x: startX ?? 0,
       y: 0,
@@ -56,6 +86,7 @@ export const usePageFlip = ({
         friction: 25,
         duration: immediate ? 0 : ANIMATION_DURATION,
       },
+      calc,
     }),
     []
   );
@@ -101,7 +132,10 @@ export const usePageFlip = ({
               status.current = "";
 
               return {
-                ...getSpringConfig({ immediate: true, startX: lastX }),
+                ...getSpringConfig({
+                  immediate: true,
+                  startX: lastX,
+                }),
                 direction,
                 config: { duration: 0 },
                 onRest: () => {
@@ -117,13 +151,19 @@ export const usePageFlip = ({
   );
 
   const handleDragEnd = useCallback(
-    (
-      progress: number,
-      idx: number,
-      direction: FlipDirection,
-      x: number,
-      corner: Corner
-    ) => {
+    ({
+      progress,
+      idx,
+      direction,
+      x,
+      corner,
+    }: {
+      progress: number;
+      idx: number;
+      direction: FlipDirection;
+      x: number;
+      corner: Corner;
+    }) => {
       if (progress < 50) {
         api.start((i) => {
           if (idx !== i) return;
@@ -148,15 +188,27 @@ export const usePageFlip = ({
   );
 
   const animateDrag = useCallback(
-    (
-      idx: number,
-      progress: number,
-      direction: FlipDirection,
-      x: number,
-      y: number,
-      corner: Corner,
-      isDrag = true
-    ) => {
+    ({
+      idx,
+      progress,
+      direction,
+      x,
+      y,
+      corner,
+      isDrag = true,
+
+      calc,
+    }: {
+      idx: number;
+      progress: number;
+      direction: FlipDirection;
+      x: number;
+      y: number;
+      corner: Corner;
+      isDrag?: boolean;
+
+      calc?: ICalc;
+    }) => {
       api.start((i) => {
         if (idx !== i) return;
         return {
@@ -165,9 +217,10 @@ export const usePageFlip = ({
             immediate: isDrag,
             startX: x,
             corner,
+
+            calc,
           }),
           progress,
-          direction,
           y,
         };
       });
@@ -184,11 +237,25 @@ export const usePageFlip = ({
       y: number,
       corner: Corner
     ) => {
-      const dir = getDirByPoint(isLeft);
+      const direction = getDirByPoint(isLeft);
       if (progress > 10) {
-        handleDragEnd(0, idx, dir, x, corner);
+        handleDragEnd({
+          progress: 0,
+          idx,
+          direction,
+          x,
+          corner,
+        });
       } else {
-        animateDrag(idx, progress, dir, x, y, corner, false);
+        animateDrag({
+          idx,
+          progress,
+          direction,
+          x,
+          y,
+          corner,
+          isDrag: false,
+        });
       }
     },
     [animateDrag, getDirByPoint, handleDragEnd]
@@ -214,7 +281,8 @@ export const usePageFlip = ({
     {
       onMouseLeave: ({ args: [idx] }) => {
         if (status.current !== "hover") return;
-        const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
+        const pageNum = currentPage + idx;
+        const isLeft = Helper.isLeftPage(pageNum, isRtl);
         const direction = getDirByPoint(isLeft);
         resetLocation(idx, direction);
       },
@@ -230,11 +298,19 @@ export const usePageFlip = ({
         if (status.current !== "hover") {
           status.current = "hover";
         }
+        const pageNum = currentPage + idx;
 
-        const isHardPage = Helper.isHardPage(currentPage + idx, totalPages);
-        const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
-        const direction = getDirByPoint(isLeft);
-        const progress = Helper.getProgress(x, !isLeft, bookRef);
+        const { isLeftPage, isHardPage } = getPageProps({
+          pageNum,
+          totalPages,
+          isRtl,
+          x,
+          y,
+          bookRef,
+          pageWidth,
+        });
+        const direction = getDirByPoint(isLeftPage);
+        const progress = Helper.getProgress(x, !isLeftPage, bookRef);
 
         if (progress > 10 || status.current !== "hover") {
           resetLocation(idx, direction);
@@ -242,23 +318,30 @@ export const usePageFlip = ({
         }
 
         if (!isHardPage) {
-          const bookRect = bookRef.current?.getBoundingClientRect();
+          const { left, top, width, height } =
+            bookRef.current!.getBoundingClientRect();
 
-          const corner = Helper.getCorner(x, y, isLeft, bookRect!, 150);
+          const rect = { pageWidth, left, top, width, height };
 
-          api.start((i) => {
-            if (idx !== i) return;
-            return {
-              ...getSpringConfig({ direction, corner }),
-              x,
-              y,
-              progress,
-            };
-          });
-          return;
+          const corner = Helper.getCorner(x, y, isLeftPage, rect, 150);
+
+          try {
+            const calc = getCalc({ x, y, direction, corner, ...rect });
+
+            api.start((i) => {
+              if (idx !== i) return;
+              return {
+                ...getSpringConfig({ direction, corner, calc }),
+                x,
+                y,
+                progress,
+              };
+            });
+            return;
+          } catch {}
         }
 
-        handleHardPageHover(isLeft, progress, idx, 0, 0, "none"); // Changed x to 0
+        handleHardPageHover(isLeftPage, progress, idx, 0, 0, "none"); // Changed x to 0
       },
 
       onClick: (params) => {
@@ -268,26 +351,27 @@ export const usePageFlip = ({
           args: [idx],
           event: { clientX, clientY },
         } = params;
+        const pageNum = currentPage + idx;
 
-        const isLeft = Helper.isLeftPage(currentPage + idx, isRtl);
+        const { isLeftPage, corner } = getPageProps({
+          pageNum,
+          totalPages,
+          isRtl,
+          x: clientX,
+          y: clientY,
+          bookRef,
+          pageWidth,
+        });
+
         const clickLocation = Helper.getXClickLocation(
           clientX,
-          isLeft,
+          isLeftPage,
           pageWidth / 2,
           bookLeft,
           bookWidth
         );
         const action = Helper.getActionByClick(clickLocation, isRtl);
         if (!action) return;
-
-        const bookRect = bookRef.current?.getBoundingClientRect();
-
-        const corner = Helper.getCorner(
-          clientX,
-          clientY + scrollY,
-          isLeft,
-          bookRect!
-        );
 
         const direction =
           action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
@@ -317,31 +401,64 @@ export const usePageFlip = ({
 
         if (!memo) {
           if (!xDir) return;
+          const pageNum = currentPage + idx;
 
           const direction = Helper.getDirection(isRtl, xDir);
-          if (!isMoveAllowed(currentPage + idx, totalPages, direction)) {
+          if (!isMoveAllowed(pageNum, totalPages, direction)) {
             return;
           }
 
-          const isLeftPage = Helper.isLeftPage(currentPage + idx, isRtl);
-          const bookRect = bookRef.current?.getBoundingClientRect();
-
-          const corner = Helper.getCorner(px, py, isLeftPage, bookRect!);
+          const { isLeftPage, isHardPage, corner, rect } = getPageProps({
+            pageNum,
+            totalPages,
+            isRtl,
+            x: px,
+            y: py,
+            bookRef,
+            pageWidth,
+          });
 
           return {
             direction,
             isLeftPage,
             corner,
+            isHardPage,
+            rect,
           };
         }
 
         const progress = Helper.getProgress(px, !memo.isLeftPage, bookRef);
 
-        if (!down) {
-          handleDragEnd(progress, idx, memo.direction, px, memo.corner);
-        } else {
-          animateDrag(idx, progress, memo.direction, px, py, memo.corner);
-        }
+        try {
+          const calc = getCalc({
+            x: px,
+            y: py,
+            direction: memo.direction,
+            corner: memo.corner,
+            ...memo.rect,
+          });
+
+          if (!down) {
+            handleDragEnd({
+              progress,
+              idx,
+              direction: memo.direction,
+              x: px,
+              corner: memo.corner,
+            });
+          } else {
+            animateDrag({
+              idx,
+              progress,
+              direction: memo.direction,
+              x: px,
+              y: py,
+              corner: memo.corner,
+              isDrag: true,
+              calc,
+            });
+          }
+        } catch {}
 
         return memo;
       },
@@ -368,4 +485,74 @@ function isMoveAllowed(
   }
 
   return !((currentPage % 2 === 1) === (direction === FlipDirection.FORWARD));
+}
+
+function getCalc({
+  x,
+  y,
+  direction,
+  corner,
+  pageWidth,
+  height,
+  left,
+  width,
+  top,
+}: {
+  x: number;
+  y: number;
+  direction: FlipDirection;
+  corner: Corner;
+  pageWidth: number;
+  height: number;
+  left: number;
+  width: number;
+  top: number;
+}) {
+  const pos = FlipCalculation.convertToPage({ x, y }, direction, {
+    left,
+    width,
+    top,
+  });
+
+  const calculations = FlipCalculation.getAngleAndPosition(
+    pos,
+    pageWidth,
+    height,
+    corner
+  );
+
+  const intersectPoints = FlipCalculation.calculateIntersectPoint(
+    calculations.pos,
+    pageWidth,
+    height,
+    corner,
+    calculations.rect
+  );
+  return { ...calculations, intersectPoints };
+}
+
+function getPageProps({
+  pageNum,
+  isRtl,
+  totalPages,
+  x,
+  y,
+  bookRef,
+  pageWidth,
+}: {
+  pageNum: number;
+  totalPages: number;
+  isRtl: boolean;
+  x: number;
+  y: number;
+  pageWidth: number;
+  bookRef: RefObject<HTMLDivElement>;
+}) {
+  const { top, left, width, height } = bookRef.current!.getBoundingClientRect();
+  const rect = { top, left, width, height, pageWidth };
+
+  const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
+  const isHardPage = Helper.isHardPage(pageNum, totalPages);
+  const corner = Helper.getCorner(x, y, isLeftPage, rect);
+  return { isLeftPage, isHardPage, corner, rect };
 }

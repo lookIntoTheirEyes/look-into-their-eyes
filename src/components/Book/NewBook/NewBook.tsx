@@ -88,7 +88,7 @@ const NewBook: React.FC<BookProps> = ({
         }}
         className={styles.book}
       >
-        {props.map(({ x, y, r, progress, direction, corner }, i) => {
+        {props.map(({ x, y, r, progress, direction, corner, calc }, i) => {
           const shouldRender =
             !i || (!isSinglePage && !isFirstPage && !isLastPage);
 
@@ -103,6 +103,7 @@ const NewBook: React.FC<BookProps> = ({
                 x={x}
                 y={y}
                 corner={corner}
+                calc={calc}
                 // r={r}
                 direction={direction}
                 progress={progress}

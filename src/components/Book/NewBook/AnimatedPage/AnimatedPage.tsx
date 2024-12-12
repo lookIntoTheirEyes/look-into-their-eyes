@@ -1,8 +1,10 @@
 import { animated, SpringValue, to } from "@react-spring/web";
 import { ReactDOMAttributes } from "@use-gesture/react/dist/declarations/src/types";
 import styles from "./AnimatedPage.module.css";
-import { Corner, FlipDirection } from "../model";
+import { Corner, FlipCorner, FlipDirection, Point } from "../model";
 import Helper from "../Helper";
+import FlipCalculation from "../FlipCalculation";
+import { ICalc } from "../hooks/usePageFlip";
 
 interface IProps {
   pageNum: number;
@@ -18,6 +20,8 @@ interface IProps {
   i: number;
   pageWidth: number;
   bookRef: React.RefObject<HTMLDivElement>;
+
+  calc: SpringValue<ICalc>;
 }
 
 const AnimatedPage: React.FC<IProps> = ({
@@ -34,6 +38,8 @@ const AnimatedPage: React.FC<IProps> = ({
   pageWidth,
   bookRef,
   corner,
+
+  calc,
 }) => {
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
   const isHardPage = Helper.isHardPage(pageNum, pages.length);
@@ -66,6 +72,7 @@ const AnimatedPage: React.FC<IProps> = ({
       : getSoftPageStyle(
           x,
           y,
+          calc,
           corner,
           progress,
           direction,
@@ -159,83 +166,10 @@ function getHardShadowStyle(
   };
 }
 
-function getClipPath(
-  corner: Corner,
-  cursorX: number,
-  cursorY: number,
-  bookRef: React.RefObject<HTMLDivElement>
-): string {
-  const bookRect = bookRef.current?.getBoundingClientRect();
-  if (!bookRect) return "none";
-
-  // Convert to local coordinates
-  const localX = cursorX - bookRect.left;
-  const localY = cursorY - bookRect.top;
-
-  // Convert to percentages relative to page (not book)
-  const pageWidth = bookRect.width / 2;
-  const x = (localX / pageWidth) * 100;
-  const y = (localY / bookRect.height) * 100;
-
-  // Calculate fold line angle and intersection
-  let foldX = x;
-  let foldY = y;
-
-  switch (corner) {
-    case "top-left": {
-      // Constrain fold line between 0-100%
-      foldY = Math.max(0, Math.min(100, y));
-      // Page should remain fully visible until cursor moves beyond page width
-      foldX = Math.min(100, Math.max(0, x));
-      return `polygon(
-        50% 0%,
-        100% 0%,
-        100% 100%,
-        0% 100%,
-        0% ${foldY}%
-      )`;
-    }
-    case "top-right": {
-      foldY = Math.max(0, Math.min(100, y));
-      foldX = Math.min(200, Math.max(100, x));
-      return `polygon(
-        0% 0%,
-        50% 0%,
-        100% ${foldY}%,
-        100% 100%,
-        0% 100%
-      )`;
-    }
-    case "bottom-right": {
-      foldY = Math.max(0, Math.min(100, y));
-      foldX = Math.min(200, Math.max(100, x));
-      return `polygon(
-        0% 0%,
-        100% 0%,
-        100% ${foldY}%,
-        ${Math.min(100, foldX)}% 100%,
-        0% 100%
-      )`;
-    }
-    case "bottom-left": {
-      foldY = Math.max(0, Math.min(100, y));
-      foldX = Math.min(100, Math.max(0, x));
-      return `polygon(
-        0% 0%,
-        100% 0%,
-        100% 100%,
-        ${foldX}% 100%,
-        0% ${foldY}%
-      )`;
-    }
-    default:
-      return "none";
-  }
-}
-
 function getSoftPageStyle(
   x: SpringValue<number>,
   y: SpringValue<number>,
+  calc: SpringValue<ICalc>,
   corner: SpringValue<Corner>,
   progress: SpringValue<number>,
   direction: SpringValue<FlipDirection>,
@@ -244,21 +178,98 @@ function getSoftPageStyle(
   isFront: boolean
 ) {
   return {
-    clipPath: to([corner, x, y], (c, xVal, yVal) =>
-      isFront
-        ? getClipPath(c as Corner, xVal as number, yVal as number, bookRef)
-        : "none"
+    clipPath: to(
+      [corner, x, y, progress, direction, calc],
+      (c, x, y, progress, dir, calc) => {
+        if (c === "none" || !bookRef.current) return "none";
+        x = x as number;
+        y = y as number;
+        dir = dir as FlipDirection;
+        c = c as Corner;
+
+        try {
+          // const areaTop = FlipCalculation.getFlippingClipArea({
+          //   ...points,
+          //   corner: topBottomCorner,
+          //   rect,
+          // });
+          const { intersectPoints } = calc as ICalc;
+
+          const pageHeight = bookRef.current.getBoundingClientRect().height;
+
+          const areaBottom = FlipCalculation.getBottomClipArea({
+            ...intersectPoints,
+            corner: c.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
+            pageHeight,
+            pageWidth,
+          });
+          // console.log("vals", vals);
+          // console.log("points", points);
+          // console.log("clipTop", clipTop);
+          // console.log("clipBottom", clipBottom);
+          // angle: number;
+          // position: Point;
+          // direction: FlipDirection;
+          // pageWidth: number;
+          // pageHeight: number;
+          // area: Point[];
+          // factorPosition: Point;
+
+          // const topSoft = FlipCalculation.getSoftCss({
+          //   position: pos,
+          //   pageWidth,
+          //   pageHeight,
+          //   area: areaTop,
+          //   direction: dir,
+          //   angle,
+          //   factorPosition: FlipCalculation.getActiveCorner(dir, rect),
+          // });
+
+          // const bottomSoft = FlipCalculation.getSoftCss({
+          //   position: pos,
+          //   pageWidth,
+          //   pageHeight,
+          //   area: areaBottom,
+          //   direction: dir,
+          //   angle: 0,
+          //   factorPosition: FlipCalculation.getBottomPagePosition(
+          //     dir,
+          //     pageWidth
+          //   ),
+          // });
+
+          const invertedArea = invertClipPath(
+            areaBottom,
+            pageWidth,
+            pageHeight
+          );
+
+          const topSoft = `polygon(${invertedArea
+            .filter((p) => p !== null)
+            .map((p) => `${p.x}px ${p.y}px`)
+            .join(", ")})`;
+
+          // console.log("topSoft", topSoft);
+          // console.log("bottomSoft", bottomSoft);
+
+          if (isFront) {
+            return topSoft;
+          } else {
+            // For back page, show only the folded triangle
+            return "none";
+          }
+        } catch {
+          return "none";
+        }
+      }
     ),
     transform: to([corner, x, y, progress], (c, xVal, yVal, p) => {
-      // console.log("transform corner", c);
-      // console.log("transform bookref", bookRef.current);
-
       if (c === "none" || !bookRef.current || isFront) return "none";
       const bookRect = bookRef.current.getBoundingClientRect();
 
       const localX = (xVal as number) - bookRect.left;
       const localY = (yVal as number) - bookRect.top;
-      // console.log("xVal", xVal);
+      return "none";
 
       return transformSoftBack(
         localX - pageWidth + 100,
@@ -267,14 +278,46 @@ function getSoftPageStyle(
         pageWidth,
         bookRect.height
       );
-
-      // Get corner base position
     }),
     zIndex: to([progress, corner], (p, corner) => {
       if (isFront) return 3;
-      return (p as number) > 0 && (corner as Corner) !== "none" ? 4 : 2;
+      return (p as number) > 0 && (corner as Corner) !== "none" ? 0 : 2;
     }),
   };
+}
+
+function invertClipPath(
+  originalPoints: Point[],
+  pageWidth: number,
+  pageHeight: number
+): Point[] {
+  const result: Point[] = [];
+
+  // Find where the original polygon intersects with the page edges
+  const topIntersect = originalPoints.find((p) => p !== null && p.y === 0);
+
+  // Add points in the correct order to create an inverted clip path
+  if (topIntersect) {
+    result.push({ x: 0, y: 0 });
+    result.push(topIntersect);
+  }
+
+  // Add the original points in reverse order to create the "hole"
+  for (let i = originalPoints.length - 1; i >= 0; i--) {
+    if (originalPoints[i] !== null) {
+      result.push(originalPoints[i]!);
+    }
+  }
+
+  // Close the path by connecting back to the starting point
+  if (topIntersect) {
+    result.push(topIntersect);
+    result.push({ x: pageWidth, y: 0 });
+    result.push({ x: pageWidth, y: pageHeight });
+    result.push({ x: 0, y: pageHeight });
+  }
+
+  return result;
 }
 
 function transformSoftBack(
@@ -284,112 +327,34 @@ function transformSoftBack(
   pageWidth: number,
   pageHeight: number
 ) {
-  // console.log("transformSoftBack", x);
+  console.log("c", c);
 
-  let cornerX: number, cornerY: number;
-  let origin: string;
-
+  // Get corner base position and calculate relative coordinates
   switch (c) {
-    case "top-left":
-      cornerX = 0;
-      cornerY = 0;
-      origin = "0 0";
-      break;
-    case "top-right":
-      cornerX = pageWidth;
-      cornerY = 0;
-      origin = "100% 0";
-      break;
-    case "bottom-left":
-      cornerX = 0;
-      cornerY = pageHeight;
-      origin = "0 100%";
-      break;
-    case "bottom-right":
-      cornerX = pageWidth;
-      cornerY = pageHeight;
-      origin = "100% 100%";
-      break;
+    case "top-left": {
+      // Original shows around -1.97127rad
+      const angle = Math.PI / 2 - Math.atan2(x, y);
+      return `translate3d(${x}px, ${y}px, 0px) rotate(${angle}rad)`;
+    }
+    case "top-right": {
+      // Original shows around -2.61592rad
+      const angle = Math.PI / 2 - Math.atan2(pageWidth - x, y);
+      return `translate3d(${x}px, ${y}px, 0px) rotate(${angle}rad)`;
+    }
+    case "bottom-left": {
+      // Original shows around -0.105467rad
+      const angle = -Math.PI / 2 - Math.atan2(x, pageHeight - y);
+      return `translate3d(${x}px, ${y}px, 0px) rotate(${angle}rad)`;
+    }
+    case "bottom-right": {
+      // Original shows similar pattern
+      const angle = -Math.PI / 2 - Math.atan2(pageWidth - x, pageHeight - y);
+      return `translate3d(${x}px, ${y}px, 0px) rotate(${angle}rad)`;
+    }
     default:
       return "none";
   }
-
-  // Calculate fold angle
-  const angle = Math.atan2(x - cornerY, y - cornerX);
-  const backAngle = angle + (c.includes("right") ? -Math.PI : Math.PI);
-  console.log("backAngle", backAngle);
-
-  // 'display: block; z-index: 35; left: 0px; top: 0px; width: 595.069px; height: 779px; transform-origin: 0px 0px; clip-path: polygon(0px 0px, 101.244px -6.03961e-14px, -3.19744e-14px 80.8385px); transform: translate3d(1111.45px, 99px, 0px) rotate(-1.78172rad);'
-  return `translate3d(${x}px, ${y}px, 0px) rotate(${backAngle}rad)`;
 }
-
-// function calculateIntersectPoint(pos: Point,pageWidth:number,pageHeight:number,corner:Corner) {
-//   const boundRect: Rect = {
-//     left: -1,
-//     top: -1,
-//     width: pageWidth + 2,
-//     height: pageHeight + 2,
-//   };
-
-//   if (corner === 'top-left' || corner === 'top-right') {
-//     const topIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
-//       boundRect,
-//       [pos, this.rect.topRight],
-//       [
-//         { x: 0, y: 0 },
-//         { x: pageWidth, y: 0 },
-//       ]
-//     );
-
-//     const sideIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
-//       boundRect,
-//       [pos, this.rect.bottomLeft],
-//       [
-//         { x: pageWidth, y: 0 },
-//         { x: pageWidth, y: pageHeight },
-//       ]
-//     );
-
-//     const bottomIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
-//       boundRect,
-//       [this.rect.bottomLeft, this.rect.bottomRight],
-//       [
-//         { x: 0, y: pageHeight },
-//         { x: pageWidth, y:pageHeight },
-//       ]
-//     );
-//     return {
-//       topIntersectPoint,bottomIntersectPoint,sideIntersectPoint}
-//   } else {
-//     const topIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
-//       boundRect,
-//       [this.rect.topLeft, this.rect.topRight],
-//       [
-//         { x: 0, y: 0 },
-//         { x: pageWidth, y: 0 },
-//       ]
-//     );
-
-//     const sideIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
-//       boundRect,
-//       [pos, this.rect.topLeft],
-//       [
-//         { x: pageWidth, y: 0 },
-//         { x: pageWidth, y: pageHeight },
-//       ]
-//     );
-
-//     const bottomIntersectPoint = Helper.GetIntersectBetweenTwoSegment(
-//       boundRect,
-//       [this.rect.bottomLeft, this.rect.bottomRight],
-//       [
-//         { x: 0, y: pageHeight },
-//         { x: pageWidth, y: pageHeight },
-//       ]
-//     );
-//     return {topIntersectPoint,bottomIntersectPoint,sideIntersectPoint}
-//   }
-// }
 
 function getHardPageStyle(
   x: SpringValue<number>,
@@ -455,3 +420,35 @@ function getHardPageTransform(
     `;
   });
 }
+// function getPageRect(localPos: Point): RectPoints {
+//   if (this.corner === FlipCorner.TOP) {
+//     return this.getRectFromBasePoint(
+//       [
+//         { x: 0, y: 0 },
+//         { x: this.pageWidth, y: 0 },
+//         { x: 0, y: this.pageHeight },
+//         { x: this.pageWidth, y: this.pageHeight },
+//       ],
+//       localPos
+//     );
+//   }
+
+//   return this.getRectFromBasePoint(
+//     [
+//       { x: 0, y: -this.pageHeight },
+//       { x: this.pageWidth, y: -this.pageHeight },
+//       { x: 0, y: 0 },
+//       { x: this.pageWidth, y: 0 },
+//     ],
+//     localPos
+//   );
+// }
+
+// function getRectFromBasePoint(points: Point[], localPos: Point): RectPoints {
+//   return {
+//     topLeft: FlipCalculation.getRotatedPoint(points[0], localPos),
+//     topRight:Helper.getRotatedPoint(points[1], localPos),
+//     bottomLeft: Helper.this.getRotatedPoint(points[2], localPos),
+//     bottomRight: Helper.getRotatedPoint(points[3], localPos),
+//   };
+// }

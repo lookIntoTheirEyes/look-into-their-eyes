@@ -1,4 +1,3 @@
-import { RefObject } from "react";
 import Helper from "./Helper";
 import {
   Point,
@@ -132,30 +131,26 @@ function getAngleAndGeometry(
   pageHeight: number,
   corner: FlipCorner
 ) {
-  // console.log("updateAngleAndGeometry", pos);
-
   const angle = calculateAngle(pos, pageWidth, pageHeight, corner);
   const rect = getPageRect(pos, pageWidth, pageHeight, corner, angle);
   return { angle, rect };
 }
 
 function convertToPage(
-  origPos: Point,
+  pos: Point,
   direction: FlipDirection,
-  bookRef: RefObject<HTMLDivElement>
+  { left, width, top }: { left: number; width: number; top: number }
 ): Point {
-  const pos = Helper.handleNull(origPos);
-
-  const rect = bookRef.current!.getBoundingClientRect();
+  pos = Helper.handleNull(pos);
 
   const x =
     direction === FlipDirection.FORWARD
-      ? pos.x - rect.left - rect.width / 2
-      : rect.width / 2 - pos.x + rect.left;
+      ? pos.x - left - width / 2
+      : width / 2 - pos.x + left;
 
   const res = {
     x,
-    y: pos.y - rect.top,
+    y: pos.y - top,
   };
 
   return res;
@@ -173,6 +168,7 @@ function calculateIntersectPoint(
     top: -1,
     width: pageWidth + 2,
     height: pageHeight + 2,
+    pageWidth,
   };
 
   if (corner === "top-left" || corner === "top-right") {
@@ -238,6 +234,268 @@ function calculateIntersectPoint(
   }
 }
 
+function checkPositionAtCenterLine(
+  checkedPos: Point,
+  centerOne: Point,
+  centerTwo: Point,
+  pageWidth: number,
+  pageHeight: number,
+  corner: FlipCorner,
+  rect: RectPoints,
+  angle: number
+): { pos: Point; angle: number; rect: RectPoints } {
+  let pos = checkedPos;
+
+  const updatedValues = { angle, rect };
+
+  const tmp = Helper.LimitPointToCircle(centerOne, pageWidth, pos);
+  // console.log("checkPositionAtCenterLine", result === tmp);
+  if (pos?.x !== tmp!.x || pos?.y !== tmp!.y) {
+    pos = tmp;
+
+    Object.assign(
+      updatedValues,
+      getAngleAndGeometry(pos, pageWidth, pageHeight, corner)
+    );
+  }
+
+  const rad = Math.sqrt(Math.pow(pageWidth, 2) + Math.pow(pageHeight, 2));
+
+  let checkPointOne = rect.bottomRight;
+  let checkPointTwo = rect.topLeft;
+
+  if (corner === FlipCorner.BOTTOM) {
+    checkPointOne = rect.topRight;
+    checkPointTwo = rect.bottomLeft;
+  }
+
+  if (checkPointOne!.x <= 0) {
+    const bottomPoint = Helper.LimitPointToCircle(
+      centerTwo,
+      rad,
+      checkPointTwo
+    );
+
+    if (bottomPoint!.x !== pos!.x || bottomPoint!.y !== pos!.y) {
+      pos = bottomPoint;
+      Object.assign(
+        updatedValues,
+        getAngleAndGeometry(pos, pageWidth, pageHeight, corner)
+      );
+    }
+  }
+
+  return { pos, angle, rect };
+}
+
+function getAngleAndPosition(
+  userPos: Point,
+  pageWidth: number,
+  pageHeight: number,
+  corner: Corner
+): { pos: Point; angle: number; rect: RectPoints } {
+  const topBottomCorner = corner.includes("top")
+    ? FlipCorner.TOP
+    : FlipCorner.BOTTOM;
+  const result = {
+    pos: userPos,
+    ...getAngleAndGeometry(userPos, pageWidth, pageHeight, topBottomCorner),
+  };
+
+  if (topBottomCorner === FlipCorner.TOP) {
+    checkPositionAtCenterLine(
+      result.pos,
+      { x: 0, y: 0 },
+      { x: 0, y: pageHeight },
+      pageWidth,
+      pageHeight,
+      topBottomCorner,
+      result.rect,
+      result.angle
+    );
+  } else {
+    checkPositionAtCenterLine(
+      result.pos,
+      { x: 0, y: pageHeight },
+      { x: 0, y: 0 },
+      pageWidth,
+      pageHeight,
+      topBottomCorner,
+      result.rect,
+      result.angle
+    );
+  }
+
+  if (Math.abs(result.pos!.x - pageWidth) < 1 && Math.abs(result.pos!.y) < 1) {
+    throw new Error("Point is too small");
+  }
+
+  return result;
+}
+
+function getBottomClipArea({
+  topIntersectPoint,
+  bottomIntersectPoint,
+  sideIntersectPoint,
+  pageHeight,
+  pageWidth,
+  corner,
+}: {
+  topIntersectPoint: Point;
+  bottomIntersectPoint: Point;
+  sideIntersectPoint: Point;
+  pageWidth: number;
+  pageHeight: number;
+  corner: FlipCorner;
+}): Point[] {
+  const result = [];
+
+  result.push(topIntersectPoint);
+
+  if (corner === FlipCorner.TOP) {
+    result.push({ x: pageWidth, y: 0 });
+  } else {
+    if (topIntersectPoint !== null) {
+      result.push({ x: pageWidth, y: 0 });
+    }
+    result.push({ x: pageWidth, y: pageHeight });
+  }
+
+  if (sideIntersectPoint !== null) {
+    if (
+      Helper.GetDistanceBetweenTwoPoint(
+        sideIntersectPoint,
+        topIntersectPoint
+      ) >= 10
+    )
+      result.push(sideIntersectPoint);
+  } else {
+    if (corner === FlipCorner.TOP) {
+      result.push({ x: pageWidth, y: pageHeight });
+    }
+  }
+
+  result.push(bottomIntersectPoint);
+  result.push(topIntersectPoint);
+
+  return result;
+}
+
+function getFlippingClipArea({
+  topIntersectPoint,
+  bottomIntersectPoint,
+  sideIntersectPoint,
+  rect,
+  corner,
+}: {
+  topIntersectPoint: Point;
+  bottomIntersectPoint: Point;
+  sideIntersectPoint: Point;
+  rect: RectPoints;
+  corner: FlipCorner;
+}): Point[] {
+  const result = [];
+  let clipBottom = false;
+
+  result.push(rect.topLeft);
+  result.push(topIntersectPoint);
+
+  if (sideIntersectPoint === null) {
+    clipBottom = true;
+  } else {
+    result.push(sideIntersectPoint);
+
+    if (bottomIntersectPoint === null) clipBottom = false;
+  }
+
+  result.push(bottomIntersectPoint);
+
+  if (clipBottom || corner === FlipCorner.BOTTOM) {
+    result.push(rect.bottomLeft);
+  }
+
+  return result;
+}
+function getSoftCss({
+  position,
+  direction,
+  pageHeight,
+  pageWidth,
+  angle,
+  area,
+  factorPosition,
+}: {
+  angle: number;
+  position: Point;
+  direction: FlipDirection;
+  pageWidth: number;
+  pageHeight: number;
+  area: Point[];
+  factorPosition: Point;
+}): string {
+  // console.log("drawSoft", this.state);
+
+  const commonStyle = `
+            display: block;
+            left: 0;
+            top: 0;
+            width: ${pageWidth}px;
+            height: ${pageHeight}px;
+        `;
+
+  let polygon = "polygon( ";
+  for (const p of area) {
+    if (p !== null) {
+      let g =
+        direction === FlipDirection.BACK
+          ? {
+              x: -p.x + factorPosition!.x,
+              y: p.y - factorPosition!.y,
+            }
+          : {
+              x: p.x - factorPosition!.x,
+              y: p.y - factorPosition!.y,
+            };
+      // console.log("g", g, this.state.angle);
+
+      g = Helper.handleNull(Helper.GetRotatedPoint(g, { x: 0, y: 0 }, angle));
+      polygon += g.x + "px " + g.y + "px, ";
+    }
+  }
+  polygon = polygon.slice(0, -2);
+  polygon += ")";
+
+  // console.log("polygon", this.state.area, polygon);
+
+  // const newStyle =
+  //   commonStyle +
+  //   `transform-origin: 0 0; clip-path: ${polygon}; ` +
+  //   `transform: translate3d(${position!.x}px, ${
+  //     position!.y
+  //   }px, 0) rotate(${angle}rad);`;
+
+  return polygon;
+}
+
+function getBottomPagePosition(
+  direction: FlipDirection,
+  pageWidth: number
+): Point {
+  if (direction === FlipDirection.BACK) {
+    return { x: pageWidth, y: 0 };
+  }
+
+  return { x: 0, y: 0 };
+}
+
+function getActiveCorner(direction: FlipDirection, rect: RectPoints): Point {
+  if (direction === FlipDirection.FORWARD) {
+    return rect.topLeft;
+  }
+
+  return rect.topRight;
+}
+
 const FlipCalculation = {
   getFlippingProgress,
   getAngle,
@@ -246,5 +504,12 @@ const FlipCalculation = {
   convertToPage,
   getAngleAndGeometry,
   calculateIntersectPoint,
+  checkPositionAtCenterLine,
+  getAngleAndPosition,
+  getFlippingClipArea,
+  getBottomClipArea,
+  getActiveCorner,
+  getBottomPagePosition,
+  getSoftCss,
 };
 export default FlipCalculation;

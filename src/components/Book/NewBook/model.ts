@@ -43,6 +43,7 @@ export interface Rect {
   top: number;
   width: number;
   height: number;
+  pageWidth: number;
 }
 
 /**
