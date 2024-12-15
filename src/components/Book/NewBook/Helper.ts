@@ -2,6 +2,7 @@ import {
   Corner,
   FlipDirection,
   PageMouseLocation,
+  PageRect,
   Point,
   Rect,
   Segment,
@@ -414,7 +415,7 @@ function getCorner(
   x: number,
   y: number,
   isLeftPage: boolean,
-  { left, top, pageWidth, width, height }: Rect,
+  { left, top, pageWidth, width, height }: PageRect,
   threshold?: number
 ): Corner {
   const localX = x - left;

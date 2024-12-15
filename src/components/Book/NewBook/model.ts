@@ -43,18 +43,12 @@ export interface Rect {
   top: number;
   width: number;
   height: number;
-  pageWidth: number;
 }
 
 /**
  * Type representing a book area
  */
-export interface PageRect {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  /** Page width. If portrait mode is equal to the width of the book. In landscape mode - half of the total width. */
+export interface PageRect extends Rect {
   pageWidth: number;
 }
 

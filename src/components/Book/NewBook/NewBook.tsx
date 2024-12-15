@@ -68,6 +68,11 @@ const NewBook: React.FC<BookProps> = ({
   const isFirstPage = currentPage === 0;
   const isLastPage = currentPage === totalPages - 1;
 
+  const bookRect = {
+    ...bookStyle,
+    pageWidth: bookStyle.width / (isSinglePage ? 1 : 2),
+  };
+
   const { props, bind, animateNextPage } = usePageFlip({
     isRtl,
     onNextPage: handleNextPage,
@@ -76,6 +81,7 @@ const NewBook: React.FC<BookProps> = ({
     currentPage,
     isSinglePage,
     totalPages,
+    bookRect,
   });
 
   return (
@@ -110,8 +116,8 @@ const NewBook: React.FC<BookProps> = ({
                 progress={progress}
                 bind={bind}
                 pageNum={currentPage + i}
-                pageWidth={bookStyle.width / (isSinglePage ? 1 : 2)}
-                bookRef={bookRef}
+                pageWidth={bookRect.pageWidth}
+                pageHeight={bookRect.height}
               />
             )
           );

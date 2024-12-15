@@ -1,7 +1,14 @@
 import { RefObject, useCallback, useRef, useState } from "react";
 import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
-import { Corner, FlipCorner, FlipDirection, Point, RectPoints } from "../model";
+import {
+  Corner,
+  FlipCorner,
+  FlipDirection,
+  PageRect,
+  Point,
+  RectPoints,
+} from "../model";
 import Helper from "../Helper";
 import FlipCalculation from "../FlipCalculation";
 
@@ -13,13 +20,13 @@ interface UsePageFlipParams {
   onPrevPage: () => void;
   bookRef: RefObject<HTMLDivElement>;
   isSinglePage: boolean;
+  bookRect: PageRect;
 }
 const ANIMATION_DURATION = 500;
 
 const initialPoint = { x: 0, y: 0 };
 
 export interface ICalc {
-  pos: Point;
   angle: number;
   rect: RectPoints;
   intersectPoints: {
@@ -38,13 +45,12 @@ export const usePageFlip = ({
   isSinglePage,
   currentPage,
   totalPages,
+  bookRect,
 }: UsePageFlipParams) => {
   const status = useRef<"" | "drag" | "hover" | "animation">("");
   const [lastX, setX] = useState(0);
-  const bookRect = bookRef.current?.getBoundingClientRect();
-  const bookWidth = bookRect?.width ?? 0;
-  const pageWidth = bookWidth / (isSinglePage ? 1 : 2);
-  const bookLeft = bookRect?.left ?? 0;
+
+  const { left: bookLeft, width: bookWidth, pageWidth } = bookRect;
 
   const getSpringConfig = useCallback(
     ({
@@ -53,7 +59,6 @@ export const usePageFlip = ({
       startX,
       corner = "none",
       calc = {
-        pos: initialPoint,
         localPos: initialPoint,
         angle: 0,
         rect: {
@@ -306,8 +311,8 @@ export const usePageFlip = ({
           isRtl,
           x,
           y,
-          bookRef,
-          pageWidth,
+
+          rect: bookRect,
         });
         const direction = getDirByPoint(isLeftPage);
         const progress = Helper.getProgress(x, !isLeftPage, bookRef);
@@ -318,15 +323,16 @@ export const usePageFlip = ({
         }
 
         if (!isHardPage) {
-          const { left, top, width, height } =
-            bookRef.current!.getBoundingClientRect();
-
-          const rect = { pageWidth, left, top, width, height };
-
-          const corner = Helper.getCorner(x, y, isLeftPage, rect, 150);
+          const corner = Helper.getCorner(x, y, isLeftPage, bookRect, 150);
 
           try {
-            const calc = getCalc({ x, y, direction, corner, ...rect });
+            const calc = getCalc({
+              x,
+              y,
+              direction,
+              corner,
+              containerRect: bookRect,
+            });
 
             api.start((i) => {
               if (idx !== i) return;
@@ -359,8 +365,7 @@ export const usePageFlip = ({
           isRtl,
           x: clientX,
           y: clientY,
-          bookRef,
-          pageWidth,
+          rect: bookRect,
         });
 
         const clickLocation = Helper.getXClickLocation(
@@ -414,8 +419,7 @@ export const usePageFlip = ({
             isRtl,
             x: px,
             y: py,
-            bookRef,
-            pageWidth,
+            rect: bookRect,
           });
 
           return {
@@ -435,7 +439,7 @@ export const usePageFlip = ({
             y: py,
             direction: memo.direction,
             corner: memo.corner,
-            ...memo.rect,
+            containerRect: memo.rect,
           });
 
           if (!down) {
@@ -492,29 +496,23 @@ function getCalc({
   y,
   direction,
   corner,
-  pageWidth,
-  height,
-  left,
-  width,
-  top,
+  containerRect,
 }: {
   x: number;
   y: number;
   direction: FlipDirection;
   corner: Corner;
-  pageWidth: number;
-  height: number;
-  left: number;
-  width: number;
-  top: number;
+  containerRect: PageRect;
 }): ICalc {
-  const pos = FlipCalculation.convertToPage({ x, y }, direction, {
-    left,
-    width,
-    top,
-  });
+  const pos = FlipCalculation.convertToPage({ x, y }, direction, containerRect);
 
-  const calculations = FlipCalculation.getAnglePositionAndRect(
+  const { pageWidth, height } = containerRect;
+
+  const {
+    pos: localPos,
+    rect,
+    angle,
+  } = FlipCalculation.getAnglePositionAndRect(
     pos,
     pageWidth,
     height,
@@ -523,13 +521,14 @@ function getCalc({
   );
 
   const intersectPoints = FlipCalculation.calculateIntersectPoint({
-    pos: calculations.pos,
+    pos: localPos,
     pageWidth,
     pageHeight: height,
     corner: corner.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
-    rect: calculations.rect,
+    rect,
   });
-  return { ...calculations, intersectPoints, localPos: pos };
+
+  return { rect, intersectPoints, localPos, angle };
 }
 
 function getPageProps({
@@ -538,20 +537,15 @@ function getPageProps({
   totalPages,
   x,
   y,
-  bookRef,
-  pageWidth,
+  rect,
 }: {
   pageNum: number;
   totalPages: number;
   isRtl: boolean;
   x: number;
   y: number;
-  pageWidth: number;
-  bookRef: RefObject<HTMLDivElement>;
+  rect: PageRect;
 }) {
-  const { top, left, width, height } = bookRef.current!.getBoundingClientRect();
-  const rect = { top, left, width, height, pageWidth };
-
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
   const isHardPage = Helper.isHardPage(pageNum, totalPages);
   const corner = Helper.getCorner(x, y, isLeftPage, rect);

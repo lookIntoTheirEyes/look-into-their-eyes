@@ -26,6 +26,12 @@ interface RectGeoParams extends GeoParams {
   rect: RectPoints;
 }
 
+interface CalcResult {
+  pos: Point;
+  angle: number;
+  rect: RectPoints;
+}
+
 function getFlippingProgress(
   px: number,
   isRightPage: boolean,
@@ -151,7 +157,7 @@ function getAngleAndGeometry(params: GeoParams) {
 function convertToPage(
   pos: Point,
   direction: FlipDirection,
-  { left, width, top }: { left: number; width: number; top: number }
+  { left, width, top }: Rect
 ): Point {
   pos = Helper.handleNull(pos);
 
@@ -180,7 +186,6 @@ function calculateIntersectPoint({
     top: -1,
     width: pageWidth + 2,
     height: pageHeight + 2,
-    pageWidth,
   };
 
   if (corner === FlipCorner.TOP) {
@@ -269,7 +274,7 @@ function checkPositionAtCenterLine({
 
   const tmp = Helper.LimitPointToCircle(centerOne, pageWidth, result);
 
-  if (result !== tmp) {
+  if (result?.x !== tmp?.x || result?.y !== tmp?.y) {
     result = tmp;
     const res = getAngleAndGeometry({
       pos: result,
@@ -298,7 +303,7 @@ function checkPositionAtCenterLine({
       checkPointTwo
     );
 
-    if (bottomPoint !== result) {
+    if (bottomPoint?.x !== result?.x || bottomPoint?.y !== result?.y) {
       result = bottomPoint;
       const res = getAngleAndGeometry({
         pos: result,
@@ -318,14 +323,50 @@ function getAnglePositionAndRect(
   userPos: Point,
   pageWidth: number,
   pageHeight: number,
-  corner: Corner,
+  corner: string,
   direction: FlipDirection
-): { pos: Point; angle: number; rect: RectPoints } {
+): CalcResult {
   const topBottomCorner = corner.includes("top")
     ? FlipCorner.TOP
     : FlipCorner.BOTTOM;
 
-  const result = {
+  const initialCalc = calculateInitialPosition({
+    userPos,
+    pageWidth,
+    pageHeight,
+    topBottomCorner,
+  });
+
+  const checkedPosition = calculateCheckedPosition({
+    initialCalc,
+    pageWidth,
+    pageHeight,
+    topBottomCorner,
+  });
+
+  validatePosition(checkedPosition.pos, pageWidth);
+
+  return {
+    ...checkedPosition,
+    angle:
+      direction === FlipDirection.FORWARD
+        ? -checkedPosition.angle
+        : checkedPosition.angle,
+  };
+}
+
+function calculateInitialPosition({
+  userPos,
+  pageWidth,
+  pageHeight,
+  topBottomCorner,
+}: {
+  userPos: Point;
+  pageWidth: number;
+  pageHeight: number;
+  topBottomCorner: FlipCorner;
+}): CalcResult {
+  return {
     pos: userPos,
     ...getAngleAndGeometry({
       pos: userPos,
@@ -334,42 +375,45 @@ function getAnglePositionAndRect(
       corner: topBottomCorner,
     }),
   };
+}
 
+function calculateCheckedPosition({
+  initialCalc,
+  pageWidth,
+  pageHeight,
+  topBottomCorner,
+}: {
+  initialCalc: CalcResult;
+  pageWidth: number;
+  pageHeight: number;
+  topBottomCorner: FlipCorner;
+}): CalcResult {
   const common = {
-    checkedPos: result.pos,
-    rect: result.rect,
-    angle: result.angle,
+    checkedPos: initialCalc.pos,
+    rect: initialCalc.rect,
+    angle: initialCalc.angle,
     pageWidth,
     pageHeight,
-    corner: corner.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
+    corner: topBottomCorner,
   };
 
-  if (topBottomCorner === FlipCorner.TOP) {
-    checkPositionAtCenterLine({
-      centerOne: { x: 0, y: 0 },
-      centerTwo: { x: 0, y: pageHeight },
-      ...common,
-    });
-  } else {
-    checkPositionAtCenterLine({
-      centerOne: { x: 0, y: pageHeight },
-      centerTwo: { x: 0, y: 0 },
-      ...common,
-    });
-  }
+  return topBottomCorner === FlipCorner.TOP
+    ? checkPositionAtCenterLine({
+        centerOne: { x: 0, y: 0 },
+        centerTwo: { x: 0, y: pageHeight },
+        ...common,
+      })
+    : checkPositionAtCenterLine({
+        centerOne: { x: 0, y: pageHeight },
+        centerTwo: { x: 0, y: 0 },
+        ...common,
+      });
+}
 
-  if (Math.abs(result.pos!.x - pageWidth) < 1 && Math.abs(result.pos!.y) < 1) {
+function validatePosition(pos: Point, pageWidth: number): void {
+  if (Math.abs(pos!.x - pageWidth) < 1 && Math.abs(pos!.y) < 1) {
     throw new Error("Point is too small");
   }
-
-  const returnVal = {
-    ...result,
-    angle: direction === FlipDirection.FORWARD ? -result.angle : result.angle,
-  };
-
-  // console.log("returnVal getAnglePositionAndRect", returnVal);
-
-  return returnVal;
 }
 
 function getBottomClipArea({
@@ -513,11 +557,9 @@ function convertToGlobal(
 ): Point {
   if (pos == null) return null;
 
-  console.log("convertToGlobal", pos, direction, rect);
-
   const x =
     direction === FlipDirection.FORWARD
-      ? pos.x + rect.left + rect.width / 2 + (rect.pageWidth - rect.left)
+      ? pos.x + rect.left + rect.width / 2
       : rect.width / 2 - pos.x + rect.left;
 
   return {

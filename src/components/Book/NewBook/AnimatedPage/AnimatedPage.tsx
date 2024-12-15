@@ -19,7 +19,7 @@ interface IProps {
   bind: (...args: unknown[]) => ReactDOMAttributes;
   i: number;
   pageWidth: number;
-  bookRef: React.RefObject<HTMLDivElement>;
+  pageHeight: number;
   calc: SpringValue<ICalc>;
 }
 
@@ -35,9 +35,8 @@ const AnimatedPage: React.FC<IProps> = ({
   direction,
   i,
   pageWidth,
-  bookRef,
+  pageHeight,
   corner,
-
   calc,
 }) => {
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
@@ -75,7 +74,7 @@ const AnimatedPage: React.FC<IProps> = ({
           corner,
           progress,
           direction,
-          bookRef,
+          pageHeight,
           pageWidth,
           isFront,
           isLeftPage
@@ -177,7 +176,6 @@ function getSoftDisplay(
 
   return {
     display: progress.to((p) => (p > 0 ? "block" : "none")),
-    left: progress.to((p) => (p > 0 || isLeftPage ? 0 : "50%")),
     top: 0,
   };
 }
@@ -189,23 +187,21 @@ function getSoftPageStyle(
   corner: SpringValue<Corner>,
   progress: SpringValue<number>,
   direction: SpringValue<FlipDirection>,
-  bookRef: React.RefObject<HTMLDivElement>,
+  pageHeight: number,
   pageWidth: number,
   isFront: boolean,
   isLeftPage: boolean
 ) {
   return {
-    ...getSoftDisplay(isFront, progress, isLeftPage),
+    // ...getSoftDisplay(isFront, progress, isLeftPage),
     clipPath: to(
       [corner, x, y, direction, calc],
       (corner, x, y, direction, calc) => {
-        if (corner === "none" || !bookRef.current) return "none";
+        if (corner === "none") return "none";
         x = x as number;
         y = y as number;
         direction = direction as FlipDirection;
         corner = corner as Corner;
-
-        const pageHeight = bookRef.current.getBoundingClientRect().height;
 
         if (isFront) {
           return getFrontSoftClipPath({
@@ -227,111 +223,32 @@ function getSoftPageStyle(
         }
       }
     ),
+    transformOrigin: "0px 0px",
     transform: to([calc, corner, direction], (calc, corner, direction) => {
-      if (corner === "none" || !bookRef.current || isFront) return "none";
+      if (corner === "none" || isFront) return "none";
       calc = calc as ICalc;
       direction = direction as FlipDirection;
 
-      const { angle, rect, pos, localPos } = calc;
-      const { top, left, width, height } =
-        bookRef.current.getBoundingClientRect();
+      const { angle, localPos } = calc;
+      console.log("localPos", localPos);
 
-      console.log("userPos", localPos);
-      console.log("pos", pos);
-
-      const pagePos = FlipCalculation.convertToGlobal(pos, direction, {
-        top,
-        left,
-        width,
-        height,
-        pageWidth,
-      });
-
-      console.log("pagePos", pagePos);
-
-      const trans = `translate3d(${pagePos!.x - width}px, ${
-        pagePos!.y
+      const trans = `translate3d(${localPos!.x}px, ${
+        localPos!.y
       }px, 0) rotate(${angle}rad)`;
 
-      console.log("trans", trans);
+      // console.log("trans", trans);
 
       return trans;
     }),
     zIndex: to([progress, corner], (p, corner) => {
+      if (p === 100) {
+        // debugger;
+      }
       if (isFront) return 3;
       return (p as number) > 0 && (corner as Corner) !== "none" ? 4 : 2;
     }),
   };
 }
-
-// function invertClipPath(
-//   originalPoints: Point[],
-//   pageWidth: number,
-//   pageHeight: number,
-//   corner: Corner = "top-right"
-// ): Point[] {
-//   const result: Point[] = [];
-//   if (!originalPoints.length) return result;
-
-//   const points = originalPoints.filter((p) => p !== null);
-//   if (!points.length) return result;
-
-//   const isLeftSide = corner.includes("left");
-//   const isTop = corner.includes("top");
-
-//   // Start from the corner being folded
-//   if (isLeftSide) {
-//     if (isTop) {
-//       // Top-left
-//       result.push({ x: 0, y: 0 });
-//       points.forEach((point) => {
-//         if (point !== null) {
-//           result.push(point);
-//         }
-//       });
-//       result.push({ x: pageWidth, y: 0 });
-//       result.push({ x: pageWidth, y: pageHeight });
-//       result.push({ x: 0, y: pageHeight });
-//     } else {
-//       // Bottom-left
-//       result.push({ x: 0, y: pageHeight });
-//       points.forEach((point) => {
-//         if (point !== null) {
-//           result.push(point);
-//         }
-//       });
-//       result.push({ x: 0, y: 0 });
-//       result.push({ x: pageWidth, y: 0 });
-//       result.push({ x: pageWidth, y: pageHeight });
-//     }
-//   } else {
-//     if (isTop) {
-//       // Top-right
-//       result.push({ x: pageWidth, y: 0 });
-//       points.forEach((point) => {
-//         if (point !== null) {
-//           result.push(point);
-//         }
-//       });
-//       result.push({ x: 0, y: 0 });
-//       result.push({ x: 0, y: pageHeight });
-//       result.push({ x: pageWidth, y: pageHeight });
-//     } else {
-//       // Bottom-right
-//       result.push({ x: pageWidth, y: pageHeight });
-//       points.forEach((point) => {
-//         if (point !== null) {
-//           result.push(point);
-//         }
-//       });
-//       result.push({ x: pageWidth, y: 0 });
-//       result.push({ x: 0, y: 0 });
-//       result.push({ x: 0, y: pageHeight });
-//     }
-//   }
-
-//   return result;
-// }
 
 function getBackSoftClipPath({
   calc,
@@ -346,15 +263,15 @@ function getBackSoftClipPath({
   pageHeight: number;
   direction: FlipDirection;
 }): string {
-  const { intersectPoints, rect, pos, angle } = calc;
+  const { intersectPoints, rect, localPos: position, angle } = calc;
   const area = FlipCalculation.getFlippingClipArea({
     ...intersectPoints,
     rect,
     corner,
   });
 
-  const topSoft = FlipCalculation.getSoftCss({
-    position: pos,
+  const backSoft = FlipCalculation.getSoftCss({
+    position,
     pageWidth,
     pageHeight,
     area,
@@ -363,7 +280,9 @@ function getBackSoftClipPath({
     factorPosition: FlipCalculation.getActiveCorner(direction, rect),
   });
 
-  return topSoft;
+  // console.log("getSoftCss", area);
+
+  return backSoft;
 }
 
 function getFrontSoftClipPath({
@@ -379,7 +298,7 @@ function getFrontSoftClipPath({
   direction: FlipDirection;
   pageWidth: number;
 }): string {
-  const { intersectPoints, pos } = calc;
+  const { intersectPoints } = calc;
 
   const area = FlipCalculation.getBottomClipArea({
     ...intersectPoints,
@@ -388,15 +307,15 @@ function getFrontSoftClipPath({
     pageWidth,
   });
 
-  const topSoft = FlipCalculation.getSoftCss({
-    position: pos,
-    pageWidth,
-    pageHeight,
-    area,
-    direction,
-    angle: 0,
-    factorPosition: FlipCalculation.getBottomPagePosition(direction, pageWidth),
-  });
+  // const topSoft = FlipCalculation.getSoftCss({
+  //   position: pos,
+  //   pageWidth,
+  //   pageHeight,
+  //   area,
+  //   direction,
+  //   angle: 0,
+  //   factorPosition: FlipCalculation.getBottomPagePosition(direction, pageWidth),
+  // });
 
   const wrongTopSoft = `polygon(${invertClipPath(
     area,
@@ -410,7 +329,7 @@ function getFrontSoftClipPath({
 
   // console.log("wrongTopSoft", wrongTopSoft);
   // console.log("not invertedTopSoft", topSoft);
-  return topSoft;
+  return wrongTopSoft;
 }
 
 function invertClipPath(
@@ -470,42 +389,6 @@ function invertClipPath(
 
     default:
       return [];
-  }
-}
-
-function transformSoftBack(
-  x: number,
-  y: number,
-  c: Corner,
-  pageWidth: number,
-  pageHeight: number
-) {
-  // console.log("c", c);
-
-  // Get corner base position and calculate relative coordinates
-  switch (c) {
-    case "top-left": {
-      // Original shows around -1.97127rad
-      const angle = Math.PI / 2 - Math.atan2(x, y);
-      return `translate3d(${x}px, ${y}px, 0px) rotate(${angle}rad)`;
-    }
-    case "top-right": {
-      // Original shows around -2.61592rad
-      const angle = Math.PI / 2 - Math.atan2(pageWidth - x, y);
-      return `translate3d(${x}px, ${y}px, 0px) rotate(${angle}rad)`;
-    }
-    case "bottom-left": {
-      // Original shows around -0.105467rad
-      const angle = -Math.PI / 2 - Math.atan2(x, pageHeight - y);
-      return `translate3d(${x}px, ${y}px, 0px) rotate(${angle}rad)`;
-    }
-    case "bottom-right": {
-      // Original shows similar pattern
-      const angle = -Math.PI / 2 - Math.atan2(pageWidth - x, pageHeight - y);
-      return `translate3d(${x}px, ${y}px, 0px) rotate(${angle}rad)`;
-    }
-    default:
-      return "none";
   }
 }
 
