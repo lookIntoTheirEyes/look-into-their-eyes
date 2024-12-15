@@ -66,17 +66,7 @@ const AnimatedPage: React.FC<IProps> = ({
           isRtl,
           isFront
         )
-      : getSoftPageStyle(
-          x,
-          y,
-          calc,
-          corner,
-          progress,
-          direction,
-          bookRect,
-          isFront,
-          isLeftPage
-        );
+      : getSoftPageStyle(x, y, calc, corner, direction, bookRect, isFront);
   };
 
   const getShadowStyle = (inner = false) => {
@@ -163,31 +153,14 @@ function getHardShadowStyle(
   };
 }
 
-// function getSoftDisplay(
-//   isFront: boolean,
-//   progress: SpringValue<number>,
-//   isLeftPage: boolean
-// ) {
-//   if (!isFront) {
-//     return {};
-//   }
-
-//   return {
-//     display: progress.to((p) => (p > 0 ? "block" : "none")),
-//     top: 0,
-//   };
-// }
-
 function getSoftPageStyle(
   x: SpringValue<number>,
   y: SpringValue<number>,
   calc: SpringValue<ICalc>,
   corner: SpringValue<Corner>,
-  progress: SpringValue<number>,
   direction: SpringValue<FlipDirection>,
   bookRect: PageRect,
-  isFront: boolean,
-  isLeftPage: boolean
+  isFront: boolean
 ) {
   const { pageWidth, height: pageHeight } = bookRect;
   return {
@@ -199,19 +172,19 @@ function getSoftPageStyle(
         y = y as number;
         direction = direction as FlipDirection;
         corner = corner as Corner;
+        calc = calc as ICalc;
 
         if (isFront) {
           return getFrontSoftClipPath({
-            calc: calc as ICalc,
+            calc,
             pageHeight,
             pageWidth,
-            direction,
             corner,
           });
         } else {
           // For back page, show only the folded triangle
           return getBackSoftClipPath({
-            calc: calc as ICalc,
+            calc,
             corner,
             pageWidth,
             pageHeight,
@@ -275,8 +248,6 @@ function getBackSoftClipPath({
     factorPosition: FlipCalculation.getActiveCorner(direction, rect),
   });
 
-  // console.log("getSoftCss", area);
-
   return backSoft;
 }
 
@@ -285,34 +256,22 @@ function getFrontSoftClipPath({
   pageHeight,
   corner,
   pageWidth,
-  direction,
 }: {
   calc: ICalc;
   pageHeight: number;
   corner: Corner;
-  direction: FlipDirection;
   pageWidth: number;
 }): string {
   const { intersectPoints } = calc;
 
-  const area = FlipCalculation.getBottomClipArea({
+  const area = FlipCalculation.getFrontClipArea({
     ...intersectPoints,
     corner: corner.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
     pageHeight,
     pageWidth,
   });
 
-  // const topSoft = FlipCalculation.getSoftCss({
-  //   position: pos,
-  //   pageWidth,
-  //   pageHeight,
-  //   area,
-  //   direction,
-  //   angle: 0,
-  //   factorPosition: FlipCalculation.getBottomPagePosition(direction, pageWidth),
-  // });
-
-  const wrongTopSoft = `polygon(${invertClipPath(
+  const clipPath = `polygon(${invertClipPath(
     area,
     pageWidth,
     pageHeight,
@@ -322,9 +281,7 @@ function getFrontSoftClipPath({
     .map((p) => `${p.x}px ${p.y}px`)
     .join(", ")})`;
 
-  // console.log("wrongTopSoft", wrongTopSoft);
-  // console.log("not invertedTopSoft", topSoft);
-  return wrongTopSoft;
+  return clipPath;
 }
 
 function invertClipPath(
@@ -339,47 +296,63 @@ function invertClipPath(
 
   switch (corner) {
     case "bottom-right": {
-      // Find the fold point (usually second point in array)
-      const foldPoint = points.find((p) => p.x !== pageWidth && p.y !== 0) ?? {
+      // For bottom-right, we need to invert the folding from the bottom
+      const bottomIntersect = points.find((p) => p && p.y === pageHeight) ?? {
+        x: pageWidth,
+        y: pageHeight,
+      };
+      const sideIntersect = points.find((p) => p && p.x === pageWidth) ?? {
         x: pageWidth,
         y: pageHeight,
       };
 
       return [
-        { x: 0, y: 0 }, // Start top-left
-        { x: foldPoint.x, y: 0 }, // Top to fold point X
-        foldPoint, // To fold point
-        { x: pageWidth, y: foldPoint.y }, // To right edge
-        { x: pageWidth, y: pageHeight }, // Down right edge
-        { x: 0, y: pageHeight }, // Complete rectangle
+        { x: 0, y: 0 }, // Top-left
+        { x: pageWidth, y: 0 }, // Top-right
+        { x: pageWidth, y: sideIntersect.y }, // Down to side intersection
+        sideIntersect, // Side intersection point
+        bottomIntersect, // Bottom intersection point
+        { x: 0, y: pageHeight }, // Bottom-left
+      ];
+    }
+
+    case "bottom-left": {
+      // For bottom-left, we mirror the bottom-right logic
+      const bottomIntersect = points.find((p) => p && p.y === pageHeight) ?? {
+        x: 0,
+        y: pageHeight,
+      };
+      const sideIntersect = points.find((p) => p && p.x === 0) ?? {
+        x: 0,
+        y: pageHeight,
+      };
+
+      return [
+        { x: 0, y: 0 }, // Top-left
+        { x: pageWidth, y: 0 }, // Top-right
+        { x: pageWidth, y: pageHeight }, // Bottom-right
+        bottomIntersect, // Bottom intersection point
+        sideIntersect, // Side intersection point
+        { x: 0, y: sideIntersect.y }, // Up to left edge
       ];
     }
 
     case "top-right":
       return [
-        { x: pageWidth, y: 0 },
-        ...points,
-        { x: 0, y: 0 },
-        { x: 0, y: pageHeight },
-        { x: pageWidth, y: pageHeight },
+        { x: pageWidth, y: 0 }, // Start from top-right
+        ...points, // Include folding points
+        { x: 0, y: 0 }, // Top-left
+        { x: 0, y: pageHeight }, // Bottom-left
+        { x: pageWidth, y: pageHeight }, // Bottom-right
       ];
 
     case "top-left":
       return [
-        { x: 0, y: 0 },
-        ...points,
-        { x: pageWidth, y: 0 },
-        { x: pageWidth, y: pageHeight },
-        { x: 0, y: pageHeight },
-      ];
-
-    case "bottom-left":
-      return [
-        { x: 0, y: pageHeight },
-        ...points,
-        { x: 0, y: 0 },
-        { x: pageWidth, y: 0 },
-        { x: pageWidth, y: pageHeight },
+        { x: 0, y: 0 }, // Start from top-left
+        ...points, // Include folding points
+        { x: pageWidth, y: 0 }, // Top-right
+        { x: pageWidth, y: pageHeight }, // Bottom-right
+        { x: 0, y: pageHeight }, // Bottom-left
       ];
 
     default:

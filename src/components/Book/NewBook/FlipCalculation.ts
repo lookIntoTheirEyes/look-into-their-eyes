@@ -417,7 +417,7 @@ function validatePosition(pos: Point, pageWidth: number): void {
   }
 }
 
-function getBottomClipArea({
+function getFrontClipArea({
   topIntersectPoint,
   bottomIntersectPoint,
   sideIntersectPoint,
@@ -584,7 +584,7 @@ const FlipCalculation = {
   checkPositionAtCenterLine,
   getAnglePositionAndRect,
   getFlippingClipArea,
-  getBottomClipArea,
+  getFrontClipArea,
   getActiveCorner,
   getBottomPagePosition,
   getSoftCss,
