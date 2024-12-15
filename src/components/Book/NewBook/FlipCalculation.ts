@@ -6,6 +6,7 @@ import {
   FlipDirection,
   FlipCorner,
   Corner,
+  PageRect,
 } from "./model";
 
 /**
@@ -553,14 +554,12 @@ function getBottomPagePosition(
 function convertToGlobal(
   pos: Point,
   direction: FlipDirection,
-  rect: Rect
+  rect: PageRect
 ): Point {
   if (pos == null) return null;
 
   const x =
-    direction === FlipDirection.FORWARD
-      ? pos.x + rect.left + rect.width / 2
-      : rect.width / 2 - pos.x + rect.left;
+    direction === FlipDirection.FORWARD ? pos.x : rect.width / 2 - pos.x;
 
   return {
     x,

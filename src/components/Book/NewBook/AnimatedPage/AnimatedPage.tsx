@@ -1,7 +1,7 @@
 import { animated, SpringValue, to } from "@react-spring/web";
 import { ReactDOMAttributes } from "@use-gesture/react/dist/declarations/src/types";
 import styles from "./AnimatedPage.module.css";
-import { Corner, FlipCorner, FlipDirection, Point } from "../model";
+import { Corner, FlipCorner, FlipDirection, PageRect, Point } from "../model";
 import Helper from "../Helper";
 import FlipCalculation from "../FlipCalculation";
 import { ICalc } from "../hooks/usePageFlip";
@@ -18,8 +18,7 @@ interface IProps {
   corner: SpringValue<Corner>;
   bind: (...args: unknown[]) => ReactDOMAttributes;
   i: number;
-  pageWidth: number;
-  pageHeight: number;
+  bookRect: PageRect;
   calc: SpringValue<ICalc>;
 }
 
@@ -34,11 +33,11 @@ const AnimatedPage: React.FC<IProps> = ({
   progress,
   direction,
   i,
-  pageWidth,
-  pageHeight,
+  bookRect,
   corner,
   calc,
 }) => {
+  const { pageWidth } = bookRect;
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
   const isHardPage = Helper.isHardPage(pageNum, pages.length);
   const backPageNum = Helper.getHiddenPageNum(
@@ -74,8 +73,7 @@ const AnimatedPage: React.FC<IProps> = ({
           corner,
           progress,
           direction,
-          pageHeight,
-          pageWidth,
+          bookRect,
           isFront,
           isLeftPage
         );
@@ -165,20 +163,20 @@ function getHardShadowStyle(
   };
 }
 
-function getSoftDisplay(
-  isFront: boolean,
-  progress: SpringValue<number>,
-  isLeftPage: boolean
-) {
-  if (!isFront) {
-    return {};
-  }
+// function getSoftDisplay(
+//   isFront: boolean,
+//   progress: SpringValue<number>,
+//   isLeftPage: boolean
+// ) {
+//   if (!isFront) {
+//     return {};
+//   }
 
-  return {
-    display: progress.to((p) => (p > 0 ? "block" : "none")),
-    top: 0,
-  };
-}
+//   return {
+//     display: progress.to((p) => (p > 0 ? "block" : "none")),
+//     top: 0,
+//   };
+// }
 
 function getSoftPageStyle(
   x: SpringValue<number>,
@@ -187,13 +185,12 @@ function getSoftPageStyle(
   corner: SpringValue<Corner>,
   progress: SpringValue<number>,
   direction: SpringValue<FlipDirection>,
-  pageHeight: number,
-  pageWidth: number,
+  bookRect: PageRect,
   isFront: boolean,
   isLeftPage: boolean
 ) {
+  const { pageWidth, height: pageHeight } = bookRect;
   return {
-    // ...getSoftDisplay(isFront, progress, isLeftPage),
     clipPath: to(
       [corner, x, y, direction, calc],
       (corner, x, y, direction, calc) => {
@@ -229,23 +226,21 @@ function getSoftPageStyle(
       calc = calc as ICalc;
       direction = direction as FlipDirection;
 
-      const { angle, localPos } = calc;
-      console.log("localPos", localPos);
+      const { angle, rect } = calc;
 
-      const trans = `translate3d(${localPos!.x}px, ${
-        localPos!.y
+      const activePos = FlipCalculation.convertToGlobal(
+        FlipCalculation.getActiveCorner(direction, rect),
+        direction,
+        bookRect
+      );
+
+      return `translate3d(${activePos!.x}px, ${
+        activePos!.y
       }px, 0) rotate(${angle}rad)`;
-
-      // console.log("trans", trans);
-
-      return trans;
     }),
-    zIndex: to([progress, corner], (p, corner) => {
-      if (p === 100) {
-        // debugger;
-      }
+    zIndex: corner.to((corner) => {
       if (isFront) return 3;
-      return (p as number) > 0 && (corner as Corner) !== "none" ? 4 : 2;
+      return (corner as Corner) !== "none" ? 4 : 2;
     }),
   };
 }
@@ -263,7 +258,7 @@ function getBackSoftClipPath({
   pageHeight: number;
   direction: FlipDirection;
 }): string {
-  const { intersectPoints, rect, localPos: position, angle } = calc;
+  const { intersectPoints, rect, pos: position, angle } = calc;
   const area = FlipCalculation.getFlippingClipArea({
     ...intersectPoints,
     rect,
@@ -456,35 +451,3 @@ function getHardPageTransform(
     `;
   });
 }
-// function getPageRect(localPos: Point): RectPoints {
-//   if (this.corner === FlipCorner.TOP) {
-//     return this.getRectFromBasePoint(
-//       [
-//         { x: 0, y: 0 },
-//         { x: this.pageWidth, y: 0 },
-//         { x: 0, y: this.pageHeight },
-//         { x: this.pageWidth, y: this.pageHeight },
-//       ],
-//       localPos
-//     );
-//   }
-
-//   return this.getRectFromBasePoint(
-//     [
-//       { x: 0, y: -this.pageHeight },
-//       { x: this.pageWidth, y: -this.pageHeight },
-//       { x: 0, y: 0 },
-//       { x: this.pageWidth, y: 0 },
-//     ],
-//     localPos
-//   );
-// }
-
-// function getRectFromBasePoint(points: Point[], localPos: Point): RectPoints {
-//   return {
-//     topLeft: FlipCalculation.getRotatedPoint(points[0], localPos),
-//     topRight:Helper.getRotatedPoint(points[1], localPos),
-//     bottomLeft: Helper.this.getRotatedPoint(points[2], localPos),
-//     bottomRight: Helper.getRotatedPoint(points[3], localPos),
-//   };
-// }

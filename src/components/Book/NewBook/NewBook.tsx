@@ -79,7 +79,6 @@ const NewBook: React.FC<BookProps> = ({
     onPrevPage: handlePrevPage,
     bookRef,
     currentPage,
-    isSinglePage,
     totalPages,
     bookRect,
   });
@@ -116,8 +115,7 @@ const NewBook: React.FC<BookProps> = ({
                 progress={progress}
                 bind={bind}
                 pageNum={currentPage + i}
-                pageWidth={bookRect.pageWidth}
-                pageHeight={bookRect.height}
+                bookRect={bookRect}
               />
             )
           );
