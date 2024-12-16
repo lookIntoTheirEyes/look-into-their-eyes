@@ -204,13 +204,16 @@ function createShadowBaseStyles(rect: PageRect) {
 function calculateShadowTranslate(
   direction: FlipDirection,
   shadowWidth: number,
-  isInner: boolean
+  isInner: boolean,
+  isRtl: boolean
 ) {
   if (isInner) {
     const innerShadowSize = (shadowWidth * 3) / 4;
-    return direction === FlipDirection.FORWARD ? innerShadowSize : 0;
+    return (direction === FlipDirection.FORWARD) !== isRtl
+      ? innerShadowSize
+      : 0;
   }
-  return direction === FlipDirection.BACK ? shadowWidth : 0;
+  return (direction === FlipDirection.BACK) !== isRtl ? shadowWidth : 0;
 }
 
 function createShadowTransform(
@@ -242,7 +245,8 @@ function getSoftInnerShadow(
       const shadowTranslate = calculateShadowTranslate(
         direction,
         calc.shadow.width,
-        true
+        true,
+        isRtl
       );
       return `${shadowTranslate}px 100px`;
     }),
@@ -250,7 +254,9 @@ function getSoftInnerShadow(
       if (!calc) return "none";
       const shadow = calc.shadow;
       const gradientDirection =
-        direction === FlipDirection.FORWARD ? "to left" : "to right";
+        (direction === FlipDirection.FORWARD) !== isRtl
+          ? "to left"
+          : "to right";
 
       return `linear-gradient(${gradientDirection},
         rgba(0, 0, 0, ${shadow.opacity}) 5%,
@@ -265,7 +271,8 @@ function getSoftInnerShadow(
       const shadowTranslate = calculateShadowTranslate(
         direction,
         shadow.width,
-        true
+        true,
+        isRtl
       );
       const shadowPos = FlipCalculation.convertToGlobal(
         shadow.pos,
@@ -289,7 +296,8 @@ function getSoftInnerShadow(
       const shadowTranslate = calculateShadowTranslate(
         direction,
         shadow.width,
-        true
+        true,
+        isRtl
       );
       const angle = shadow.angle + (3 * Math.PI) / 2;
 
@@ -298,7 +306,8 @@ function getSoftInnerShadow(
         direction,
         shadow.pos,
         shadowTranslate,
-        angle
+        angle,
+        isRtl
       );
     }),
     display: calc.to((calc) => (calc?.shadow.progress > 0 ? "block" : "none")),
@@ -330,7 +339,9 @@ function getSoftOuterShadow({
       if (!calc) return "none";
       const { shadow } = calc;
       const gradientDirection =
-        direction === FlipDirection.FORWARD ? "to right" : "to left";
+        (direction === FlipDirection.FORWARD) !== isRtl
+          ? "to right"
+          : "to left";
       return `linear-gradient(${gradientDirection}, rgba(0, 0, 0, ${shadow.opacity}), rgba(0, 0, 0, 0))`;
     }),
     transformOrigin: to([calc, direction], (calc, direction) => {
@@ -338,7 +349,8 @@ function getSoftOuterShadow({
       const shadowTranslate = calculateShadowTranslate(
         direction,
         calc.shadow.width,
-        false
+        false,
+        isRtl
       );
       return `${shadowTranslate}px 100px`;
     }),
@@ -349,7 +361,8 @@ function getSoftOuterShadow({
       const shadowTranslate = calculateShadowTranslate(
         direction,
         shadow.width,
-        false
+        false,
+        isRtl
       );
       const shadowPos = FlipCalculation.convertToGlobal(
         shadow.pos,
@@ -367,7 +380,8 @@ function getSoftOuterShadow({
       const shadowTranslate = calculateShadowTranslate(
         direction,
         shadow.width,
-        false
+        false,
+        isRtl
       );
       const angle = shadow.angle + (3 * Math.PI) / 2;
 
@@ -376,7 +390,8 @@ function getSoftOuterShadow({
         direction,
         shadow.pos,
         shadowTranslate,
-        angle
+        angle,
+        isRtl
       );
     }),
     display: calc.to((calc) => (calc?.shadow.progress > 0 ? "block" : "none")),
@@ -388,14 +403,15 @@ function createClipPath(
   direction: FlipDirection,
   shadowPos: Point,
   shadowTranslate: number,
-  angle: number
+  angle: number,
+  isRtl: boolean
 ): string {
   const polygon = points.reduce((acc, p) => {
     if (!p) return acc;
 
     const g = {
       x:
-        direction === FlipDirection.BACK
+        (direction === FlipDirection.BACK) !== isRtl
           ? -p.x + shadowPos.x
           : p.x - shadowPos.x,
       y: p.y - shadowPos.y,
