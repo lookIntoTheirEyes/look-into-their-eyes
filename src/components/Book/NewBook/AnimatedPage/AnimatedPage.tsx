@@ -38,6 +38,8 @@ interface IProps {
   bookRect: PageRect;
 }
 
+const MIN_SHADOW_PROGRESS = 0.5;
+
 const AnimatedPage: React.FC<IProps> = ({
   pageNum,
   isRtl,
@@ -70,6 +72,8 @@ const AnimatedPage: React.FC<IProps> = ({
     isRtl
   );
   const adjustOrigin = pageNum === pages.length - 1 || pageNum === 1;
+
+  console.log("animatedPage rendered");
 
   const calculatedValues = to(
     [x, y, direction, corner, progress],
@@ -197,7 +201,6 @@ function getSoftShadowStyle(
 function createShadowBaseStyles(rect: PageRect) {
   return {
     height: `${rect.height * 2}px`,
-    display: "none", // Will be overridden by spring
   };
 }
 
@@ -310,7 +313,9 @@ function getSoftInnerShadow(
         isRtl
       );
     }),
-    display: calc.to((calc) => (calc?.shadow.progress > 0 ? "block" : "none")),
+    display: calc.to((calc) =>
+      calc?.shadow.progress > MIN_SHADOW_PROGRESS ? "block" : "none"
+    ),
   };
 }
 
@@ -394,7 +399,9 @@ function getSoftOuterShadow({
         isRtl
       );
     }),
-    display: calc.to((calc) => (calc?.shadow.progress > 0 ? "block" : "none")),
+    display: calc.to((calc) =>
+      calc?.shadow.progress > MIN_SHADOW_PROGRESS ? "block" : "none"
+    ),
   };
 }
 
@@ -437,7 +444,7 @@ function getHardShadowStyle(
   inner = false
 ) {
   return {
-    display: progress.to((p) => (p > 0 ? "block" : "none")),
+    display: progress.to((p) => (p > MIN_SHADOW_PROGRESS ? "block" : "none")),
     width: progress.to((p) => Helper.getShadowWidth(p, pageWidth)),
     background: progress.to((p) => Helper.getShadowBackground(p, inner)),
     transform: to([progress, direction], (p, dir) =>
