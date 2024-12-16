@@ -21,7 +21,16 @@ import { RefObject } from "react";
  * @param {Point} point2
  */
 function GetDistanceBetweenTwoPoint(point1: Point, point2: Point): number {
-  if (point1 === null || point2 === null) {
+  if (!point1 || !point2) {
+    return Infinity;
+  }
+
+  if (
+    typeof point1.x !== "number" ||
+    typeof point1.y !== "number" ||
+    typeof point2.x !== "number" ||
+    typeof point2.y !== "number"
+  ) {
     return Infinity;
   }
 

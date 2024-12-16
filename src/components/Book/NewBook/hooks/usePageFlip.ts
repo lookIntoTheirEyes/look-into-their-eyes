@@ -1,17 +1,8 @@
 import { RefObject, useCallback, useRef, useState } from "react";
 import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
-import {
-  Corner,
-  FlipCorner,
-  FlipDirection,
-  IShadow,
-  PageRect,
-  Point,
-  RectPoints,
-} from "../model";
+import { Corner, FlipDirection, PageRect } from "../model";
 import Helper from "../Helper";
-import FlipCalculation from "../FlipCalculation";
 
 interface UsePageFlipParams {
   isRtl: boolean;
@@ -23,44 +14,6 @@ interface UsePageFlipParams {
   bookRect: PageRect;
 }
 const ANIMATION_DURATION = 500;
-
-const initialPoint = { x: 0, y: 0 };
-
-export interface ICalc {
-  angle: number;
-  rect: RectPoints;
-  intersectPoints: {
-    topIntersectPoint: Point;
-    bottomIntersectPoint: Point;
-    sideIntersectPoint: Point;
-  };
-  pos: Point;
-  shadow: IShadow;
-}
-
-const defCalc = {
-  pos: initialPoint,
-  angle: 0,
-  rect: {
-    topLeft: initialPoint,
-    topRight: initialPoint,
-    bottomLeft: initialPoint,
-    bottomRight: initialPoint,
-  },
-  intersectPoints: {
-    topIntersectPoint: initialPoint,
-    bottomIntersectPoint: initialPoint,
-    sideIntersectPoint: initialPoint,
-  },
-  shadow: {
-    pos: initialPoint,
-    angle: 0,
-    width: 0,
-    opacity: 0,
-    direction: FlipDirection.FORWARD,
-    progress: 0,
-  },
-};
 
 export const usePageFlip = ({
   isRtl,
@@ -82,13 +35,11 @@ export const usePageFlip = ({
       immediate = false,
       startX,
       corner = "none",
-      calc = defCalc,
     }: {
       direction?: FlipDirection;
       immediate?: boolean;
       startX?: number;
       corner?: Corner;
-      calc?: ICalc;
     }) => ({
       x: startX ?? 0,
       y: 0,
@@ -103,7 +54,6 @@ export const usePageFlip = ({
         friction: 25,
         duration: immediate ? 0 : ANIMATION_DURATION,
       },
-      calc,
     }),
     []
   );
@@ -186,11 +136,11 @@ export const usePageFlip = ({
           status.current = "animation";
 
           return {
-            calc: defCalc,
+            ...getSpringConfig({ direction, corner: "none" }),
             immediate: false,
             progress: 0,
             config: { duration: ANIMATION_DURATION },
-            corner: "none",
+
             onRest: () => {
               status.current = "";
               setX(x);
@@ -201,7 +151,7 @@ export const usePageFlip = ({
         animateNextPage(idx, direction, corner);
       }
     },
-    [animateNextPage, api]
+    [animateNextPage, api, getSpringConfig]
   );
 
   const animateDrag = useCallback(
@@ -213,7 +163,6 @@ export const usePageFlip = ({
       y,
       corner,
       isDrag = true,
-      calc,
     }: {
       idx: number;
       progress: number;
@@ -222,7 +171,6 @@ export const usePageFlip = ({
       y: number;
       corner: Corner;
       isDrag?: boolean;
-      calc?: ICalc;
     }) => {
       api.start((i) => {
         if (idx !== i) return;
@@ -232,8 +180,6 @@ export const usePageFlip = ({
             immediate: isDrag,
             startX: x,
             corner,
-
-            calc,
           }),
           progress,
           y,
@@ -302,17 +248,13 @@ export const usePageFlip = ({
         resetLocation(idx, direction);
       },
 
-      onMouseMove: (params) => {
+      onMouseMove: ({ args: [idx], event: { clientX: x, clientY: y } }) => {
         if (status.current === "drag" || status.current === "animation") return;
-
-        const {
-          args: [idx],
-          event: { clientX: x, clientY: y },
-        } = params;
 
         if (status.current !== "hover") {
           status.current = "hover";
         }
+        y = y + scrollY;
         const pageNum = currentPage + idx;
 
         const { isLeftPage, isHardPage } = getPageProps({
@@ -335,40 +277,25 @@ export const usePageFlip = ({
         if (!isHardPage) {
           const corner = Helper.getCorner(x, y, isLeftPage, bookRect, 150);
 
-          try {
-            const calc = getCalc({
+          api.start((i) => {
+            if (idx !== i) return;
+            return {
+              ...getSpringConfig({ direction, corner }),
               x,
               y,
-              direction,
-              corner,
-              containerRect: bookRect,
-              isRtl,
               progress,
-            });
-
-            api.start((i) => {
-              if (idx !== i) return;
-              return {
-                ...getSpringConfig({ direction, corner, calc }),
-                x,
-                y,
-                progress,
-              };
-            });
-            return;
-          } catch {}
+            };
+          });
+          return;
         }
 
         handleHardPageHover(isLeftPage, progress, idx, 0, 0, "none"); // Changed x to 0
       },
 
-      onClick: (params) => {
+      onClick: ({ args: [idx], event: { clientX, clientY } }) => {
         if (status.current === "drag" || status.current === "animation") return;
+        clientY = clientY + scrollY;
 
-        const {
-          args: [idx],
-          event: { clientX, clientY },
-        } = params;
         const pageNum = currentPage + idx;
 
         const { isLeftPage, corner } = getPageProps({
@@ -396,15 +323,15 @@ export const usePageFlip = ({
         animateNextPage(idx, direction, corner);
       },
 
-      onDrag: (params) => {
-        const {
-          down,
-          args: [idx],
-          _direction: [xDir],
-          xy: [px, py],
-          memo,
-          tap,
-        } = params;
+      onDrag: ({
+        down,
+        args: [idx],
+        _direction: [xDir],
+        xy: [px, py],
+        memo,
+        tap,
+      }) => {
+        py = py + scrollY;
 
         if (tap || status.current === "animation") return;
         status.current = "drag";
@@ -429,7 +356,7 @@ export const usePageFlip = ({
             totalPages,
             isRtl,
             x: px,
-            y: py + scrollY,
+            y: py,
             rect: bookRect,
           });
 
@@ -444,38 +371,25 @@ export const usePageFlip = ({
 
         const progress = Helper.getProgress(px, !memo.isLeftPage, bookRef);
 
-        try {
-          const calc = getCalc({
-            x: px,
-            y: py + scrollY,
-            direction: memo.direction,
-            corner: memo.corner,
-            containerRect: memo.rect,
-            isRtl,
+        if (!down) {
+          handleDragEnd({
             progress,
+            idx,
+            direction: memo.direction,
+            x: px,
+            corner: memo.corner,
           });
-
-          if (!down) {
-            handleDragEnd({
-              progress,
-              idx,
-              direction: memo.direction,
-              x: px,
-              corner: memo.corner,
-            });
-          } else {
-            animateDrag({
-              idx,
-              progress,
-              direction: memo.direction,
-              x: px,
-              y: py + scrollY,
-              corner: memo.corner,
-              isDrag: true,
-              calc,
-            });
-          }
-        } catch {}
+        } else {
+          animateDrag({
+            idx,
+            progress,
+            direction: memo.direction,
+            x: px,
+            y: py,
+            corner: memo.corner,
+            isDrag: true,
+          });
+        }
 
         return memo;
       },
@@ -502,68 +416,6 @@ function isMoveAllowed(
   }
 
   return !((currentPage % 2 === 1) === (direction === FlipDirection.FORWARD));
-}
-
-function getCalc({
-  x,
-  y,
-  direction,
-  corner,
-  containerRect,
-  isRtl,
-  progress,
-}: {
-  x: number;
-  y: number;
-  direction: FlipDirection;
-  corner: Corner;
-  containerRect: PageRect;
-  isRtl: boolean;
-  progress: number;
-}): ICalc {
-  const { pageWidth, height } = containerRect;
-  const topBottomCorner = corner.includes("top")
-    ? FlipCorner.TOP
-    : FlipCorner.BOTTOM;
-  const adjustedPOs = FlipCalculation.convertToPage(
-    { x, y },
-    direction,
-    containerRect,
-    isRtl
-  );
-
-  const { pos, rect, angle } = FlipCalculation.getAnglePositionAndRect(
-    adjustedPOs,
-    pageWidth,
-    height,
-    corner,
-    direction,
-    isRtl
-  );
-
-  const intersectPoints = FlipCalculation.calculateIntersectPoint({
-    pos,
-    pageWidth,
-    pageHeight: height,
-    corner: topBottomCorner,
-    rect,
-  });
-
-  const shadow = FlipCalculation.getShadowData(
-    FlipCalculation.getShadowStartPoint(topBottomCorner, intersectPoints),
-    FlipCalculation.getShadowAngle({
-      pageWidth,
-      direction,
-      intersections: intersectPoints,
-      corner: topBottomCorner,
-      isRtl,
-    }),
-    progress,
-    direction,
-    pageWidth
-  );
-
-  return { rect, intersectPoints, pos, angle, shadow };
 }
 
 function getPageProps({
