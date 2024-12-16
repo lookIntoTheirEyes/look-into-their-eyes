@@ -34,6 +34,16 @@ interface CalcResult {
   rect: RectPoints;
 }
 
+interface IClipAreaParams extends IIntersectPoints {
+  rect: RectPoints;
+  corner: Corner;
+}
+interface IFrontClipArea extends IIntersectPoints {
+  pageWidth: number;
+  pageHeight: number;
+  corner: FlipCorner;
+}
+
 function getFlippingProgress(
   px: number,
   isRightPage: boolean,
@@ -420,14 +430,7 @@ function getFrontClipArea({
   pageHeight,
   pageWidth,
   corner,
-}: {
-  topIntersectPoint: Point;
-  bottomIntersectPoint: Point;
-  sideIntersectPoint: Point;
-  pageWidth: number;
-  pageHeight: number;
-  corner: FlipCorner;
-}): Point[] {
+}: IFrontClipArea): (Point | null)[] {
   const result = [];
 
   result.push(topIntersectPoint);
@@ -467,13 +470,7 @@ function getFlippingClipArea({
   sideIntersectPoint,
   rect,
   corner,
-}: {
-  topIntersectPoint: Point;
-  bottomIntersectPoint: Point;
-  sideIntersectPoint: Point;
-  rect: RectPoints;
-  corner: Corner;
-}): Point[] {
+}: IClipAreaParams): (Point | null)[] {
   const result = [];
   let clipBottom = false;
   const topBottomCorner = corner.includes("top")
@@ -511,7 +508,7 @@ function getSoftCss({
   direction: FlipDirection;
   pageWidth: number;
   pageHeight: number;
-  area: Point[];
+  area: (Point | null)[];
   factorPosition: Point;
   isRtl: boolean;
 }): string {
@@ -555,7 +552,7 @@ function convertToGlobal(
   direction: FlipDirection,
   width: number,
   isRtl: boolean
-): Point {
+): Point | null {
   if (pos == null) return null;
 
   const x =
@@ -581,11 +578,8 @@ function getActiveCorner(
 
 function getShadowStartPoint(
   corner: FlipCorner,
-  {
-    topIntersectPoint,
-    sideIntersectPoint,
-  }: { topIntersectPoint: Point; sideIntersectPoint: Point }
-): Point {
+  { topIntersectPoint, sideIntersectPoint }: IIntersectPoints
+): Point | null {
   if (corner === FlipCorner.TOP) {
     return topIntersectPoint;
   } else {
@@ -642,7 +636,7 @@ function getShadowAngle({
 }
 
 function getShadowData(
-  pos: Point,
+  pos: Point | null,
   angle: number,
   progress: number,
   direction: FlipDirection,

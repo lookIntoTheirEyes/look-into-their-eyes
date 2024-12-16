@@ -20,7 +20,10 @@ import { RefObject } from "react";
  * @param {Point} point1
  * @param {Point} point2
  */
-function GetDistanceBetweenTwoPoint(point1: Point, point2: Point): number {
+function GetDistanceBetweenTwoPoint(
+  point1: Point | null,
+  point2: Point | null
+): number {
   if (!point1 || !point2) {
     return Infinity;
   }
@@ -269,7 +272,7 @@ function GetCordsFromTwoPoint(pointOne: Point, pointTwo: Point): Point[] {
 
   return result;
 }
-function handleNull(point: Point) {
+function handleNull(point: Point | null) {
   if (!point) {
     return { x: 0, y: 0 };
   }

@@ -5,6 +5,7 @@ import {
   Corner,
   FlipCorner,
   FlipDirection,
+  IIntersectPoints,
   IShadow,
   PageRect,
   Point,
@@ -17,11 +18,7 @@ import { useRef } from "react";
 interface ICalc {
   angle: number;
   rect: RectPoints;
-  intersectPoints: {
-    topIntersectPoint: Point;
-    bottomIntersectPoint: Point;
-    sideIntersectPoint: Point;
-  };
+  intersectPoints: IIntersectPoints;
   pos: Point;
   shadow: IShadow;
 }
@@ -196,6 +193,38 @@ function getSoftShadowStyle(
     : getSoftOuterShadow({ direction, calc, rect, isRtl });
 }
 
+function createShadowBaseStyles(rect: PageRect) {
+  return {
+    height: `${rect.height * 2}px`,
+    display: "none", // Will be overridden by spring
+  };
+}
+
+function calculateShadowTranslate(
+  direction: FlipDirection,
+  shadowWidth: number,
+  isInner: boolean
+) {
+  if (isInner) {
+    const innerShadowSize = (shadowWidth * 3) / 4;
+    return direction === FlipDirection.FORWARD ? innerShadowSize : 0;
+  }
+  return direction === FlipDirection.BACK ? shadowWidth : 0;
+}
+
+function createShadowTransform(
+  shadowPos: Point | null,
+  shadowTranslate: number,
+  angle: number
+) {
+  if (!shadowPos) {
+    return "none";
+  }
+  return `translate3d(${shadowPos.x - shadowTranslate}px, ${
+    shadowPos.y - 100
+  }px, 0) rotate(${angle}rad)`;
+}
+
 function getSoftInnerShadow(
   direction: SpringValue<FlipDirection>,
   isRtl: boolean,
@@ -203,30 +232,40 @@ function getSoftInnerShadow(
   rect: PageRect
 ) {
   return {
-    height: `${rect.height * 2}px`,
-    width: calc.to((calc) => `${(calc?.shadow.width * 3) / 4}px`),
+    ...createShadowBaseStyles(rect),
+    width: calc.to((calc) =>
+      calc ? `${(calc.shadow.width * 3) / 4}px` : "0px"
+    ),
     transformOrigin: to([direction, calc], (direction, calc) => {
-      const innerShadowSize = (calc?.shadow.width * 3) / 4;
-      const shadowTranslate =
-        direction === FlipDirection.FORWARD ? innerShadowSize : 0;
+      if (!calc) return "0px 0px";
+      const shadowTranslate = calculateShadowTranslate(
+        direction,
+        calc.shadow.width,
+        true
+      );
       return `${shadowTranslate}px 100px`;
     }),
     background: to([direction, calc], (direction, calc) => {
-      const shadow = calc?.shadow;
-      return `linear-gradient(${
-        direction === FlipDirection.FORWARD ? "to left" : "to right"
-      },
-                  rgba(0, 0, 0, ${shadow?.opacity}) 5%,
-                  rgba(0, 0, 0, 0.05) 15%,
-                  rgba(0, 0, 0, ${shadow?.opacity}) 35%,
-                  rgba(0, 0, 0, 0) 100%)`;
+      if (!calc) return "none";
+      const shadow = calc.shadow;
+      const gradientDirection =
+        direction === FlipDirection.FORWARD ? "to left" : "to right";
+
+      return `linear-gradient(${gradientDirection},
+        rgba(0, 0, 0, ${shadow.opacity}) 5%,
+        rgba(0, 0, 0, 0.05) 15%,
+        rgba(0, 0, 0, ${shadow.opacity}) 35%,
+        rgba(0, 0, 0, 0) 100%
+      )`;
     }),
     transform: to([direction, calc], (direction, calc) => {
       if (!calc) return "none";
       const { shadow } = calc;
-      const innerShadowSize = (shadow.width * 3) / 4;
-      const shadowTranslate =
-        direction === FlipDirection.FORWARD ? innerShadowSize : 0;
+      const shadowTranslate = calculateShadowTranslate(
+        direction,
+        shadow.width,
+        true
+      );
       const shadowPos = FlipCalculation.convertToGlobal(
         shadow.pos,
         direction,
@@ -235,9 +274,7 @@ function getSoftInnerShadow(
       );
       const angle = shadow.angle + (3 * Math.PI) / 2;
 
-      return `translate3d(${shadowPos!.x - shadowTranslate}px, ${
-        shadowPos!.y - 100
-      }px, 0) rotate(${angle}rad)`;
+      return createShadowTransform(shadowPos, shadowTranslate, angle);
     }),
     clipPath: to([direction, calc], (direction, calc) => {
       if (!calc) return "none";
@@ -248,33 +285,20 @@ function getSoftInnerShadow(
         rectPoints.bottomRight,
         rectPoints.bottomLeft,
       ];
-      const innerShadowSize = (shadow.width * 3) / 4;
-      const shadowTranslate =
-        direction === FlipDirection.FORWARD ? innerShadowSize : 0;
+      const shadowTranslate = calculateShadowTranslate(
+        direction,
+        shadow.width,
+        true
+      );
       const angle = shadow.angle + (3 * Math.PI) / 2;
 
-      const polygon = clip.reduce((acc, p) => {
-        if (!p) return acc;
-        const g =
-          direction === FlipDirection.BACK
-            ? {
-                x: -p.x + shadow.pos!.x,
-                y: p.y - shadow.pos!.y,
-              }
-            : {
-                x: p.x - shadow.pos!.x,
-                y: p.y - shadow.pos!.y,
-              };
-
-        const rotated = Helper.GetRotatedPoint(
-          g,
-          { x: shadowTranslate, y: 100 },
-          angle
-        );
-        return `${acc}${rotated!.x}px ${rotated!.y}px, `;
-      }, "polygon(");
-
-      return polygon.slice(0, -2) + ")";
+      return createClipPath(
+        clip,
+        direction,
+        shadow.pos,
+        shadowTranslate,
+        angle
+      );
     }),
     display: calc.to((calc) => (calc?.shadow.progress > 0 ? "block" : "none")),
   };
@@ -291,27 +315,41 @@ function getSoftOuterShadow({
   direction: SpringValue<FlipDirection>;
   isRtl: boolean;
 }) {
+  const staticClip = [
+    { x: 0, y: 0 },
+    { x: rect.pageWidth, y: 0 },
+    { x: rect.pageWidth, y: rect.height },
+    { x: 0, y: rect.height },
+  ];
+
   return {
-    width: calc.to((calc) => `${calc?.shadow.width}px`),
-    height: `${rect.height * 2}px`,
+    ...createShadowBaseStyles(rect),
+    width: calc.to((calc) => (calc ? `${calc.shadow.width}px` : "0px")),
     background: to([direction, calc], (direction, calc) => {
       if (!calc) return "none";
       const { shadow } = calc;
-      const shadowDirection =
+      const gradientDirection =
         direction === FlipDirection.FORWARD ? "to right" : "to left";
-      return `linear-gradient(${shadowDirection}, rgba(0, 0, 0, ${shadow.opacity}), rgba(0, 0, 0, 0))`;
+      return `linear-gradient(${gradientDirection}, rgba(0, 0, 0, ${shadow.opacity}), rgba(0, 0, 0, 0))`;
     }),
     transformOrigin: to([calc, direction], (calc, direction) => {
-      if (!calc) return "none";
-      const shadowTranslate =
-        direction === FlipDirection.BACK ? calc.shadow.width : 0;
+      if (!calc) return "0px 0px";
+      const shadowTranslate = calculateShadowTranslate(
+        direction,
+        calc.shadow.width,
+        false
+      );
       return `${shadowTranslate}px 100px`;
     }),
     transform: to([calc, direction], (calc, direction) => {
       if (!calc) return "none";
+
       const { shadow } = calc;
-      const shadowTranslate =
-        direction === FlipDirection.BACK ? shadow.width : 0;
+      const shadowTranslate = calculateShadowTranslate(
+        direction,
+        shadow.width,
+        false
+      );
       const shadowPos = FlipCalculation.convertToGlobal(
         shadow.pos,
         direction,
@@ -320,47 +358,58 @@ function getSoftOuterShadow({
       );
       const angle = shadow.angle + (3 * Math.PI) / 2;
 
-      return `translate3d(${shadowPos!.x - shadowTranslate}px, ${
-        shadowPos!.y - 100
-      }px, 0) rotate(${angle}rad)`;
+      return createShadowTransform(shadowPos, shadowTranslate, angle);
     }),
     clipPath: to([direction, calc], (direction, calc) => {
       if (!calc) return "none";
       const { shadow } = calc;
-      const clip = [
-        { x: 0, y: 0 },
-        { x: rect.pageWidth, y: 0 },
-        { x: rect.pageWidth, y: rect.height },
-        { x: 0, y: rect.height },
-      ];
-      const shadowTranslate =
-        direction === FlipDirection.BACK ? shadow.width : 0;
+      const shadowTranslate = calculateShadowTranslate(
+        direction,
+        shadow.width,
+        false
+      );
       const angle = shadow.angle + (3 * Math.PI) / 2;
 
-      const polygon = clip.reduce((acc, p) => {
-        const g =
-          direction === FlipDirection.BACK
-            ? {
-                x: -p.x + shadow.pos!.x,
-                y: p.y - shadow.pos!.y,
-              }
-            : {
-                x: p.x - shadow.pos!.x,
-                y: p.y - shadow.pos!.y,
-              };
-
-        const rotated = Helper.GetRotatedPoint(
-          g,
-          { x: shadowTranslate, y: 100 },
-          angle
-        );
-        return `${acc}${rotated!.x}px ${rotated!.y}px, `;
-      }, "polygon(");
-
-      return polygon.slice(0, -2) + ")";
+      return createClipPath(
+        staticClip,
+        direction,
+        shadow.pos,
+        shadowTranslate,
+        angle
+      );
     }),
     display: calc.to((calc) => (calc?.shadow.progress > 0 ? "block" : "none")),
   };
+}
+
+function createClipPath(
+  points: Point[],
+  direction: FlipDirection,
+  shadowPos: Point,
+  shadowTranslate: number,
+  angle: number
+): string {
+  const polygon = points.reduce((acc, p) => {
+    if (!p) return acc;
+
+    const g = {
+      x:
+        direction === FlipDirection.BACK
+          ? -p.x + shadowPos.x
+          : p.x - shadowPos.x,
+      y: p.y - shadowPos.y,
+    };
+
+    const rotated = Helper.GetRotatedPoint(
+      g,
+      { x: shadowTranslate, y: 100 },
+      angle
+    );
+
+    return `${acc}${rotated.x}px ${rotated.y}px, `;
+  }, "polygon(");
+
+  return polygon.slice(0, -2) + ")";
 }
 
 function getHardShadowStyle(
@@ -505,7 +554,7 @@ function getFrontSoftClipPath({
 }
 
 function invertClipPath(
-  originalPoints: Point[],
+  originalPoints: (Point | null)[],
   pageWidth: number,
   pageHeight: number,
   corner: Corner = "top-right"

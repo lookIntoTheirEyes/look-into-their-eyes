@@ -20,7 +20,7 @@ interface IPoint {
   y: number;
 }
 
-export type Point = IPoint | null;
+export type Point = IPoint;
 /**
  * Type representing a coordinates of the rectangle on the plane
  */
@@ -36,7 +36,7 @@ export interface RectPoints {
 }
 
 export interface IShadow {
-  pos: Point;
+  pos: Point | null;
   angle: number;
   width: number;
   opacity: number;
@@ -45,9 +45,9 @@ export interface IShadow {
 }
 
 export interface IIntersectPoints {
-  topIntersectPoint: Point;
-  bottomIntersectPoint: Point;
-  sideIntersectPoint: Point;
+  topIntersectPoint: Point | null;
+  bottomIntersectPoint: Point | null;
+  sideIntersectPoint: Point | null;
 }
 
 /**
@@ -70,7 +70,7 @@ export interface PageRect extends Rect {
 /**
  * Type representing a line segment contains two points: start and end
  */
-export type Segment = [Point, Point];
+export type Segment = [Point | null, Point | null];
 
 export type PageMouseLocation =
   | "leftPageLeft"
