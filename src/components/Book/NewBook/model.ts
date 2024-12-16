@@ -35,6 +35,21 @@ export interface RectPoints {
   bottomRight: Point;
 }
 
+export interface IShadow {
+  pos: Point;
+  angle: number;
+  width: number;
+  opacity: number;
+  direction: FlipDirection;
+  progress: number;
+}
+
+export interface IIntersectPoints {
+  topIntersectPoint: Point;
+  bottomIntersectPoint: Point;
+  sideIntersectPoint: Point;
+}
+
 /**
  * Type representing a rectangle
  */

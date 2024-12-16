@@ -6,7 +6,8 @@ import {
   FlipDirection,
   FlipCorner,
   Corner,
-  PageRect,
+  Segment,
+  IIntersectPoints,
 } from "./model";
 
 /**
@@ -552,15 +553,13 @@ function getBottomPagePosition(
 function convertToGlobal(
   pos: Point,
   direction: FlipDirection,
-  rect: PageRect,
+  width: number,
   isRtl: boolean
 ): Point {
   if (pos == null) return null;
 
   const x =
-    (direction === FlipDirection.FORWARD) !== isRtl
-      ? pos.x
-      : rect.width / 2 - pos.x;
+    (direction === FlipDirection.FORWARD) !== isRtl ? pos.x : width / 2 - pos.x;
 
   return {
     x,
@@ -580,6 +579,85 @@ function getActiveCorner(
   return rect.topRight;
 }
 
+function getShadowStartPoint(
+  corner: FlipCorner,
+  {
+    topIntersectPoint,
+    sideIntersectPoint,
+  }: { topIntersectPoint: Point; sideIntersectPoint: Point }
+): Point {
+  if (corner === FlipCorner.TOP) {
+    return topIntersectPoint;
+  } else {
+    if (sideIntersectPoint !== null) return sideIntersectPoint;
+
+    return topIntersectPoint;
+  }
+}
+
+function getSegmentToShadowLine({
+  corner,
+  intersections,
+}: {
+  intersections: IIntersectPoints;
+  corner: FlipCorner;
+}): Segment {
+  const first = getShadowStartPoint(corner, intersections);
+
+  const { sideIntersectPoint, bottomIntersectPoint } = intersections;
+
+  const second =
+    first !== sideIntersectPoint && sideIntersectPoint !== null
+      ? sideIntersectPoint
+      : bottomIntersectPoint;
+
+  return [first, second];
+}
+
+function getShadowAngle({
+  pageWidth,
+  direction,
+  isRtl,
+  intersections,
+  corner,
+}: {
+  pageWidth: number;
+  direction: FlipDirection;
+  isRtl: boolean;
+  intersections: IIntersectPoints;
+  corner: FlipCorner;
+}): number {
+  const shadowLine = getSegmentToShadowLine({ corner, intersections });
+
+  const angle = Helper.GetAngleBetweenTwoLine(shadowLine, [
+    { x: 0, y: 0 },
+    { x: pageWidth, y: 0 },
+  ]);
+
+  if ((direction === FlipDirection.FORWARD) !== isRtl) {
+    return angle;
+  }
+
+  return Math.PI - angle;
+}
+
+function getShadowData(
+  pos: Point,
+  angle: number,
+  progress: number,
+  direction: FlipDirection,
+  pageWidth: number
+) {
+  return {
+    pos,
+    angle,
+    width: (((pageWidth * 3) / 4) * progress) / 100,
+    opacity: (100 - progress) / 100,
+    direction,
+    progress: progress * 2,
+  };
+}
+
 const FlipCalculation = {
   getFlippingProgress,
   convertToPage,
@@ -593,5 +671,8 @@ const FlipCalculation = {
   getBottomPagePosition,
   getSoftCss,
   convertToGlobal,
+  getShadowStartPoint,
+  getShadowData,
+  getShadowAngle,
 };
 export default FlipCalculation;

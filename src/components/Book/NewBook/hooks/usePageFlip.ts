@@ -5,6 +5,7 @@ import {
   Corner,
   FlipCorner,
   FlipDirection,
+  IShadow,
   PageRect,
   Point,
   RectPoints,
@@ -34,6 +35,7 @@ export interface ICalc {
     sideIntersectPoint: Point;
   };
   pos: Point;
+  shadow: IShadow;
 }
 
 export const usePageFlip = ({
@@ -69,6 +71,14 @@ export const usePageFlip = ({
           topIntersectPoint: initialPoint,
           bottomIntersectPoint: initialPoint,
           sideIntersectPoint: initialPoint,
+        },
+        shadow: {
+          pos: initialPoint,
+          angle: 0,
+          width: 0,
+          opacity: 0,
+          direction: FlipDirection.FORWARD,
+          progress: 0,
         },
       },
     }: {
@@ -121,7 +131,6 @@ export const usePageFlip = ({
 
         return {
           ...getSpringConfig({ startX: lastX, corner }), // Add lastX here
-
           progress: 100,
           config: { duration: ANIMATION_DURATION },
           direction,
@@ -331,6 +340,7 @@ export const usePageFlip = ({
               corner,
               containerRect: bookRect,
               isRtl,
+              progress,
             });
 
             api.start((i) => {
@@ -391,10 +401,7 @@ export const usePageFlip = ({
           xy: [px, py],
           memo,
           tap,
-          offset,
         } = params;
-
-        // console.log("drag py", py);
 
         if (tap || status.current === "animation") return;
         status.current = "drag";
@@ -442,6 +449,7 @@ export const usePageFlip = ({
             corner: memo.corner,
             containerRect: memo.rect,
             isRtl,
+            progress,
           });
 
           if (!down) {
@@ -470,8 +478,8 @@ export const usePageFlip = ({
       },
     },
     {
-      drag: { filterTaps: true, bounds: bookRef, capture: true },
-      eventOptions: { passive: true, precision: 0.0001 },
+      drag: { filterTaps: true, bounds: bookRef },
+      eventOptions: { passive: true },
     }
   );
 
@@ -500,6 +508,7 @@ function getCalc({
   corner,
   containerRect,
   isRtl,
+  progress,
 }: {
   x: number;
   y: number;
@@ -507,8 +516,12 @@ function getCalc({
   corner: Corner;
   containerRect: PageRect;
   isRtl: boolean;
+  progress: number;
 }): ICalc {
   const { pageWidth, height } = containerRect;
+  const topBottomCorner = corner.includes("top")
+    ? FlipCorner.TOP
+    : FlipCorner.BOTTOM;
   const adjustedPOs = FlipCalculation.convertToPage(
     { x, y },
     direction,
@@ -529,11 +542,26 @@ function getCalc({
     pos,
     pageWidth,
     pageHeight: height,
-    corner: corner.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
+    corner: topBottomCorner,
     rect,
   });
 
-  return { rect, intersectPoints, pos, angle };
+  const shadow = FlipCalculation.getShadowData(
+    FlipCalculation.getShadowStartPoint(topBottomCorner, intersectPoints),
+    FlipCalculation.getShadowAngle({
+      pageWidth,
+      direction,
+      intersections: intersectPoints,
+      corner: topBottomCorner,
+      isRtl,
+    }),
+    progress,
+    direction,
+    pageWidth
+  );
+  console.log("shadow width", shadow.width);
+
+  return { rect, intersectPoints, pos, angle, shadow };
 }
 
 function getPageProps({
