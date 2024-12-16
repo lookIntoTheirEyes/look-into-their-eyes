@@ -38,6 +38,30 @@ export interface ICalc {
   shadow: IShadow;
 }
 
+const defCalc = {
+  pos: initialPoint,
+  angle: 0,
+  rect: {
+    topLeft: initialPoint,
+    topRight: initialPoint,
+    bottomLeft: initialPoint,
+    bottomRight: initialPoint,
+  },
+  intersectPoints: {
+    topIntersectPoint: initialPoint,
+    bottomIntersectPoint: initialPoint,
+    sideIntersectPoint: initialPoint,
+  },
+  shadow: {
+    pos: initialPoint,
+    angle: 0,
+    width: 0,
+    opacity: 0,
+    direction: FlipDirection.FORWARD,
+    progress: 0,
+  },
+};
+
 export const usePageFlip = ({
   isRtl,
   onNextPage,
@@ -58,29 +82,7 @@ export const usePageFlip = ({
       immediate = false,
       startX,
       corner = "none",
-      calc = {
-        pos: initialPoint,
-        angle: 0,
-        rect: {
-          topLeft: initialPoint,
-          topRight: initialPoint,
-          bottomLeft: initialPoint,
-          bottomRight: initialPoint,
-        },
-        intersectPoints: {
-          topIntersectPoint: initialPoint,
-          bottomIntersectPoint: initialPoint,
-          sideIntersectPoint: initialPoint,
-        },
-        shadow: {
-          pos: initialPoint,
-          angle: 0,
-          width: 0,
-          opacity: 0,
-          direction: FlipDirection.FORWARD,
-          progress: 0,
-        },
-      },
+      calc = defCalc,
     }: {
       direction?: FlipDirection;
       immediate?: boolean;
@@ -169,13 +171,13 @@ export const usePageFlip = ({
       progress,
       idx,
       direction,
-      x,
+      x = 0,
       corner,
     }: {
       progress: number;
       idx: number;
       direction: FlipDirection;
-      x: number;
+      x?: number;
       corner: Corner;
     }) => {
       if (progress < 50) {
@@ -184,6 +186,7 @@ export const usePageFlip = ({
           status.current = "animation";
 
           return {
+            calc: defCalc,
             immediate: false,
             progress: 0,
             config: { duration: ANIMATION_DURATION },
@@ -559,7 +562,6 @@ function getCalc({
     direction,
     pageWidth
   );
-  console.log("shadow width", shadow.width);
 
   return { rect, intersectPoints, pos, angle, shadow };
 }
