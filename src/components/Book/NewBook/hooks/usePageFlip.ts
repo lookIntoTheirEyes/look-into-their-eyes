@@ -330,6 +330,7 @@ export const usePageFlip = ({
               direction,
               corner,
               containerRect: bookRect,
+              isRtl,
             });
 
             api.start((i) => {
@@ -440,6 +441,7 @@ export const usePageFlip = ({
             direction: memo.direction,
             corner: memo.corner,
             containerRect: memo.rect,
+            isRtl,
           });
 
           if (!down) {
@@ -497,21 +499,30 @@ function getCalc({
   direction,
   corner,
   containerRect,
+  isRtl,
 }: {
   x: number;
   y: number;
   direction: FlipDirection;
   corner: Corner;
   containerRect: PageRect;
+  isRtl: boolean;
 }): ICalc {
   const { pageWidth, height } = containerRect;
+  const adjustedPOs = FlipCalculation.convertToPage(
+    { x, y },
+    direction,
+    containerRect,
+    isRtl
+  );
 
   const { pos, rect, angle } = FlipCalculation.getAnglePositionAndRect(
-    FlipCalculation.convertToPage({ x, y }, direction, containerRect),
+    adjustedPOs,
     pageWidth,
     height,
     corner,
-    direction
+    direction,
+    isRtl
   );
 
   const intersectPoints = FlipCalculation.calculateIntersectPoint({

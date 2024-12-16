@@ -51,13 +51,6 @@ function getFlippingProgress(
   return Math.min(100, Math.max(0, progress));
 }
 
-function getAngle(direction: FlipDirection, progress: number) {
-  return (
-    ((direction === FlipDirection.FORWARD ? 90 : -90) * (200 - progress * 2)) /
-    100
-  );
-}
-
 function getRotatedPoint(
   transformedPoint: Point,
   startPoint: Point,
@@ -158,12 +151,13 @@ function getAngleAndGeometry(params: GeoParams) {
 function convertToPage(
   pos: Point,
   direction: FlipDirection,
-  { left, width, top }: Rect
+  { left, width, top }: Rect,
+  isRtl = false
 ): Point {
   pos = Helper.handleNull(pos);
 
   const x =
-    direction === FlipDirection.FORWARD
+    (direction === FlipDirection.FORWARD) !== isRtl
       ? pos.x - left - width / 2
       : width / 2 - pos.x + left;
 
@@ -325,7 +319,8 @@ function getAnglePositionAndRect(
   pageWidth: number,
   pageHeight: number,
   corner: string,
-  direction: FlipDirection
+  direction: FlipDirection,
+  isRtl = false
 ): CalcResult {
   const topBottomCorner = corner.includes("top")
     ? FlipCorner.TOP
@@ -350,7 +345,7 @@ function getAnglePositionAndRect(
   return {
     ...checkedPosition,
     angle:
-      direction === FlipDirection.FORWARD
+      (direction === FlipDirection.FORWARD) !== isRtl
         ? -checkedPosition.angle
         : checkedPosition.angle,
   };
@@ -508,6 +503,7 @@ function getSoftCss({
   angle,
   area,
   factorPosition,
+  isRtl,
 }: {
   angle: number;
   position: Point;
@@ -516,12 +512,13 @@ function getSoftCss({
   pageHeight: number;
   area: Point[];
   factorPosition: Point;
+  isRtl: boolean;
 }): string {
   return `polygon(${area
     .filter((p) => p !== null)
     .map((p) => {
       const g =
-        direction === FlipDirection.BACK
+        (direction === FlipDirection.BACK) !== isRtl
           ? {
               x: -p.x + factorPosition!.x,
               y: p.y - factorPosition!.y,
@@ -542,9 +539,10 @@ function getSoftCss({
 
 function getBottomPagePosition(
   direction: FlipDirection,
-  pageWidth: number
+  pageWidth: number,
+  isRtl: boolean
 ): Point {
-  if (direction === FlipDirection.BACK) {
+  if ((direction === FlipDirection.BACK) !== isRtl) {
     return { x: pageWidth, y: 0 };
   }
 
@@ -554,12 +552,15 @@ function getBottomPagePosition(
 function convertToGlobal(
   pos: Point,
   direction: FlipDirection,
-  rect: PageRect
+  rect: PageRect,
+  isRtl: boolean
 ): Point {
   if (pos == null) return null;
 
   const x =
-    direction === FlipDirection.FORWARD ? pos.x : rect.width / 2 - pos.x;
+    (direction === FlipDirection.FORWARD) !== isRtl
+      ? pos.x
+      : rect.width / 2 - pos.x;
 
   return {
     x,
@@ -567,8 +568,12 @@ function convertToGlobal(
   };
 }
 
-function getActiveCorner(direction: FlipDirection, rect: RectPoints): Point {
-  if (direction === FlipDirection.FORWARD) {
+function getActiveCorner(
+  direction: FlipDirection,
+  rect: RectPoints,
+  isRtl: boolean
+): Point {
+  if ((direction === FlipDirection.FORWARD) !== isRtl) {
     return rect.topLeft;
   }
 
@@ -577,7 +582,6 @@ function getActiveCorner(direction: FlipDirection, rect: RectPoints): Point {
 
 const FlipCalculation = {
   getFlippingProgress,
-  getAngle,
   convertToPage,
   getAngleAndGeometry,
   calculateIntersectPoint,

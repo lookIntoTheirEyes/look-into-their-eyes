@@ -66,7 +66,16 @@ const AnimatedPage: React.FC<IProps> = ({
           isRtl,
           isFront
         )
-      : getSoftPageStyle(x, y, calc, corner, direction, bookRect, isFront);
+      : getSoftPageStyle(
+          x,
+          y,
+          calc,
+          corner,
+          direction,
+          bookRect,
+          isFront,
+          isRtl
+        );
   };
 
   const getShadowStyle = (inner = false) => {
@@ -160,7 +169,8 @@ function getSoftPageStyle(
   corner: SpringValue<Corner>,
   direction: SpringValue<FlipDirection>,
   bookRect: PageRect,
-  isFront: boolean
+  isFront: boolean,
+  isRtl: boolean
 ) {
   const { pageWidth, height: pageHeight } = bookRect;
   return {
@@ -189,6 +199,7 @@ function getSoftPageStyle(
             pageWidth,
             pageHeight,
             direction,
+            isRtl,
           });
         }
       }
@@ -202,9 +213,10 @@ function getSoftPageStyle(
       const { angle, rect } = calc;
 
       const activePos = FlipCalculation.convertToGlobal(
-        FlipCalculation.getActiveCorner(direction, rect),
+        FlipCalculation.getActiveCorner(direction, rect, isRtl),
         direction,
-        bookRect
+        bookRect,
+        isRtl
       );
 
       return `translate3d(${activePos!.x}px, ${
@@ -224,12 +236,14 @@ function getBackSoftClipPath({
   pageHeight,
   pageWidth,
   direction,
+  isRtl,
 }: {
   calc: ICalc;
   corner: Corner;
   pageWidth: number;
   pageHeight: number;
   direction: FlipDirection;
+  isRtl: boolean;
 }): string {
   const { intersectPoints, rect, pos: position, angle } = calc;
   const area = FlipCalculation.getFlippingClipArea({
@@ -245,7 +259,8 @@ function getBackSoftClipPath({
     area,
     direction,
     angle,
-    factorPosition: FlipCalculation.getActiveCorner(direction, rect),
+    factorPosition: FlipCalculation.getActiveCorner(direction, rect, isRtl),
+    isRtl,
   });
 
   return backSoft;
