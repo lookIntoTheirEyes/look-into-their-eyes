@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useRef, useState } from "react";
+import { RefObject, useCallback, useRef } from "react";
 import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
 import { Corner, FlipDirection, PageRect } from "../model";
@@ -25,7 +25,6 @@ export const usePageFlip = ({
   bookRect,
 }: UsePageFlipParams) => {
   const status = useRef<"" | "drag" | "hover" | "animation">("");
-  const [lastX, setX] = useState(0);
 
   const { left: bookLeft, width: bookWidth, pageWidth } = bookRect;
 
@@ -33,18 +32,18 @@ export const usePageFlip = ({
     ({
       direction = FlipDirection.FORWARD,
       immediate = false,
-      startX,
+      startX = 0,
+      startY = 0,
       corner = "none",
     }: {
       direction?: FlipDirection;
       immediate?: boolean;
       startX?: number;
+      startY?: number;
       corner?: Corner;
     }) => ({
-      x: startX ?? 0,
-      y: 0,
-      r: 0,
-      z: 10,
+      x: startX,
+      y: startY,
       progress: 0,
       immediate,
       direction,
@@ -80,9 +79,17 @@ export const usePageFlip = ({
       api.start((i) => {
         if (i !== idx) return;
         status.current = "animation";
+        const x =
+          (direction === FlipDirection.FORWARD) !== isRtl
+            ? 0
+            : bookRect.width + bookRect.left;
+
+        const y = corner.includes("top")
+          ? bookRect.top
+          : bookRect.top + bookRect.height;
 
         return {
-          ...getSpringConfig({ startX: lastX, corner }), // Add lastX here
+          ...getSpringConfig({ corner, startY: y, startX: x }),
           progress: 100,
           config: { duration: ANIMATION_DURATION },
           direction,
@@ -100,20 +107,26 @@ export const usePageFlip = ({
               return {
                 ...getSpringConfig({
                   immediate: true,
-                  startX: lastX,
                 }),
-                direction,
+
                 config: { duration: 0 },
-                onRest: () => {
-                  setX(lastX);
-                },
               };
             });
           },
         };
       });
     },
-    [api, getSpringConfig, onPrevPage, onNextPage, lastX]
+    [
+      api,
+      isRtl,
+      bookRect.width,
+      bookRect.left,
+      bookRect.top,
+      bookRect.height,
+      getSpringConfig,
+      onPrevPage,
+      onNextPage,
+    ]
   );
 
   const handleDragEnd = useCallback(
@@ -121,13 +134,11 @@ export const usePageFlip = ({
       progress,
       idx,
       direction,
-      x = 0,
       corner,
     }: {
       progress: number;
       idx: number;
       direction: FlipDirection;
-      x?: number;
       corner: Corner;
     }) => {
       if (progress < 50) {
@@ -137,16 +148,10 @@ export const usePageFlip = ({
 
           return {
             ...getSpringConfig({ direction, corner: "none" }),
-            immediate: false,
             progress: 0,
-            config: { duration: ANIMATION_DURATION },
-
-            onRest: () => {
-              status.current = "";
-              setX(x);
-            },
           };
         });
+        status.current = "";
       } else {
         animateNextPage(idx, direction, corner);
       }
@@ -204,7 +209,6 @@ export const usePageFlip = ({
           progress: 0,
           idx,
           direction,
-          x,
           corner,
         });
       } else {
@@ -222,18 +226,19 @@ export const usePageFlip = ({
     [animateDrag, getDirByPoint, handleDragEnd]
   );
 
+  console.log("rerender");
+
   const resetLocation = useCallback(
     (idx: number, direction: FlipDirection) => {
       api.start((i) => {
         if (idx !== i) return;
+        console.log("resetLocation");
+
         return {
           ...getSpringConfig({ direction }),
-          onRest: () => {
-            status.current = "";
-            setX(0);
-          },
         };
       });
+      status.current = "";
     },
     [api, getSpringConfig]
   );
@@ -263,7 +268,6 @@ export const usePageFlip = ({
           isRtl,
           x,
           y,
-
           rect: bookRect,
         });
         const direction = getDirByPoint(isLeftPage);
@@ -280,7 +284,7 @@ export const usePageFlip = ({
           api.start((i) => {
             if (idx !== i) return;
             return {
-              ...getSpringConfig({ direction, corner }),
+              ...getSpringConfig({ direction, corner, immediate: true }),
               x,
               y,
               progress,
@@ -289,7 +293,7 @@ export const usePageFlip = ({
           return;
         }
 
-        handleHardPageHover(isLeftPage, progress, idx, 0, 0, "none"); // Changed x to 0
+        handleHardPageHover(isLeftPage, progress, idx, 0, 0, "none");
       },
 
       onClick: ({ args: [idx], event: { clientX, clientY } }) => {
@@ -332,11 +336,10 @@ export const usePageFlip = ({
         tap,
       }) => {
         py = py + scrollY;
+        idx = idx as number;
 
         if (tap || status.current === "animation") return;
         status.current = "drag";
-
-        setX(px);
 
         const dir = xDir < 0 ? -1 : 1;
 
@@ -371,24 +374,18 @@ export const usePageFlip = ({
 
         const progress = Helper.getProgress(px, !memo.isLeftPage, bookRef);
 
+        const props = {
+          progress,
+          idx,
+          direction: memo.direction as FlipDirection,
+          x: px,
+          y: py,
+          corner: memo.corner as Corner,
+        };
         if (!down) {
-          handleDragEnd({
-            progress,
-            idx,
-            direction: memo.direction,
-            x: px,
-            corner: memo.corner,
-          });
+          handleDragEnd(props);
         } else {
-          animateDrag({
-            idx,
-            progress,
-            direction: memo.direction,
-            x: px,
-            y: py,
-            corner: memo.corner,
-            isDrag: true,
-          });
+          animateDrag({ ...props, isDrag: true });
         }
 
         return memo;
