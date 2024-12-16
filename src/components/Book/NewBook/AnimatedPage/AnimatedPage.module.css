@@ -39,12 +39,15 @@
 .shadow {
   position: absolute;
   top: 0;
-  left: 50%;
+  left: 0;
   transform-origin: 0px 0px;
   height: 100%;
   z-index: 10;
   &.hard {
     z-index: 6;
+    &.left {
+      left: 100%;
+    }
     &.inner {
       z-index: 10;
     }

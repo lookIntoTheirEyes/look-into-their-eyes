@@ -166,17 +166,18 @@ const AnimatedPage: React.FC<IProps> = ({
             {pages[belowPageNum]}
           </animated.div>
         )}
+        {[false, true].map((isInner) => (
+          <animated.div
+            key={isInner ? "inner-shadow" : "outer-shadow"}
+            className={`${styles.shadow} ${
+              isSinglePage || (!isHardPage && isLeftPage) ? styles.onePage : ""
+            } ${isHardPage ? styles.hard : ""} ${isInner ? styles.inner : ""}
+            ${isLeftPage ? styles.left : ""}
+            `}
+            style={getShadowStyle(isInner)}
+          />
+        ))}
       </animated.div>
-
-      {[false, true].map((isInner) => (
-        <animated.div
-          key={isInner ? "inner-shadow" : "outer-shadow"}
-          className={`${styles.shadow} ${
-            isSinglePage || (!isHardPage && isLeftPage) ? styles.onePage : ""
-          } ${isHardPage ? styles.hard : ""} ${isInner ? styles.inner : ""}`}
-          style={getShadowStyle(isInner)}
-        />
-      ))}
     </>
   );
 };
