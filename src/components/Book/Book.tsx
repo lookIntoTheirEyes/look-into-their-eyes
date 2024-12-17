@@ -45,6 +45,7 @@ const Book: React.FC<BookProps> = ({
   if (toc) {
     pages.push(
       <TableOfContentsContainer
+        key='toc'
         noContentAmount={noContentAmount}
         rtl={rtl}
         isMobile={isMobile}
@@ -81,6 +82,10 @@ const Book: React.FC<BookProps> = ({
           const pageNum = (data || 0) + 1;
 
           updatePage(pageNum || 1);
+        }}
+        onInit={({ object }) => {
+          const orientation = object.getOrientation();
+          console.log("orientation", orientation);
         }}
       >
         {pages}

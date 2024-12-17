@@ -53,7 +53,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
     <Page
       isMobile={isMobile}
       rtl={rtl}
-      key={content.title}
+      key={content.title || "" + content.id}
       pageNum={pageNum(i)}
     >
       <PageContent
@@ -77,8 +77,8 @@ const BookComponent: React.FC<IProps> = async (props) => {
     longDescription: t("story.back.longDescription"),
   };
 
-  const Front = <PageCover details={frontDetails} />;
-  const Back = <PageCover details={backDetails} />;
+  const Front = <PageCover key={"front"} details={frontDetails} />;
+  const Back = <PageCover key={"back"} details={backDetails} />;
 
   return (
     <BookContainer

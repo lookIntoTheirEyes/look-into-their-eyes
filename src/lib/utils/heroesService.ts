@@ -60,6 +60,7 @@ export function getAllPages(lang: Language, type: DataType): Page[] {
   const pages = getData(type).map((page) => {
     const { name: title, description, longDescription } = page[lang];
     return {
+      id: page.id,
       title,
       description,
       longDescription,

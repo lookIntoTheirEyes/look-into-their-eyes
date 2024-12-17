@@ -35,4 +35,6 @@ export interface IBookState {
 
 export interface IEventProps {
   onFlip?: (flipEvent: WidgetEvent) => void;
+  onChangeOrientation?: (flipEvent: WidgetEvent) => void;
+  onInit?: (flipEvent: WidgetEvent) => void;
 }
