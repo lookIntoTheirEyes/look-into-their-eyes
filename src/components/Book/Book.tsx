@@ -4,7 +4,6 @@ import styles from "./Book.module.css";
 import { BookActions } from "@/lib/utils/utils";
 import { Page } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
-import DummyPage from "@/components/Book/DummyPage";
 import TableOfContentsContainer from "@/components/Book/TableOfContents/TableOfContentsContainer";
 import FlipBook from "@/components/FlipBook/ReactFlipBook/index";
 import { SizeType } from "@/components/FlipBook/Settings";
@@ -37,9 +36,14 @@ const Book: React.FC<BookProps> = ({
 
   const { currPage, pageFlipRef, flipPage, updatePage, goToPage } =
     useBookNavigation(pagesAmount);
-  const renderToc = () => {
-    return renderPage(
-      !!toc,
+
+  const pages = [] as React.JSX.Element[];
+  if (Front) {
+    pages.push(Front);
+  }
+
+  if (toc) {
+    pages.push(
       <TableOfContentsContainer
         noContentAmount={noContentAmount}
         rtl={rtl}
@@ -49,14 +53,15 @@ const Book: React.FC<BookProps> = ({
         toc={toc!}
       />
     );
-  };
+  }
 
-  const renderPage = <T extends React.ReactNode>(
-    condition: boolean,
-    page: T
-  ): T | React.ReactNode => {
-    return condition ? page : <DummyPage />;
-  };
+  if (Pages.length) {
+    pages.push(...Pages);
+  }
+
+  if (Back) {
+    pages.push(Back);
+  }
 
   return (
     <div className={styles.storyContainer}>
@@ -78,10 +83,7 @@ const Book: React.FC<BookProps> = ({
           updatePage(pageNum || 1);
         }}
       >
-        {renderPage(!!Front, Front)}
-        {renderToc()}
-        {renderPage(Pages.length > 0, Pages)}
-        {renderPage(!!Back, Back)}
+        {pages}
       </FlipBook>
       <Controls
         currPage={currPage}
