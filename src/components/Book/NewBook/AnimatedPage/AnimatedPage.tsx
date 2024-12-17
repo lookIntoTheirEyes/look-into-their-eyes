@@ -73,7 +73,7 @@ const AnimatedPage: React.FC<IProps> = ({
   );
   const adjustOrigin = pageNum === pages.length - 1 || pageNum === 1;
 
-  console.log("animatedPage rendered");
+  // console.log("animatedPage rendered");
 
   const calculatedValues = to(
     [x, y, direction, corner, progress],
@@ -122,7 +122,8 @@ const AnimatedPage: React.FC<IProps> = ({
           direction,
           bookRect,
           isFront,
-          isRtl
+          isRtl,
+          isLeftPage
         );
   };
 
@@ -166,6 +167,50 @@ const AnimatedPage: React.FC<IProps> = ({
             className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
               styles.below
             }`}
+            style={{
+              zIndex: calculatedValues.to((calc: ICalc) => {
+                return isLeftPage &&
+                  !isHardPage &&
+                  calc &&
+                  calc.shadow.progress > MIN_SHADOW_PROGRESS
+                  ? 10
+                  : 1;
+              }),
+              clipPath: to(
+                [corner, direction, calculatedValues],
+                (corner, direction, calc) => {
+                  if (corner === "none" || !calc || !isLeftPage || isHardPage)
+                    return "none";
+                  const pageHeight = bookRect.height;
+
+                  const { intersectPoints, pos } = calc;
+
+                  const area = FlipCalculation.getFrontClipArea({
+                    ...intersectPoints,
+                    corner: corner.includes("top")
+                      ? FlipCorner.TOP
+                      : FlipCorner.BOTTOM,
+                    pageHeight,
+                    pageWidth,
+                  });
+
+                  return FlipCalculation.getSoftCss({
+                    position: pos,
+                    pageWidth,
+                    pageHeight,
+                    area,
+                    direction,
+                    angle: 0,
+                    factorPosition: FlipCalculation.getBottomPagePosition(
+                      direction,
+                      pageWidth,
+                      isRtl
+                    ),
+                    isRtl,
+                  });
+                }
+              ),
+            }}
           >
             {pages[belowPageNum]}
           </animated.div>
@@ -459,12 +504,13 @@ function getSoftPageStyle(
   direction: SpringValue<FlipDirection>,
   bookRect: PageRect,
   isFront: boolean,
-  isRtl: boolean
+  isRtl: boolean,
+  isLeftPage: boolean
 ) {
   const { pageWidth, height: pageHeight, width } = bookRect;
   return {
     clipPath: to([corner, direction, calc], (corner, direction, calc) => {
-      if (corner === "none" || !calc) return "none";
+      if (corner === "none" || !calc || (isFront && isLeftPage)) return "none";
 
       if (isFront) {
         return getFrontSoftClipPath({
@@ -500,6 +546,9 @@ function getSoftPageStyle(
       }px, 0) rotate(${angle}rad)`;
     }),
     zIndex: corner.to((corner) => {
+      // console.log("corner", corner);
+      // console.log("isFront", isFront);
+
       if (isFront) return 3;
       return corner !== "none" ? 4 : 2;
     }),
@@ -564,17 +613,12 @@ function getFrontSoftClipPath({
     pageWidth,
   });
 
-  const clipPath = `polygon(${invertClipPath(
-    area,
-    pageWidth,
-    pageHeight,
-    corner
-  )
+  const invertedPath = invertClipPath(area, pageWidth, pageHeight, corner);
+
+  return `polygon(${invertedPath
     .filter((p): p is Point => !!p)
     .map((p) => `${p!.x}px ${p!.y}px`)
     .join(", ")})`;
-
-  return clipPath;
 }
 
 function invertClipPath(
@@ -608,26 +652,6 @@ function invertClipPath(
       ];
     }
 
-    case "bottom-left": {
-      const bottomIntersect = points.find((p) => p?.y === pageHeight) ?? {
-        x: 0,
-        y: pageHeight,
-      };
-      const sideIntersect = points.find((p) => p?.x === 0) ?? {
-        x: 0,
-        y: pageHeight,
-      };
-
-      return [
-        { x: 0, y: 0 },
-        { x: pageWidth, y: 0 },
-        { x: pageWidth, y: pageHeight },
-        bottomIntersect,
-        sideIntersect,
-        { x: 0, y: sideIntersect.y },
-      ];
-    }
-
     case "top-right":
       return [
         { x: pageWidth, y: 0 },
@@ -635,15 +659,6 @@ function invertClipPath(
         { x: 0, y: 0 },
         { x: 0, y: pageHeight },
         { x: pageWidth, y: pageHeight },
-      ];
-
-    case "top-left":
-      return [
-        { x: 0, y: 0 },
-        ...points,
-        { x: pageWidth, y: 0 },
-        { x: pageWidth, y: pageHeight },
-        { x: 0, y: pageHeight },
       ];
 
     default:
