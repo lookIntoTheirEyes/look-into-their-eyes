@@ -65,7 +65,6 @@ export const useBookNavigation = (pagesAmount: number) => {
     const pageFlip = pageFlipRef.current?.pageFlip();
     return () => {
       if (pageFlip) {
-        pageFlip.getRender().destroy();
         pageFlip.destroy();
       }
     };
