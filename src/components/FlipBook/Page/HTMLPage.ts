@@ -89,7 +89,9 @@ export class HTMLPage extends Page {
         ? `transform-origin: ${this.render.getRect().pageWidth}px 0; 
                    transform: translate3d(0, 0, 0) rotateY(${angle}deg);`
         : `transform-origin: 0 0; 
-                   transform: translate3d(${pos}px, 0, 0) rotateY(${angle}deg);`);
+                   transform: translate3d(${
+                     pos - (this.render.getSettings().rtl ? 1 : 0)
+                   }px, 0, 0) rotateY(${angle}deg);`);
 
     this.element.style.cssText = newStyle;
   }
@@ -119,7 +121,9 @@ export class HTMLPage extends Page {
     const newStyle =
       commonStyle +
       `transform-origin: 0 0; clip-path: ${polygon}; ` +
-      `transform: translate3d(${position.x}px, ${position.y}px, 0) rotate(${this.state.angle}rad);`;
+      `transform: translate3d(${
+        position.x - (this.render.getSettings().rtl ? 1 : 0)
+      }px, ${position.y}px, 0) rotate(${this.state.angle}rad);`;
 
     this.element.style.cssText = newStyle;
   }
@@ -131,7 +135,9 @@ export class HTMLPage extends Page {
     const pageHeight = rect.height;
 
     const x =
-      orient === PageOrientation.RIGHT ? rect.left + rect.pageWidth : rect.left;
+      orient === PageOrientation.RIGHT
+        ? rect.left + rect.pageWidth - (this.render.getSettings().rtl ? 1 : 0)
+        : rect.left;
 
     const y = rect.top;
 
