@@ -12,9 +12,9 @@ import { SizeType } from "@/components/FlipBook/Settings";
 interface BookProps extends BookActions {
   rtl: boolean;
   book: {
-    Pages: JSX.Element[];
-    Front?: JSX.Element;
-    Back?: JSX.Element;
+    Pages: React.JSX.Element[];
+    Front?: React.JSX.Element;
+    Back?: React.JSX.Element;
     toc?: {
       title: string;
       pages: Page[];

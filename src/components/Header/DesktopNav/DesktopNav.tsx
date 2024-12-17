@@ -3,7 +3,7 @@
 import styles from "./DesktopNav.module.css";
 
 interface HeaderProps {
-  links: JSX.Element[];
+  links: React.JSX.Element[];
   children?: React.ReactNode;
 }
 

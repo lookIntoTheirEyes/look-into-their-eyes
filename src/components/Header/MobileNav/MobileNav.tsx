@@ -3,7 +3,7 @@
 import styles from "./MobileNav.module.css";
 
 interface HeaderProps {
-  links: JSX.Element[];
+  links: React.JSX.Element[];
   menuOpen: boolean;
   handleToggleMenu: () => void;
 }

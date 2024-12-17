@@ -9,19 +9,25 @@ import React, {
 import { IFlipSetting, IEventProps } from "./settings";
 import { PageFlip } from "../PageFlip";
 import { WidgetEvent } from "../Event/EventObject";
+
 interface IProps extends IFlipSetting, IEventProps {
   children: React.ReactNode;
 }
 
+// Define a type for the child components that can accept refs
+interface FlipPageElement extends ReactElement {
+  ref?: React.Ref<HTMLElement>;
+}
+
 const HTMLFlipBookForward = React.forwardRef<
-  { pageFlip: () => PageFlip | null }, // Ref Type
+  { pageFlip: () => PageFlip | null },
   IProps
 >((props, ref) => {
   const htmlElementRef = useRef<HTMLDivElement | null>(null);
   const childRef = useRef<HTMLElement[]>([]);
   const pageFlip = useRef<PageFlip | null>(null);
 
-  const [pages, setPages] = useState<ReactElement[]>([]);
+  const [pages, setPages] = useState<FlipPageElement[]>([]);
 
   useImperativeHandle(ref, () => ({
     pageFlip: () => pageFlip.current,
@@ -47,17 +53,22 @@ const HTMLFlipBookForward = React.forwardRef<
     childRef.current = [];
 
     if (props.children) {
-      const childList = React.Children.map(props.children, (child) =>
-        React.cloneElement(child as ReactElement, {
+      const childList = React.Children.map(props.children, (child) => {
+        // Type guard to ensure child is a ReactElement
+        if (!React.isValidElement(child)) {
+          return child;
+        }
+
+        return React.cloneElement(child, {
           ref: (dom: HTMLElement | null) => {
             if (dom) {
               childRef.current.push(dom);
             }
           },
-        })
-      );
+        } as { ref: (dom: HTMLElement | null) => void });
+      });
 
-      setPages(childList || []);
+      setPages((childList || []) as FlipPageElement[]);
     }
   }, [pages.length, props.children, props.rtl, refreshOnPageDelete]);
 
