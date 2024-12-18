@@ -226,12 +226,11 @@ export class HTMLRender extends Render {
   }
 
   private drawLeftPage(): void {
-    if (this.orientation === Orientation.PORTRAIT || this.leftPage === null)
-      return;
+    if (this.orientation === Orientation.PORTRAIT || !this.leftPage) return;
 
     if (
       this.direction === FlipDirection.BACK &&
-      this.flippingPage !== null &&
+      this.flippingPage &&
       this.flippingPage.getDrawingDensity() === PageDensity.HARD
     ) {
       (this.leftPage as HTMLPage).getElement().style.zIndex = (
@@ -245,11 +244,11 @@ export class HTMLRender extends Render {
   }
 
   private drawRightPage(): void {
-    if (this.rightPage === null) return;
+    if (!this.rightPage) return;
 
     if (
       this.direction === FlipDirection.FORWARD &&
-      this.flippingPage !== null &&
+      this.flippingPage &&
       this.flippingPage.getDrawingDensity() === PageDensity.HARD
     ) {
       (this.rightPage as HTMLPage).getElement().style.zIndex = (
@@ -291,7 +290,7 @@ export class HTMLRender extends Render {
     this.drawRightPage();
     this.drawBottomPage();
 
-    if (this.flippingPage != null) {
+    if (this.flippingPage) {
       const { rtl } = this.app.getSettings();
       const progress = this.app.getProgress();
       const pages = this.app.getPageCollection();
@@ -309,7 +308,7 @@ export class HTMLRender extends Render {
       this.flippingPage.draw();
     }
 
-    if (this.shadow != null && this.flippingPage !== null) {
+    if (this.shadow && this.flippingPage) {
       if (this.flippingPage.getDrawingDensity() === PageDensity.SOFT) {
         this.drawOuterShadow();
         this.drawInnerShadow();

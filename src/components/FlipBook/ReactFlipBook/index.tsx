@@ -14,7 +14,6 @@ interface IProps extends IFlipSetting, IEventProps {
   children: React.ReactNode;
 }
 
-// Define a type for the child components that can accept refs
 interface FlipPageElement extends ReactElement {
   ref?: React.Ref<HTMLElement>;
 }
@@ -56,7 +55,6 @@ const HTMLFlipBookForward = React.forwardRef<
 
     if (props.children) {
       const childList = React.Children.map(props.children, (child) => {
-        // Type guard to ensure child is a ReactElement
         if (!React.isValidElement(child)) {
           return child;
         }
@@ -119,7 +117,14 @@ const HTMLFlipBookForward = React.forwardRef<
     return () => removeHandlers();
   }, [pages, props, props.rtl, removeHandlers]);
 
-  return <div ref={htmlElementRef}>{pages}</div>;
+  return (
+    <div
+      style={{ display: pageFlip.current ? "block" : "none" }}
+      ref={htmlElementRef}
+    >
+      {pages}
+    </div>
+  );
 });
 
 HTMLFlipBookForward.displayName = "HTMLFlipBookForward";
