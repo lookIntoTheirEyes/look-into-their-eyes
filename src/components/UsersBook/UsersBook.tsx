@@ -41,12 +41,7 @@ const UsersBook: React.FC<IProps> = ({
   );
 
   const Pages = structuredClone(pages).map((content, i) => (
-    <Page
-      isMobile={isMobile}
-      rtl={rtl}
-      key={content.title}
-      pageNum={pageNum(i)}
-    >
+    <Page isMobile={isMobile} rtl={rtl} key={content.id} pageNum={pageNum(i)}>
       {
         <PageContent
           details={content}

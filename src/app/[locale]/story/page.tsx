@@ -50,12 +50,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
   const pageNum = (i: number) => i + 1 + noContentPages - 1;
 
   const Pages = structuredClone(bookPages).map((content, i) => (
-    <Page
-      isMobile={isMobile}
-      rtl={rtl}
-      key={content.title || "" + content.id}
-      pageNum={pageNum(i)}
-    >
+    <Page isMobile={isMobile} rtl={rtl} key={content.id} pageNum={pageNum(i)}>
       <PageContent
         cta={t("common.pageCta")}
         details={content}
