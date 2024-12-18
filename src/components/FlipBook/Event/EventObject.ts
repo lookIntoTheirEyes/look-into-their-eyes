@@ -1,6 +1,7 @@
 import { PageFlip } from "../PageFlip";
+import { Orientation } from "../Render/Render";
 
-export type DataType = number | null;
+export type DataType = number | Orientation;
 
 export interface WidgetEvent {
   data: DataType;
@@ -26,11 +27,11 @@ export abstract class EventObject {
     this.events.delete(eventName);
   }
 
-  protected trigger(
-    eventName: string,
-    app: PageFlip,
-    data: DataType = null
-  ): void {
+  public hasEvent(eventName: string): boolean {
+    return this.events.has(eventName);
+  }
+
+  protected trigger(eventName: string, app: PageFlip, data: DataType): void {
     const callbacks = this.events.get(eventName);
     if (!callbacks) return;
 

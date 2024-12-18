@@ -71,7 +71,8 @@ export class PageFlip extends EventObject {
 
     setTimeout(() => {
       this.ui.update();
-    }, 1);
+      this.trigger("init", this, this.render.getOrientation());
+    }, 0);
   }
 
   public updateFromHtml(items: HTMLElement[]): void {
@@ -127,6 +128,7 @@ export class PageFlip extends EventObject {
   public updateOrientation(newOrientation: Orientation): void {
     this.ui.setOrientationStyle(newOrientation);
     this.update();
+    this.trigger("changeOrientation", this, newOrientation);
   }
 
   public getPageCount(): number {

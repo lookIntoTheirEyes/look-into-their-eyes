@@ -1,6 +1,6 @@
 import { IModalProps } from "./common";
 
-export interface Page {
+export interface IPage {
   id?: number;
   title?: string;
   description?: string;
@@ -9,7 +9,7 @@ export interface Page {
   imageDescription?: string;
 }
 
-export interface CoverPage extends Page {
+export interface CoverPage extends IPage {
   author?: string;
 }
 

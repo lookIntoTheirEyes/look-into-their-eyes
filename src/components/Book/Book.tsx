@@ -2,23 +2,27 @@
 import { useBookNavigation } from "@/hooks/useNavigation";
 import styles from "./Book.module.css";
 import { BookActions } from "@/lib/utils/utils";
-import { Page } from "@/lib/model/book";
+import { IPage } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
-import TableOfContentsContainer from "@/components/Book/TableOfContents/TableOfContentsContainer";
 import FlipBook from "@/components/FlipBook/ReactFlipBook/index";
 import { SizeType } from "@/components/FlipBook/Settings";
+import { Orientation } from "../FlipBook/Render/Render";
+import { useRef } from "react";
+import Page from "./Page/Page";
+
+export interface StoryBook {
+  Pages: React.JSX.Element[];
+  Front?: React.JSX.Element;
+  Back?: React.JSX.Element;
+  toc?: {
+    title: string;
+    pages: IPage[];
+  };
+}
 
 interface BookProps extends BookActions {
   rtl: boolean;
-  book: {
-    Pages: React.JSX.Element[];
-    Front?: React.JSX.Element;
-    Back?: React.JSX.Element;
-    toc?: {
-      title: string;
-      pages: Page[];
-    };
-  };
+  book: StoryBook;
   noContentAmount: number;
   isMobile: boolean;
   children?: React.ReactNode;
@@ -26,50 +30,56 @@ interface BookProps extends BookActions {
 
 const Book: React.FC<BookProps> = ({
   rtl,
-  book: { Pages, Front, Back, toc },
+  book,
   actions,
   noContentAmount,
   isMobile,
   children,
 }) => {
-  const pagesAmount = Pages.length + noContentAmount;
+  const pagesAmount = book.Pages.length + noContentAmount;
+  const controlsRef = useRef<{
+    setCurrPage(pageNum: number): void;
+  }>(null);
 
-  const { currPage, pageFlipRef, flipPage, updatePage, goToPage } =
-    useBookNavigation(pagesAmount);
+  const setPageNum = (pageNum: number) => {
+    controlsRef.current?.setCurrPage(pageNum);
+  };
 
-  const pages = [] as React.JSX.Element[];
-  if (Front) {
-    pages.push(Front);
-  }
+  const { pageFlipRef, flipPage, pages, setPages, initPageNum } =
+    useBookNavigation({
+      pagesAmount,
+      isMobile,
+      book,
+      rtl,
+      noContentAmount,
+      setPageNum,
+    });
 
-  if (toc) {
-    pages.push(
-      <TableOfContentsContainer
-        key='toc'
-        noContentAmount={noContentAmount}
+  const needBlankPage = pages.length % 2 === 1;
+
+  const addBlankPage = (pages: JSX.Element[]) => {
+    const newPages = [...pages];
+    const lastPage = newPages.pop() as JSX.Element;
+    const blankPage = (
+      <Page
+        key='blank page'
         rtl={rtl}
+        pageNum={pages.length}
         isMobile={isMobile}
-        goToPage={goToPage}
-        pagesAmount={pagesAmount}
-        toc={toc!}
       />
     );
-  }
+    newPages.push(blankPage, lastPage);
+    return newPages;
+  };
 
-  if (Pages.length) {
-    pages.push(...Pages);
-  }
-
-  if (Back) {
-    pages.push(Back);
-  }
+  console.log("rerender");
 
   return (
     <div className={styles.storyContainer}>
       {children}
       <FlipBook
         ref={pageFlipRef}
-        startPage={currPage - 1}
+        startPage={initPageNum - 1}
         width={550}
         height={720}
         size={SizeType.STRETCH}
@@ -81,20 +91,33 @@ const Book: React.FC<BookProps> = ({
         onFlip={({ data }) => {
           const pageNum = (data || 0) + 1;
 
-          updatePage(pageNum || 1);
+          controlsRef.current?.setCurrPage(pageNum || 1);
         }}
-        onInit={({ object }) => {
-          const orientation = object.getOrientation();
-          console.log("orientation", orientation);
+        onInit={({ data }) => {
+          console.log("onInit");
+
+          if (data === Orientation.LANDSCAPE && needBlankPage) {
+            // setPages(addBlankPage(pages));
+          }
+          // console.log(
+          //   "orientation on init",
+          //   data === Orientation.LANDSCAPE,
+          //   needBlankPage
+          // );
+        }}
+        onChangeOrientation={({ data }) => {
+          const orientation = data;
+          console.log("orientation", orientation === Orientation.LANDSCAPE);
         }}
       >
         {pages}
       </FlipBook>
       <Controls
-        currPage={currPage}
+        ref={controlsRef}
         pageCount={pagesAmount}
         flipPage={flipPage}
         actions={actions}
+        initPageNum={initPageNum}
       />
     </div>
   );

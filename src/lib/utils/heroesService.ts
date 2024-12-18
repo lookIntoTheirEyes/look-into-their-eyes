@@ -2,7 +2,7 @@ import { Language } from "../model/language";
 import heroesData from "@/books/heroes.json";
 import commentsData from "@/books/comments.json";
 import familiesData from "@/books/families.json";
-import { Page } from "../model/book";
+import { IPage } from "../model/book";
 import { getImageUrl } from "./utils";
 
 const BOOK_NO_CONTENT_PAGES = 3;
@@ -56,7 +56,7 @@ export async function getHero(page: string, lang: Language) {
   };
 }
 
-export function getAllPages(lang: Language, type: DataType): Page[] {
+export function getAllPages(lang: Language, type: DataType): IPage[] {
   const pages = getData(type).map((page) => {
     const { name: title, description, longDescription } = page[lang];
     return {

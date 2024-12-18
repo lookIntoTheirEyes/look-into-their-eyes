@@ -43,6 +43,8 @@ const HTMLFlipBookForward = React.forwardRef<
     const flip = pageFlip.current;
     if (flip) {
       flip.off("flip");
+      flip.off("changeOrientation");
+      flip.off("init");
     }
   }, []);
 
@@ -80,14 +82,21 @@ const HTMLFlipBookForward = React.forwardRef<
         if (props.onFlip) {
           flip.on("flip", (e: WidgetEvent) => props.onFlip?.(e));
         }
-        if (props.onInit) {
-          flip.on("init", (e: WidgetEvent) => props.onInit?.(e));
-        }
 
         if (props.onChangeOrientation) {
-          flip.on("changeOrientation", (e: WidgetEvent) =>
-            props.onChangeOrientation?.(e)
-          );
+          flip.on("changeOrientation", (e: WidgetEvent) => {
+            props.onChangeOrientation?.(e);
+          });
+        }
+
+        if (props.onInit) {
+          if (flip.hasEvent("init")) {
+            removeHandlers();
+          }
+
+          flip.on("init", (e: WidgetEvent) => {
+            props.onInit?.(e);
+          });
         }
       }
     };

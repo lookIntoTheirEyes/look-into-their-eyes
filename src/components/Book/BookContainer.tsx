@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 import Book from "./Book";
-import { Page as BookPage } from "@/lib/model/book";
+import { IPage } from "@/lib/model/book";
 
 interface IBookProps {
   rtl: boolean;
@@ -10,7 +10,7 @@ interface IBookProps {
   Pages: React.JSX.Element[];
   Front: React.JSX.Element;
   Back?: React.JSX.Element;
-  pagesContent: BookPage[];
+  pagesContent: IPage[];
   noContentAmount: number;
   children?: ReactNode;
 }
