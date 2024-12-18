@@ -10,6 +10,8 @@ import { IFlipSetting, IEventProps } from "./settings";
 import { PageFlip } from "../PageFlip";
 import { WidgetEvent } from "../Event/EventObject";
 
+import styles from "./index.module.css";
+
 interface IProps extends IFlipSetting, IEventProps {
   children: React.ReactNode;
   controls: React.ReactNode;
@@ -26,8 +28,9 @@ const HTMLFlipBookForward = React.forwardRef<
   const htmlElementRef = useRef<HTMLDivElement | null>(null);
   const childRef = useRef<HTMLElement[]>([]);
   const pageFlip = useRef<PageFlip | null>(null);
-
   const [pages, setPages] = useState<FlipPageElement[]>([]);
+  const [isLoading, setLoading] = useState(true);
+  const isInitialized = useRef(false);
 
   useImperativeHandle(ref, () => ({
     pageFlip: () => pageFlip.current,
@@ -36,9 +39,7 @@ const HTMLFlipBookForward = React.forwardRef<
   const removeHandlers = useCallback(() => {
     const flip = pageFlip.current;
     if (flip) {
-      flip.off("flip");
-      flip.off("changeOrientation");
-      flip.off("init");
+      flip.removeListeners();
     }
   }, []);
 
@@ -65,28 +66,23 @@ const HTMLFlipBookForward = React.forwardRef<
 
       setPages((childList || []) as FlipPageElement[]);
     }
-  }, [pages.length, props.children, props.rtl]);
+  }, [props.children, props.rtl]);
 
   useEffect(() => {
     const setHandlers = () => {
       const flip = pageFlip.current;
-
       if (flip) {
         if (props.onFlip) {
-          flip.on("flip", (e: WidgetEvent) => props.onFlip?.(e));
+          flip.on("flip", (e: WidgetEvent) => {
+            props.onFlip?.(e);
+          });
         }
-
         if (props.onChangeOrientation) {
           flip.on("changeOrientation", (e: WidgetEvent) => {
             props.onChangeOrientation?.(e);
           });
         }
-
         if (props.onInit) {
-          if (flip.hasEvent("init")) {
-            removeHandlers();
-          }
-
           flip.on("init", (e: WidgetEvent) => {
             props.onInit?.(e);
           });
@@ -94,33 +90,46 @@ const HTMLFlipBookForward = React.forwardRef<
       }
     };
 
-    if (pages.length > 0 && childRef.current.length > 0) {
-      removeHandlers();
-
+    if (
+      pages.length > 0 &&
+      childRef.current.length > 0 &&
+      !isInitialized.current
+    ) {
       if (htmlElementRef.current && !pageFlip.current) {
         pageFlip.current = new PageFlip(htmlElementRef.current, props);
       }
 
       if (!pageFlip.current?.getFlipController()) {
         pageFlip.current?.loadFromHTML(childRef.current);
+        isInitialized.current = true;
+        setLoading(false);
       } else {
         pageFlip.current.updateFromHtml(childRef.current);
       }
+    }
 
+    if (
+      pageFlip.current?.hasListeners() === false &&
+      (props.onFlip || props.onChangeOrientation || props.onInit)
+    ) {
       setHandlers();
     }
-    return () => removeHandlers();
-  }, [pages, props, props.rtl, removeHandlers]);
+
+    return () => {
+      removeHandlers();
+    };
+  }, [pages.length, removeHandlers, props]);
 
   return (
     <>
+      {isLoading && <div className={styles.loader} />}
       <div
-        style={{ display: pageFlip.current ? "block" : "none" }}
+        style={{ display: !isLoading ? "block" : "none" }}
         ref={htmlElementRef}
       >
         {pages}
       </div>
-      {props.controls}
+      {!isLoading && props.controls}
     </>
   );
 });
@@ -128,5 +137,3 @@ const HTMLFlipBookForward = React.forwardRef<
 HTMLFlipBookForward.displayName = "HTMLFlipBookForward";
 
 export default React.memo(HTMLFlipBookForward);
-
-/* HTML: <div class="loader"></div> */

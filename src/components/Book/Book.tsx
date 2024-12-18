@@ -6,7 +6,8 @@ import { IPage } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
 import FlipBook from "@/components/FlipBook/ReactFlipBook/index";
 import { SizeType } from "@/components/FlipBook/Settings";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
+import { WidgetEvent } from "../FlipBook/Event/EventObject";
 
 export interface StoryBook {
   Pages: React.JSX.Element[];
@@ -61,6 +62,11 @@ const Book: React.FC<BookProps> = ({
       initPageNum={initPageNum}
     />
   );
+  const handleFlip = useCallback(({ data }: WidgetEvent) => {
+    const pageNum = (data || 0) + 1;
+
+    controlsRef.current?.setCurrPage(pageNum || 1);
+  }, []);
 
   return (
     <div className={styles.storyContainer}>
@@ -76,11 +82,7 @@ const Book: React.FC<BookProps> = ({
         minHeight={400}
         maxHeight={1533}
         rtl={rtl}
-        onFlip={({ data }) => {
-          const pageNum = (data || 0) + 1;
-
-          controlsRef.current?.setCurrPage(pageNum || 1);
-        }}
+        onFlip={handleFlip}
         controls={controls}
       >
         {pages}

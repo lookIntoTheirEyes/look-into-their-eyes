@@ -27,8 +27,12 @@ export abstract class EventObject {
     this.events.delete(eventName);
   }
 
-  public hasEvent(eventName: string): boolean {
-    return this.events.has(eventName);
+  public hasListeners(): boolean {
+    return this.events.size !== 0;
+  }
+
+  public removeListeners() {
+    this.events.clear();
   }
 
   protected trigger(eventName: string, app: PageFlip, data: DataType): void {
