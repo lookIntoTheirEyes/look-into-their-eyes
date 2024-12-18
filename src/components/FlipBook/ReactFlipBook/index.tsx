@@ -10,8 +10,6 @@ import { IFlipSetting, IEventProps } from "./settings";
 import { PageFlip } from "../PageFlip";
 import { WidgetEvent } from "../Event/EventObject";
 
-import styles from "./index.module.css";
-
 interface IProps extends IFlipSetting, IEventProps {
   children: React.ReactNode;
   controls: React.ReactNode;
@@ -30,7 +28,6 @@ const HTMLFlipBookForward = React.forwardRef<
   const pageFlip = useRef<PageFlip | null>(null);
 
   const [pages, setPages] = useState<FlipPageElement[]>([]);
-  const [isLoading, setLoading] = useState(true);
 
   useImperativeHandle(ref, () => ({
     pageFlip: () => pageFlip.current,
@@ -106,7 +103,6 @@ const HTMLFlipBookForward = React.forwardRef<
 
       if (!pageFlip.current?.getFlipController()) {
         pageFlip.current?.loadFromHTML(childRef.current);
-        setLoading(false);
       } else {
         pageFlip.current.updateFromHtml(childRef.current);
       }
@@ -118,14 +114,13 @@ const HTMLFlipBookForward = React.forwardRef<
 
   return (
     <>
-      {isLoading && <div className={styles.loader}></div>}
       <div
-        style={{ display: !isLoading ? "block" : "none" }}
+        style={{ display: pageFlip.current ? "block" : "none" }}
         ref={htmlElementRef}
       >
         {pages}
       </div>
-      {!isLoading && props.controls}
+      {props.controls}
     </>
   );
 });
