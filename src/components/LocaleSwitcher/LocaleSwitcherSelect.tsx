@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { ChangeEvent, ReactNode, useTransition } from "react";
 import { Locale, usePathname, useRouter } from "@/i18n/routing";
 import styles from "./LocaleSwitcherSelect.module.css";
@@ -20,15 +19,25 @@ export default function LocaleSwitcherSelect({
   const [isPending, startTransition] = useTransition();
   const pathname = usePathname();
 
-  const searchParams = useSearchParams();
-  const page = searchParams.get("page");
-
   function onSelectChange(event: ChangeEvent<HTMLSelectElement>) {
     const locale = event.target.value as Locale;
 
     startTransition(() => {
-      const query = page ? { query: { page } } : {};
-      router.push({ pathname, ...query }, { locale, scroll: false });
+      const currentUrl = new URL(window.location.href);
+      const currentParams = Object.fromEntries(
+        currentUrl.searchParams.entries()
+      );
+
+      router.push(
+        {
+          pathname,
+          query: currentParams,
+        },
+        {
+          locale,
+          scroll: false,
+        }
+      );
     });
   }
 
