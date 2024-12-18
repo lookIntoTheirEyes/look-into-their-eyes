@@ -52,6 +52,16 @@ const Book: React.FC<BookProps> = ({
     setPageNum,
   });
 
+  const controls = (
+    <Controls
+      ref={controlsRef}
+      pageCount={pagesAmount}
+      flipPage={flipPage}
+      actions={actions}
+      initPageNum={initPageNum}
+    />
+  );
+
   return (
     <div className={styles.storyContainer}>
       {children}
@@ -71,16 +81,10 @@ const Book: React.FC<BookProps> = ({
 
           controlsRef.current?.setCurrPage(pageNum || 1);
         }}
+        controls={controls}
       >
         {pages}
       </FlipBook>
-      <Controls
-        ref={controlsRef}
-        pageCount={pagesAmount}
-        flipPage={flipPage}
-        actions={actions}
-        initPageNum={initPageNum}
-      />
     </div>
   );
 };

@@ -1,8 +1,8 @@
 import { ILanguageProps, Language } from "@/lib/model/language";
 import { getTranslations } from "next-intl/server";
 import BookContainer from "@/components/Book/BookContainer";
-import { getPageNum, SearchParams } from "@/lib/utils/utils";
-import { getAllPages, getHero } from "@/lib/utils/heroesService";
+import { SearchParams } from "@/lib/utils/utils";
+import { getAllPages } from "@/lib/utils/heroesService";
 import Page from "@/components/Book/Page/Page";
 import PageContent from "@/components/Book/Page/PageContent/PageContent";
 import PageCover from "@/components/Book/PageCover/PageCover";
@@ -10,32 +10,6 @@ import { cookies } from "next/headers";
 
 interface IProps extends ILanguageProps {
   searchParams: Promise<SearchParams>;
-}
-
-export async function generateMetadata(props: IProps) {
-  const searchParams = await props.searchParams;
-  const params = await props.params;
-
-  const { locale } = params;
-  const pageNum = getPageNum(searchParams);
-  try {
-    const { name: title, description } = await getHero(pageNum, locale);
-
-    return {
-      title,
-      description,
-    };
-  } catch {
-    const t = await getTranslations("Metadata");
-
-    const title = t("layout.title");
-    const description = t("layout.description");
-
-    return {
-      title,
-      description,
-    };
-  }
 }
 
 const BookComponent: React.FC<IProps> = async (props) => {

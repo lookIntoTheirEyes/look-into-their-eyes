@@ -10,8 +10,11 @@ import { IFlipSetting, IEventProps } from "./settings";
 import { PageFlip } from "../PageFlip";
 import { WidgetEvent } from "../Event/EventObject";
 
+import styles from "./index.module.css";
+
 interface IProps extends IFlipSetting, IEventProps {
   children: React.ReactNode;
+  controls: React.ReactNode;
 }
 
 interface FlipPageElement extends ReactElement {
@@ -27,16 +30,11 @@ const HTMLFlipBookForward = React.forwardRef<
   const pageFlip = useRef<PageFlip | null>(null);
 
   const [pages, setPages] = useState<FlipPageElement[]>([]);
+  const [isLoading, setLoading] = useState(true);
 
   useImperativeHandle(ref, () => ({
     pageFlip: () => pageFlip.current,
   }));
-
-  const refreshOnPageDelete = useCallback(() => {
-    if (pageFlip.current) {
-      pageFlip.current.clear();
-    }
-  }, []);
 
   const removeHandlers = useCallback(() => {
     const flip = pageFlip.current;
@@ -70,7 +68,7 @@ const HTMLFlipBookForward = React.forwardRef<
 
       setPages((childList || []) as FlipPageElement[]);
     }
-  }, [pages.length, props.children, props.rtl, refreshOnPageDelete]);
+  }, [pages.length, props.children, props.rtl]);
 
   useEffect(() => {
     const setHandlers = () => {
@@ -108,6 +106,7 @@ const HTMLFlipBookForward = React.forwardRef<
 
       if (!pageFlip.current?.getFlipController()) {
         pageFlip.current?.loadFromHTML(childRef.current);
+        setLoading(false);
       } else {
         pageFlip.current.updateFromHtml(childRef.current);
       }
@@ -118,15 +117,21 @@ const HTMLFlipBookForward = React.forwardRef<
   }, [pages, props, props.rtl, removeHandlers]);
 
   return (
-    <div
-      style={{ display: pageFlip.current ? "block" : "none" }}
-      ref={htmlElementRef}
-    >
-      {pages}
-    </div>
+    <>
+      {isLoading && <div className={styles.loader}></div>}
+      <div
+        style={{ display: !isLoading ? "block" : "none" }}
+        ref={htmlElementRef}
+      >
+        {pages}
+      </div>
+      {!isLoading && props.controls}
+    </>
   );
 });
 
 HTMLFlipBookForward.displayName = "HTMLFlipBookForward";
 
 export default React.memo(HTMLFlipBookForward);
+
+/* HTML: <div class="loader"></div> */
