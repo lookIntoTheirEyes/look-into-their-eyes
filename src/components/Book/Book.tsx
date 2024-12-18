@@ -6,9 +6,7 @@ import { IPage } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
 import FlipBook from "@/components/FlipBook/ReactFlipBook/index";
 import { SizeType } from "@/components/FlipBook/Settings";
-import { Orientation } from "../FlipBook/Render/Render";
 import { useRef } from "react";
-import Page from "./Page/Page";
 
 export interface StoryBook {
   Pages: React.JSX.Element[];
@@ -45,34 +43,14 @@ const Book: React.FC<BookProps> = ({
     controlsRef.current?.setCurrPage(pageNum);
   };
 
-  const { pageFlipRef, flipPage, pages, setPages, initPageNum } =
-    useBookNavigation({
-      pagesAmount,
-      isMobile,
-      book,
-      rtl,
-      noContentAmount,
-      setPageNum,
-    });
-
-  const needBlankPage = pages.length % 2 === 1;
-
-  const addBlankPage = (pages: JSX.Element[]) => {
-    const newPages = [...pages];
-    const lastPage = newPages.pop() as JSX.Element;
-    const blankPage = (
-      <Page
-        key='blank page'
-        rtl={rtl}
-        pageNum={pages.length}
-        isMobile={isMobile}
-      />
-    );
-    newPages.push(blankPage, lastPage);
-    return newPages;
-  };
-
-  console.log("rerender");
+  const { pageFlipRef, flipPage, pages, initPageNum } = useBookNavigation({
+    pagesAmount,
+    isMobile,
+    book,
+    rtl,
+    noContentAmount,
+    setPageNum,
+  });
 
   return (
     <div className={styles.storyContainer}>
@@ -92,22 +70,6 @@ const Book: React.FC<BookProps> = ({
           const pageNum = (data || 0) + 1;
 
           controlsRef.current?.setCurrPage(pageNum || 1);
-        }}
-        onInit={({ data }) => {
-          console.log("onInit");
-
-          if (data === Orientation.LANDSCAPE && needBlankPage) {
-            // setPages(addBlankPage(pages));
-          }
-          // console.log(
-          //   "orientation on init",
-          //   data === Orientation.LANDSCAPE,
-          //   needBlankPage
-          // );
-        }}
-        onChangeOrientation={({ data }) => {
-          const orientation = data;
-          console.log("orientation", orientation === Orientation.LANDSCAPE);
         }}
       >
         {pages}

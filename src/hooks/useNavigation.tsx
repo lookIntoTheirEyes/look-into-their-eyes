@@ -1,14 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { PageFlip } from "@/components/FlipBook/PageFlip";
 import TableOfContentsContainer from "@/components/Book/TableOfContents/TableOfContentsContainer";
 import { StoryBook } from "@/components/Book/Book";
-
-interface CustomPageFlip {
-  pageFlip: () => PageFlip | null;
-}
 
 export const useBookNavigation = ({
   pagesAmount,
@@ -25,7 +21,9 @@ export const useBookNavigation = ({
   noContentAmount: number;
   setPageNum: (pageNum: number) => void;
 }) => {
-  const pageFlipRef = useRef<CustomPageFlip | null>(null);
+  const pageFlipRef = useRef<{
+    pageFlip: () => PageFlip | null;
+  } | null>(null);
   const searchParams = useSearchParams();
 
   const queryParamPage = +(searchParams.get("page") || 1);
@@ -41,28 +39,26 @@ export const useBookNavigation = ({
     [setPageNum]
   );
 
-  const [pages, setPages] = useState(
-    getPages(
-      book,
-      book.toc ? (
-        <TableOfContentsContainer
-          key='toc'
-          noContentAmount={noContentAmount}
-          rtl={rtl}
-          isMobile={isMobile}
-          goToPage={goToPage}
-          pagesAmount={pagesAmount}
-          toc={book.toc}
-        />
-      ) : undefined
-    )
+  const pages = getPages(
+    book,
+    book.toc ? (
+      <TableOfContentsContainer
+        key='toc'
+        noContentAmount={noContentAmount}
+        rtl={rtl}
+        isMobile={isMobile}
+        goToPage={goToPage}
+        pagesAmount={pagesAmount}
+        toc={book.toc}
+      />
+    ) : undefined
   );
 
-  const flipPage = (direction: "next" | "previous") => {
+  const flipPage = useCallback((direction: "next" | "previous") => {
     const flipDirection = direction === "next" ? "flipNext" : "flipPrev";
 
     pageFlipRef.current?.pageFlip()?.[flipDirection]();
-  };
+  }, []);
 
   useEffect(() => {
     const pageFlip = pageFlipRef.current?.pageFlip();
@@ -78,7 +74,6 @@ export const useBookNavigation = ({
     pageFlipRef,
     flipPage,
     goToPage,
-    setPages,
     pages,
   };
 };

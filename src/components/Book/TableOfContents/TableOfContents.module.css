@@ -39,6 +39,7 @@
   width: 100%;
   text-align: start;
   font-family: "Header-font", sans-serif;
+  cursor: pointer;
 }
 
 .pageNumber {
