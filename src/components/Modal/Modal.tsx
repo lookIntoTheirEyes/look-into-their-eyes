@@ -64,14 +64,12 @@ const ModalClient = ({
             aria-modal
             initial={{
               opacity: 0,
-              scale: 0.2,
-              rotate: 180,
+              scale: 0,
             }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{
               opacity: 0,
-              scale: 0.2,
-              rotate: 180,
+              scale: 0,
             }}
             transition={{ duration: 0.5 }}
             onClick={(e) => e.stopPropagation()}
