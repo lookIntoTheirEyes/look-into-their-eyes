@@ -8,11 +8,20 @@ import {
   Corner,
   Segment,
   IIntersectPoints,
+  IShadow,
 } from "./model";
 
 /**
  * Class representing mathematical methods for calculating page position (rotation angle, clip area ...)
  */
+
+export interface ICalc {
+  angle: number;
+  rect: RectPoints;
+  intersectPoints: IIntersectPoints;
+  pos: Point;
+  shadow: IShadow;
+}
 
 interface GeoParams {
   pos: Point;
