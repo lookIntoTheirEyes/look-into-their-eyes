@@ -1,8 +1,70 @@
 import { Interpolation, SpringValue, to } from "@react-spring/web";
 import FlipCalculation, { ICalc } from "./FlipCalculation";
 import { Corner, FlipCorner, FlipDirection, PageRect } from "./model";
-import { Point } from "framer-motion";
+
 import Helper from "./Helper";
+
+const MIN_SHADOW_PROGRESS = 0.5;
+
+function getBelowPageStyle({
+  calculatedValues,
+  isHardPage,
+  direction,
+  corner,
+  bookRect,
+  isRtl,
+}: {
+  isRtl: boolean;
+  isHardPage: boolean;
+  calculatedValues: Interpolation<ICalc | null>;
+  direction: SpringValue<FlipDirection>;
+  corner: SpringValue<Corner>;
+  bookRect: PageRect;
+}) {
+  const pageWidth = bookRect.pageWidth;
+
+  return {
+    zIndex: calculatedValues.to((calc: ICalc) => {
+      return !isHardPage && calc && calc.shadow.progress > MIN_SHADOW_PROGRESS
+        ? 10
+        : 1;
+    }),
+    clipPath: to(
+      [corner, direction, calculatedValues],
+      (corner, direction, calc) => {
+        if (corner === "none" || !calc || isHardPage) return "none";
+        const pageHeight = bookRect.height;
+        calc = calc as ICalc;
+        corner = corner as Corner;
+        direction = direction as FlipDirection;
+
+        const { intersectPoints, pos } = calc;
+
+        const area = FlipCalculation.getFrontClipArea({
+          ...intersectPoints,
+          corner: corner.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
+          pageHeight,
+          pageWidth,
+        });
+
+        return FlipCalculation.getSoftCss({
+          position: pos,
+          pageWidth,
+          pageHeight,
+          area,
+          direction,
+          angle: 0,
+          factorPosition: FlipCalculation.getBottomPagePosition(
+            direction,
+            pageWidth,
+            isRtl
+          ),
+          isRtl,
+        });
+      }
+    ),
+  };
+}
 
 function getSoftPageStyle(
   calc: Interpolation<ICalc | null>,
@@ -10,22 +72,13 @@ function getSoftPageStyle(
   direction: SpringValue<FlipDirection>,
   bookRect: PageRect,
   isFront: boolean,
-  isRtl: boolean,
-  isLeftPage: boolean
+  isRtl: boolean
 ) {
   const { pageWidth, height: pageHeight, width } = bookRect;
   return {
     clipPath: to([corner, direction, calc], (corner, direction, calc) => {
-      if (corner === "none" || !calc || (isFront && isLeftPage)) return "none";
+      if (corner === "none" || !calc || isFront) return "none";
 
-      if (isFront) {
-        return getFrontSoftClipPath({
-          calc,
-          pageHeight,
-          pageWidth,
-          corner,
-        });
-      }
       return getBackSoftClipPath({
         calc,
         corner,
@@ -99,78 +152,78 @@ function getBackSoftClipPath({
   });
 }
 
-function getFrontSoftClipPath({
-  calc,
-  pageHeight,
-  corner,
-  pageWidth,
-}: {
-  calc: ICalc;
-  pageHeight: number;
-  corner: Corner;
-  pageWidth: number;
-}): string {
-  const { intersectPoints } = calc;
+// function getFrontSoftClipPath({
+//   calc,
+//   pageHeight,
+//   corner,
+//   pageWidth,
+// }: {
+//   calc: ICalc;
+//   pageHeight: number;
+//   corner: Corner;
+//   pageWidth: number;
+// }): string {
+//   const { intersectPoints } = calc;
 
-  const area = FlipCalculation.getFrontClipArea({
-    ...intersectPoints,
-    corner: corner.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
-    pageHeight,
-    pageWidth,
-  });
+//   const area = FlipCalculation.getFrontClipArea({
+//     ...intersectPoints,
+//     corner: corner.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
+//     pageHeight,
+//     pageWidth,
+//   });
 
-  const invertedPath = invertClipPath(area, pageWidth, pageHeight, corner);
+//   const invertedPath = invertClipPath(area, pageWidth, pageHeight, corner);
 
-  return `polygon(${invertedPath
-    .filter((p): p is Point => !!p)
-    .map((p) => `${p!.x}px ${p!.y}px`)
-    .join(", ")})`;
-}
+//   return `polygon(${invertedPath
+//     .filter((p): p is Point => !!p)
+//     .map((p) => `${p!.x}px ${p!.y}px`)
+//     .join(", ")})`;
+// }
 
-function invertClipPath(
-  originalPoints: (Point | null)[],
-  pageWidth: number,
-  pageHeight: number,
-  corner: Corner = "top-right"
-): Point[] {
-  if (!originalPoints.length) return [];
-  const points = originalPoints.filter((p) => p !== null);
-  if (!points.length) return [];
+// function invertClipPath(
+//   originalPoints: (Point | null)[],
+//   pageWidth: number,
+//   pageHeight: number,
+//   corner: Corner = "top-right"
+// ): Point[] {
+//   if (!originalPoints.length) return [];
+//   const points = originalPoints.filter((p) => p !== null);
+//   if (!points.length) return [];
 
-  switch (corner) {
-    case "bottom-right": {
-      const bottomIntersect = points.find((p) => p?.y === pageHeight) ?? {
-        x: pageWidth,
-        y: pageHeight,
-      };
-      const sideIntersect = points.find((p) => p?.x === pageWidth) ?? {
-        x: pageWidth,
-        y: pageHeight,
-      };
+//   switch (corner) {
+//     case "bottom-right": {
+//       const bottomIntersect = points.find((p) => p?.y === pageHeight) ?? {
+//         x: pageWidth,
+//         y: pageHeight,
+//       };
+//       const sideIntersect = points.find((p) => p?.x === pageWidth) ?? {
+//         x: pageWidth,
+//         y: pageHeight,
+//       };
 
-      return [
-        { x: 0, y: 0 },
-        { x: pageWidth, y: 0 },
-        { x: pageWidth, y: sideIntersect.y },
-        sideIntersect,
-        bottomIntersect,
-        { x: 0, y: pageHeight },
-      ];
-    }
+//       return [
+//         { x: 0, y: 0 },
+//         { x: pageWidth, y: 0 },
+//         { x: pageWidth, y: sideIntersect.y },
+//         sideIntersect,
+//         bottomIntersect,
+//         { x: 0, y: pageHeight },
+//       ];
+//     }
 
-    case "top-right":
-      return [
-        { x: pageWidth, y: 0 },
-        ...points,
-        { x: 0, y: 0 },
-        { x: 0, y: pageHeight },
-        { x: pageWidth, y: pageHeight },
-      ];
+//     case "top-right":
+//       return [
+//         { x: pageWidth, y: 0 },
+//         ...points,
+//         { x: 0, y: 0 },
+//         { x: 0, y: pageHeight },
+//         { x: pageWidth, y: pageHeight },
+//       ];
 
-    default:
-      return [];
-  }
-}
+//     default:
+//       return [];
+//   }
+// }
 
 function getHardPageStyle(
   x: SpringValue<number>,
@@ -238,6 +291,7 @@ function getHardPageTransform(
 const PageStyle = {
   getSoftPageStyle,
   getHardPageStyle,
+  getBelowPageStyle,
 };
 
 export default PageStyle;

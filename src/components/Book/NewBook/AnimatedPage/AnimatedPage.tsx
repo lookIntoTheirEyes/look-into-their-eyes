@@ -1,7 +1,7 @@
 import { animated, SpringValue, to } from "@react-spring/web";
 import { ReactDOMAttributes } from "@use-gesture/react/dist/declarations/src/types";
 import styles from "./AnimatedPage.module.css";
-import { Corner, FlipCorner, FlipDirection, PageRect } from "../model";
+import { Corner, FlipDirection, PageRect } from "../model";
 import Helper from "../Helper";
 import ShadowStyle from "../shadow";
 
@@ -23,8 +23,6 @@ interface IProps {
   i: number;
   bookRect: PageRect;
 }
-
-const MIN_SHADOW_PROGRESS = 0.5;
 
 const AnimatedPage: React.FC<IProps> = ({
   pageNum,
@@ -62,7 +60,7 @@ const AnimatedPage: React.FC<IProps> = ({
   const calculatedValues = to(
     [x, y, direction, corner, progress],
     (x, y, direction, corner, progress) => {
-      if (corner === "none") return null;
+      if (corner === "none" || isHardPage) return null;
       x = x as number;
       y = y as number;
       direction = direction as FlipDirection;
@@ -70,7 +68,7 @@ const AnimatedPage: React.FC<IProps> = ({
       corner = corner as Corner;
 
       try {
-        const calc = getCalc({
+        const calc = FlipCalculation.getCalc({
           x,
           y,
           direction,
@@ -106,8 +104,7 @@ const AnimatedPage: React.FC<IProps> = ({
           direction,
           bookRect,
           isFront,
-          isRtl,
-          isLeftPage
+          isRtl
         );
   };
 
@@ -158,50 +155,14 @@ const AnimatedPage: React.FC<IProps> = ({
             className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
               styles.below
             }`}
-            style={{
-              zIndex: calculatedValues.to((calc: ICalc) => {
-                return isLeftPage &&
-                  !isHardPage &&
-                  calc &&
-                  calc.shadow.progress > MIN_SHADOW_PROGRESS
-                  ? 10
-                  : 1;
-              }),
-              clipPath: to(
-                [corner, direction, calculatedValues],
-                (corner, direction, calc) => {
-                  if (corner === "none" || !calc || !isLeftPage || isHardPage)
-                    return "none";
-                  const pageHeight = bookRect.height;
-
-                  const { intersectPoints, pos } = calc;
-
-                  const area = FlipCalculation.getFrontClipArea({
-                    ...intersectPoints,
-                    corner: corner.includes("top")
-                      ? FlipCorner.TOP
-                      : FlipCorner.BOTTOM,
-                    pageHeight,
-                    pageWidth,
-                  });
-
-                  return FlipCalculation.getSoftCss({
-                    position: pos,
-                    pageWidth,
-                    pageHeight,
-                    area,
-                    direction,
-                    angle: 0,
-                    factorPosition: FlipCalculation.getBottomPagePosition(
-                      direction,
-                      pageWidth,
-                      isRtl
-                    ),
-                    isRtl,
-                  });
-                }
-              ),
-            }}
+            style={PageStyle.getBelowPageStyle({
+              isRtl,
+              isHardPage,
+              bookRect,
+              calculatedValues,
+              direction,
+              corner,
+            })}
           >
             {pages[belowPageNum]}
           </animated.div>
@@ -221,67 +182,5 @@ const AnimatedPage: React.FC<IProps> = ({
     </>
   );
 };
-
-function getCalc({
-  x,
-  y,
-  direction,
-  corner,
-  containerRect,
-  isRtl,
-  progress,
-}: {
-  x: number;
-  y: number;
-  direction: FlipDirection;
-  corner: Corner;
-  containerRect: PageRect;
-  isRtl: boolean;
-  progress: number;
-}): ICalc {
-  const { pageWidth, height } = containerRect;
-  const topBottomCorner = corner.includes("top")
-    ? FlipCorner.TOP
-    : FlipCorner.BOTTOM;
-  const adjustedPos = FlipCalculation.convertToPage(
-    { x, y },
-    direction,
-    containerRect,
-    isRtl
-  );
-
-  const { pos, rect, angle } = FlipCalculation.getAnglePositionAndRect(
-    adjustedPos,
-    pageWidth,
-    height,
-    corner,
-    direction,
-    isRtl
-  );
-
-  const intersectPoints = FlipCalculation.calculateIntersectPoint({
-    pos,
-    pageWidth,
-    pageHeight: height,
-    corner: topBottomCorner,
-    rect,
-  });
-
-  const shadow = FlipCalculation.getShadowData(
-    FlipCalculation.getShadowStartPoint(topBottomCorner, intersectPoints),
-    FlipCalculation.getShadowAngle({
-      pageWidth,
-      direction,
-      intersections: intersectPoints,
-      corner: topBottomCorner,
-      isRtl,
-    }),
-    progress,
-    direction,
-    pageWidth
-  );
-
-  return { rect, intersectPoints, pos, angle, shadow };
-}
 
 export default AnimatedPage;

@@ -9,6 +9,7 @@ import {
   Segment,
   IIntersectPoints,
   IShadow,
+  PageRect,
 } from "./model";
 
 /**
@@ -51,6 +52,68 @@ interface IFrontClipArea extends IIntersectPoints {
   pageWidth: number;
   pageHeight: number;
   corner: FlipCorner;
+}
+
+function getCalc({
+  x,
+  y,
+  direction,
+  corner,
+  containerRect,
+  isRtl,
+  progress,
+}: {
+  x: number;
+  y: number;
+  direction: FlipDirection;
+  corner: Corner;
+  containerRect: PageRect;
+  isRtl: boolean;
+  progress: number;
+}): ICalc {
+  const { pageWidth, height } = containerRect;
+  const topBottomCorner = corner.includes("top")
+    ? FlipCorner.TOP
+    : FlipCorner.BOTTOM;
+  const adjustedPos = FlipCalculation.convertToPage(
+    { x, y },
+    direction,
+    containerRect,
+    isRtl
+  );
+
+  const { pos, rect, angle } = FlipCalculation.getAnglePositionAndRect(
+    adjustedPos,
+    pageWidth,
+    height,
+    corner,
+    direction,
+    isRtl
+  );
+
+  const intersectPoints = FlipCalculation.calculateIntersectPoint({
+    pos,
+    pageWidth,
+    pageHeight: height,
+    corner: topBottomCorner,
+    rect,
+  });
+
+  const shadow = FlipCalculation.getShadowData(
+    FlipCalculation.getShadowStartPoint(topBottomCorner, intersectPoints),
+    FlipCalculation.getShadowAngle({
+      pageWidth,
+      direction,
+      intersections: intersectPoints,
+      corner: topBottomCorner,
+      isRtl,
+    }),
+    progress,
+    direction,
+    pageWidth
+  );
+
+  return { rect, intersectPoints, pos, angle, shadow };
 }
 
 function getFlippingProgress(
@@ -677,5 +740,6 @@ const FlipCalculation = {
   getShadowStartPoint,
   getShadowData,
   getShadowAngle,
+  getCalc,
 };
 export default FlipCalculation;
