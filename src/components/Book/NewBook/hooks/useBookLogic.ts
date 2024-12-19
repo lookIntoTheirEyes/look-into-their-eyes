@@ -26,15 +26,6 @@ export function useBookLogic({
 
   const [currentPage, setCurrentPage] = useState(0);
 
-  // const createQueryString = useCallback(
-  //   (name: string, value: string) => {
-  //     const params = new URLSearchParams(searchParams.toString());
-  //     params.set(name, value);
-  //     return params.toString();
-  //   },
-  //   [searchParams]
-  // );
-
   const updateUrlWithSearchParams = useCallback(
     (pageNum: number) => {
       router.push(
@@ -53,18 +44,15 @@ export function useBookLogic({
     [currentPage, updateUrlWithSearchParams]
   );
 
-  const handleNextPage = useCallback(() => {
-    // console.log("handleNextPage");
-
+  const handleNextPage = () => {
     if (!isSinglePage && currentPage % 2 === 1 && currentPage) {
       if (currentPage + 1 < totalPages) updatePage(2);
     } else {
       if (currentPage < totalPages - 1) updatePage(1);
     }
-  }, [isSinglePage, currentPage, totalPages, updatePage]);
+  };
 
-  const handlePrevPage = useCallback(() => {
-    // console.log("handlePrevPage");
+  const handlePrevPage = () => {
     if (
       !isSinglePage &&
       currentPage % 2 === 1 &&
@@ -75,7 +63,7 @@ export function useBookLogic({
     } else {
       updatePage(-1);
     }
-  }, [isSinglePage, currentPage, totalPages, updatePage]);
+  };
 
   useEffect(() => {
     const queryParamPage = +(searchParams.get("page") || 1);

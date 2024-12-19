@@ -4,6 +4,7 @@ import Page from "../../Page/Page";
 import PageContent from "../../Page/PageContent/PageContent";
 import PageCover from "../../PageCover/PageCover";
 import TableOfContentsContainer from "../../TableOfContents/TableOfContentsContainer";
+import { Corner, FlipDirection } from "../model";
 
 interface UseBookLayoutParams {
   bookPages: IPage[];
@@ -17,7 +18,13 @@ interface UseBookLayoutParams {
   backDetails: ICoverPage;
   frontDetails: ICoverPage;
   isRtl: boolean;
-  setCurrentPage: (page: number) => void;
+  animateNextPage: (params: {
+    idx: number;
+    direction: FlipDirection;
+    corner: Corner;
+    isFullAnimate?: boolean;
+    nextPageNum?: number;
+  }) => void;
 }
 
 export const useBookLayout = ({
@@ -29,7 +36,7 @@ export const useBookLayout = ({
   backDetails,
   frontDetails,
   isRtl,
-  setCurrentPage,
+  animateNextPage,
 }: UseBookLayoutParams) => {
   const bookContainerRef = useRef<HTMLDivElement>(null);
   const [pages, setPages] = useState([] as JSX.Element[]);
@@ -62,7 +69,17 @@ export const useBookLayout = ({
         noContentAmount={2}
         rtl={isRtl}
         goToPage={(pageNum: number) => {
-          setCurrentPage((pageNum % 2 === 0 ? pageNum - 1 : pageNum) - 1);
+          if (pageNum < 3) {
+            return;
+          }
+
+          animateNextPage({
+            nextPageNum: pageNum % 2 === 0 ? pageNum - 1 : pageNum,
+            corner: isRtl ? "top-left" : "top-right",
+            direction: FlipDirection.FORWARD,
+            idx: 1,
+            isFullAnimate: true,
+          });
         }}
         toc={toc}
       />
@@ -77,7 +94,7 @@ export const useBookLayout = ({
     isRtl,
     pageCta,
     pageNum,
-    setCurrentPage,
+    animateNextPage,
     storyTitle,
     toc,
   ]);

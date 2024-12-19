@@ -44,6 +44,10 @@ const NewBook: React.FC<BookProps> = ({
   const bookRef = useRef<HTMLDivElement>(null);
 
   const { bookStyle, bookContainerRef, isSinglePage } = useBookStyle();
+  const bookRect = {
+    ...bookStyle,
+    pageWidth: bookStyle.width / (isSinglePage ? 1 : 2),
+  };
 
   const {
     totalPages,
@@ -52,6 +56,20 @@ const NewBook: React.FC<BookProps> = ({
     handleNextPage,
     handlePrevPage,
   } = useBookLogic({ noContentPages, isSinglePage, pagesContent: bookPages });
+
+  const isFirstPage = currentPage === 0;
+  const isLastPage = currentPage === totalPages - 1;
+
+  const { props, bind, animateNextPage } = usePageFlip({
+    isRtl,
+    onNextPage: handleNextPage,
+    onPrevPage: handlePrevPage,
+    bookRef,
+    currentPage,
+    totalPages,
+    bookRect,
+    setCurrentPage,
+  });
 
   const { pages } = useBookLayout({
     bookPages,
@@ -62,25 +80,7 @@ const NewBook: React.FC<BookProps> = ({
     backDetails,
     frontDetails,
     isRtl,
-    setCurrentPage,
-  });
-
-  const isFirstPage = currentPage === 0;
-  const isLastPage = currentPage === totalPages - 1;
-
-  const bookRect = {
-    ...bookStyle,
-    pageWidth: bookStyle.width / (isSinglePage ? 1 : 2),
-  };
-
-  const { props, bind, animateNextPage } = usePageFlip({
-    isRtl,
-    onNextPage: handleNextPage,
-    onPrevPage: handlePrevPage,
-    bookRef,
-    currentPage,
-    totalPages,
-    bookRect,
+    animateNextPage,
   });
 
   return (
@@ -130,13 +130,15 @@ const NewBook: React.FC<BookProps> = ({
               ? 0
               : 1;
 
-          animateNextPage(
+          animateNextPage({
             idx,
             direction,
-            (direction === FlipDirection.FORWARD) === !isRtl
-              ? "top-right"
-              : "top-left"
-          );
+            corner:
+              (direction === FlipDirection.FORWARD) === !isRtl
+                ? "top-right"
+                : "top-left",
+            isFullAnimate: true,
+          });
         }}
         pageCount={totalPages}
         currPage={currentPage + 1}

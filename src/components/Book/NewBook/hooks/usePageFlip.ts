@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useRef } from "react";
+import { RefObject, useRef } from "react";
 import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
 import { Corner, FlipDirection, PageRect } from "../model";
@@ -12,7 +12,9 @@ interface UsePageFlipParams {
   onPrevPage: () => void;
   bookRef: RefObject<HTMLDivElement>;
   bookRect: PageRect;
+  setCurrentPage: (pageNum: number) => void;
 }
+const CORNER_FACTOR = 150;
 const ANIMATION_DURATION = 500;
 
 export const usePageFlip = ({
@@ -23,253 +25,248 @@ export const usePageFlip = ({
   currentPage,
   totalPages,
   bookRect,
+  setCurrentPage,
 }: UsePageFlipParams) => {
   const status = useRef<"" | "drag" | "hover" | "animation">("");
 
   const { left: bookLeft, width: bookWidth, pageWidth } = bookRect;
 
-  const getSpringConfig = useCallback(
-    ({
-      direction = FlipDirection.FORWARD,
-      immediate = false,
-      startX = 0,
-      startY = 0,
-      progress = 0,
-      corner = "none",
-    }: {
-      direction?: FlipDirection;
-      immediate?: boolean;
-      startX?: number;
-      startY?: number;
-      progress?: number;
-      corner?: Corner;
-    }) => ({
-      x: startX,
-      y: startY,
-      progress,
-      immediate,
-      direction,
-      corner,
-      config: {
-        tension: 200,
-        friction: 25,
-        duration: immediate ? 0 : ANIMATION_DURATION,
-      },
-    }),
-    []
-  );
+  const getSpringConfig = ({
+    direction = FlipDirection.FORWARD,
+    immediate = false,
+    x = 0,
+    y = 0,
+    progress = 0,
+    corner = "none",
+  }: {
+    direction?: FlipDirection;
+    immediate?: boolean;
+    x?: number;
+    y?: number;
+    progress?: number;
+    corner?: Corner;
+  }) => ({
+    x,
+    y,
+    progress,
+    immediate,
+    direction,
+    corner,
+  });
 
-  const getDirByPoint = useCallback(
-    (isLeft: boolean) => {
-      return isLeft
-        ? isRtl
-          ? FlipDirection.FORWARD
-          : FlipDirection.BACK
-        : isRtl
-        ? FlipDirection.BACK
-        : FlipDirection.FORWARD;
-    },
-    [isRtl]
-  );
+  const getDirByPoint = (isLeft: boolean) => {
+    return isLeft
+      ? isRtl
+        ? FlipDirection.FORWARD
+        : FlipDirection.BACK
+      : isRtl
+      ? FlipDirection.BACK
+      : FlipDirection.FORWARD;
+  };
 
   const [props, api] = useSprings(2, () => ({
     ...getSpringConfig({}),
   }));
 
-  const animateNextPage = useCallback(
-    (idx: number, direction: FlipDirection, corner: Corner) => {
-      api.start((i) => {
-        if (i !== idx) return;
-        status.current = "animation";
-        const x =
-          (direction === FlipDirection.FORWARD) !== isRtl
-            ? 0
-            : bookRect.width + bookRect.left;
+  const getEndX = (
+    direction: FlipDirection,
+    left: number,
+    width: number,
+    reverse = false
+  ) => {
+    const condition = (direction === FlipDirection.FORWARD) !== isRtl;
 
-        const y = corner.includes("top")
-          ? bookRect.top
-          : bookRect.top + bookRect.height;
+    return (reverse ? !condition : condition) ? left : left + width;
+  };
 
-        const config = {
-          ...getSpringConfig({
-            corner,
-            startY: y,
-            startX: x,
-            progress: 100,
-            direction,
-          }),
-        };
+  const animateNextPage = (params: {
+    idx: number;
+    direction: FlipDirection;
+    corner: Corner;
+    isFullAnimate?: boolean;
+    nextPageNum?: number;
+  }) => {
+    const { idx, direction, corner, isFullAnimate, nextPageNum = -1 } = params;
 
-        return {
-          ...config,
+    const {
+      top: origTop,
+      height,
+      left,
+      width,
+    } = bookRef.current!.getBoundingClientRect();
+    const top = origTop + scrollY;
 
-          onResolve: () => {
+    api.start((i) => {
+      if (i !== idx) return;
+      status.current = "animation";
+      const x = getEndX(direction, left, width);
+
+      const y = corner.includes("top") ? top : top + height;
+
+      const to = {
+        ...getSpringConfig({
+          corner,
+          y,
+          x,
+          progress: 100,
+          direction,
+        }),
+      };
+      const config = isFullAnimate
+        ? {
+            to,
+            from: {
+              ...to,
+              x: getEndX(direction, left, width, true),
+              progress: 0,
+              y: corner.includes("top") ? y + CORNER_FACTOR : y - CORNER_FACTOR,
+            },
+          }
+        : to;
+
+      return {
+        ...config,
+        config: {
+          tension: 200,
+          friction: 25,
+          duration: ANIMATION_DURATION,
+        },
+
+        onResolve: () => {
+          if (nextPageNum >= 0) {
+            setCurrentPage(nextPageNum);
+          } else {
             if (direction === FlipDirection.BACK) {
               onPrevPage();
             } else {
               onNextPage();
             }
+          }
 
-            api.start((i) => {
-              if (i !== idx) return;
-              status.current = "";
+          api.start((i) => {
+            if (i !== idx) return;
+            status.current = "";
 
-              return {
-                ...getSpringConfig({
-                  immediate: true,
-                }),
-              };
-            });
+            return {
+              ...getSpringConfig({
+                immediate: true,
+              }),
+            };
+          });
+        },
+      };
+    });
+  };
+
+  const handleDragEnd = ({
+    progress,
+    idx,
+    direction,
+    corner,
+  }: {
+    progress: number;
+    idx: number;
+    direction: FlipDirection;
+    corner: Corner;
+  }) => {
+    if (progress < 50) {
+      api.start((i) => {
+        if (idx !== i) return;
+        status.current = "animation";
+
+        const x = getEndX(direction, bookRect.left, bookRect.width, true);
+
+        const y = corner.includes("top")
+          ? bookRect.top
+          : bookRect.top + bookRect.height;
+
+        return {
+          to: getSpringConfig({ direction, corner, x, y }),
+          onResolve: () => {
+            status.current = "";
+            return {
+              ...getSpringConfig({ corner: "none", immediate: true }),
+            };
           },
         };
       });
-    },
-    [
-      api,
-      isRtl,
-      bookRect.width,
-      bookRect.left,
-      bookRect.top,
-      bookRect.height,
-      getSpringConfig,
-      onPrevPage,
-      onNextPage,
-    ]
-  );
+    } else {
+      animateNextPage({ idx, direction, corner });
+    }
+  };
 
-  const handleDragEnd = useCallback(
-    ({
-      progress,
-      idx,
-      direction,
-      corner,
-    }: {
-      progress: number;
-      idx: number;
-      direction: FlipDirection;
-      corner: Corner;
-    }) => {
-      if (progress < 50) {
-        api.start((i) => {
-          if (idx !== i) return;
-          status.current = "animation";
-          const startX =
-            (direction === FlipDirection.FORWARD) !== isRtl
-              ? bookRect.width + bookRect.left
-              : 0;
+  const animateDrag = ({
+    idx,
+    progress,
+    direction,
+    x,
+    y,
+    corner,
+    isDrag = true,
+  }: {
+    idx: number;
+    progress: number;
+    direction: FlipDirection;
+    x: number;
+    y: number;
+    corner: Corner;
+    isDrag?: boolean;
+  }) => {
+    api.start((i) => {
+      if (idx !== i) return;
 
-          const startY = corner.includes("top")
-            ? bookRect.top
-            : bookRect.top + bookRect.height;
-
-          return {
-            ...getSpringConfig({ direction, corner, startX, startY }),
-            onResolve: () => {
-              status.current = "";
-              return {
-                ...getSpringConfig({ corner: "none", immediate: true }),
-              };
-            },
-          };
-        });
-      } else {
-        animateNextPage(idx, direction, corner);
-      }
-    },
-    [
-      animateNextPage,
-      api,
-      bookRect.height,
-      bookRect.left,
-      bookRect.top,
-      bookRect.width,
-      getSpringConfig,
-      isRtl,
-    ]
-  );
-
-  const animateDrag = useCallback(
-    ({
-      idx,
-      progress,
-      direction,
-      x,
-      y,
-      corner,
-      isDrag = true,
-    }: {
-      idx: number;
-      progress: number;
-      direction: FlipDirection;
-      x: number;
-      y: number;
-      corner: Corner;
-      isDrag?: boolean;
-    }) => {
-      api.start((i) => {
-        if (idx !== i) return;
-        return {
-          ...getSpringConfig({
-            direction,
-            immediate: isDrag,
-            startX: x,
-            corner,
-            progress,
-            startY: y,
-          }),
-        };
-      });
-    },
-    [api, getSpringConfig]
-  );
-
-  const handleHardPageHover = useCallback(
-    (
-      isLeft: boolean,
-      progress: number,
-      idx: number,
-      x: number,
-      y: number,
-      corner: Corner
-    ) => {
-      const direction = getDirByPoint(isLeft);
-      if (progress > 10) {
-        handleDragEnd({
-          progress: 0,
-          idx,
+      return {
+        ...getSpringConfig({
           direction,
-          corner,
-        });
-      } else {
-        animateDrag({
-          idx,
-          progress,
-          direction,
+          immediate: isDrag,
           x,
           y,
           corner,
-          isDrag: false,
-        });
-      }
-    },
-    [animateDrag, getDirByPoint, handleDragEnd]
-  );
+          progress,
+        }),
+      };
+    });
+  };
 
-  // console.log("rerender");
-
-  const resetLocation = useCallback(
-    (idx: number, direction: FlipDirection) => {
-      api.start((i) => {
-        if (idx !== i) return;
-
-        return {
-          ...getSpringConfig({ direction }),
-        };
+  const handleHardPageHover = (
+    isLeft: boolean,
+    progress: number,
+    idx: number,
+    x: number,
+    y: number,
+    corner: Corner
+  ) => {
+    const direction = getDirByPoint(isLeft);
+    if (progress > 10) {
+      handleDragEnd({
+        progress: 0,
+        idx,
+        direction,
+        corner,
       });
-      status.current = "";
-    },
-    [api, getSpringConfig]
-  );
+    } else {
+      animateDrag({
+        idx,
+        progress,
+        direction,
+        x,
+        y,
+        corner,
+        isDrag: false,
+      });
+    }
+  };
+
+  const resetLocation = (idx: number, direction: FlipDirection) => {
+    api.start((i) => {
+      if (idx !== i) return;
+
+      return {
+        ...getSpringConfig({ direction }),
+      };
+    });
+    status.current = "";
+  };
 
   const bind = useGesture(
     {
@@ -308,7 +305,13 @@ export const usePageFlip = ({
         }
 
         if (!isHardPage) {
-          const corner = Helper.getCorner(x, y, isLeftPage, bookRect, 150);
+          const corner = Helper.getCorner(
+            x,
+            y,
+            isLeftPage,
+            bookRect,
+            CORNER_FACTOR
+          );
 
           api.start((i) => {
             if (idx !== i) return;
@@ -339,7 +342,6 @@ export const usePageFlip = ({
           y: clientY,
           rect: bookRect,
         });
-        // console.log("get page props onClick corner", corner);
 
         const clickLocation = Helper.getXClickLocation(
           clientX,
@@ -350,13 +352,11 @@ export const usePageFlip = ({
         );
         const action = Helper.getActionByClick(clickLocation, isRtl);
         if (!action) return;
-        // console.log("get page props onClick action", action);
 
         const direction =
           action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
 
-        // console.log("direction", direction);
-        animateNextPage(idx, direction, corner);
+        animateNextPage({ idx, direction, corner, isFullAnimate: true });
       },
 
       onDrag: ({
