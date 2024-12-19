@@ -73,27 +73,25 @@ const AnimatedPage: React.FC<IProps> = ({
   );
   const adjustOrigin = pageNum === pages.length - 1 || pageNum === 1;
 
-  // console.log("animatedPage rendered");
-
   const calculatedValues = to(
     [x, y, direction, corner, progress],
-    (currentX, currentY, currentDirection, currentCorner, currentProgress) => {
-      if (currentCorner === "none") return null;
-      currentX = currentX as number;
-      currentY = currentY as number;
-      currentProgress = currentProgress as number;
-      currentDirection = currentDirection as FlipDirection;
-      currentCorner = currentCorner as Corner;
+    (x, y, direction, corner, progress) => {
+      if (corner === "none") return null;
+      x = x as number;
+      y = y as number;
+      direction = direction as FlipDirection;
+      progress = progress as number;
+      corner = corner as Corner;
 
       try {
         const calc = getCalc({
-          x: currentX,
-          y: currentY,
-          direction: currentDirection,
-          corner: currentCorner,
+          x,
+          y,
+          direction,
+          corner,
           containerRect: bookRect,
           isRtl,
-          progress: currentProgress,
+          progress,
         });
 
         prevCalc.current = calc;
@@ -144,16 +142,11 @@ const AnimatedPage: React.FC<IProps> = ({
         {...bind(i)}
         style={{ zIndex: progress.to((p) => (p > 50 ? 9 : !p ? 6 : 8)) }}
       >
-        <animated.div
-          key={`page-front-${pageNum}`}
-          className={`${styles.page}`}
-          style={getPageStyle(true)}
-        >
+        <animated.div className={`${styles.page}`} style={getPageStyle(true)}>
           {pages[pageNum]}
         </animated.div>
 
         <animated.div
-          key={`page-back-${backPageNum}`}
           className={`${styles.page} ${styles.back} ${
             adjustOrigin === isRtl ? "" : styles.right
           }`}

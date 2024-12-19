@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { CoverPage, Page as BookPage } from "@/lib/model/book";
+import { ICoverPage, IPage } from "@/lib/model/book";
 import { useBookStyle } from "./hooks/useBookStyle";
 import { useBookLogic } from "./hooks/useBookLogic";
 import { usePageFlip } from "./hooks/usePageFlip";
@@ -20,13 +20,13 @@ interface BookProps {
   isRtl: boolean;
   toc?: {
     title: string;
-    pages: BookPage[];
+    pages: IPage[];
   };
-  bookPages: BookPage[];
+  bookPages: IPage[];
   storyTitle: string;
   pageCta: string;
-  backDetails: CoverPage;
-  frontDetails: CoverPage;
+  backDetails: ICoverPage;
+  frontDetails: ICoverPage;
   noContentPages: number;
 }
 

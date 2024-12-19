@@ -1,21 +1,31 @@
-import { useRef, useState, useMemo, useCallback } from "react";
-import { CoverPage, Page as BookPage } from "@/lib/model/book";
+import { useRef, useState, useCallback, useEffect } from "react";
+import { ICoverPage, IPage } from "@/lib/model/book";
 import Page from "../../Page/Page";
 import PageContent from "../../Page/PageContent/PageContent";
 import PageCover from "../../PageCover/PageCover";
 import TableOfContentsContainer from "../../TableOfContents/TableOfContentsContainer";
 
-interface UseBookLayoutParams {
-  bookPages: BookPage[];
+export interface StoryBook {
+  Pages: React.JSX.Element[];
+  Front?: React.JSX.Element;
+  Back?: React.JSX.Element;
   toc?: {
     title: string;
-    pages: BookPage[];
+    pages: IPage[];
+  };
+}
+
+interface UseBookLayoutParams {
+  bookPages: IPage[];
+  toc?: {
+    title: string;
+    pages: IPage[];
   };
   noContentPages: number;
   storyTitle: string;
   pageCta: string;
-  backDetails: CoverPage;
-  frontDetails: CoverPage;
+  backDetails: ICoverPage;
+  frontDetails: ICoverPage;
   isRtl: boolean;
   setCurrentPage: (page: number) => void;
 }
@@ -32,71 +42,82 @@ export const useBookLayout = ({
   setCurrentPage,
 }: UseBookLayoutParams) => {
   const bookContainerRef = useRef<HTMLDivElement>(null);
-  const [isSinglePage, setIsSinglePage] = useState(false);
+  const [pages, setPages] = useState([] as JSX.Element[]);
 
   const pageNum = useCallback(
     (i: number) => i + noContentPages,
     [noContentPages]
   );
 
-  const content = useMemo(
-    () =>
-      bookPages.map((pageContent, i) => ({
-        component: (
-          <Page key={`page-${i}`} rtl={isRtl} pageNum={pageNum(i)}>
-            <PageContent
-              cta={pageCta}
-              details={pageContent}
-              pageNum={pageNum(i - 1)}
-              title={storyTitle}
-            />
-          </Page>
-        ),
-        content: pageContent,
-      })),
-    [bookPages, isRtl, pageCta, pageNum, storyTitle]
-  );
+  useEffect(() => {
+    if (pages.length) {
+      return;
+    }
 
-  const pagesContent = useMemo(() => {
+    const Pages = bookPages.map((pageContent, i) => (
+      <Page key={`page-${i}`} rtl={isRtl} pageNum={pageNum(i)}>
+        <PageContent
+          cta={pageCta}
+          details={pageContent}
+          pageNum={pageNum(i - 1)}
+          title={storyTitle}
+        />
+      </Page>
+    ));
+
     const Front = <PageCover key='front' details={frontDetails} />;
     const Back = <PageCover key='back' details={backDetails} />;
 
-    return [Front, ...content.map((c) => c.component), Back];
-  }, [content, frontDetails, backDetails]);
+    const tocContainer = toc && (
+      <TableOfContentsContainer
+        key='toc'
+        noContentAmount={2}
+        rtl={isRtl}
+        goToPage={(pageNum: number) => {
+          setCurrentPage((pageNum % 2 === 0 ? pageNum - 1 : pageNum) - 1);
+        }}
+        toc={toc}
+      />
+    );
 
-  const tocContainer = useMemo(
-    () =>
-      toc && (
-        <TableOfContentsContainer
-          key='toc'
-          noContentAmount={2}
-          rtl={isRtl}
-          goToPage={(pageNum: number) => {
-            setCurrentPage((pageNum % 2 === 0 ? pageNum - 1 : pageNum) - 1);
-          }}
-          toc={toc}
-        />
-      ),
-    [toc, isRtl, setCurrentPage]
-  );
-
-  const pages = useMemo(
-    () =>
-      toc
-        ? [
-            pagesContent[0],
-            tocContainer as JSX.Element,
-            ...pagesContent.slice(1),
-          ]
-        : pagesContent,
-    [toc, pagesContent, tocContainer]
-  );
+    setPages(getPages({ Front, Back, Pages }, tocContainer));
+  }, [
+    backDetails,
+    bookPages,
+    frontDetails,
+    isRtl,
+    pageCta,
+    pageNum,
+    setCurrentPage,
+    storyTitle,
+    toc,
+    pages.length,
+  ]);
 
   return {
     bookContainerRef,
-    isSinglePage,
-    setIsSinglePage,
     pages,
-    content,
   };
 };
+
+function getPages({ Front, Back, Pages }: StoryBook, toc?: JSX.Element) {
+  const renderPages = [] as React.JSX.Element[];
+
+  if (Front) {
+    renderPages.push(Front);
+  }
+
+  if (toc) {
+    renderPages.push(toc);
+  }
+
+  if (renderPages.length) {
+    renderPages.push(...Pages);
+  }
+
+  if (Back) {
+    renderPages.push(Back);
+  }
+
+  return renderPages;
+}

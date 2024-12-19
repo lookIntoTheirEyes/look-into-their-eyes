@@ -101,8 +101,6 @@ export const usePageFlip = ({
           }),
         };
 
-        console.log("animate next config", config);
-
         return {
           ...config,
 
@@ -342,7 +340,7 @@ export const usePageFlip = ({
           y: clientY,
           rect: bookRect,
         });
-        console.log("get page props onClick corner", corner);
+        // console.log("get page props onClick corner", corner);
 
         const clickLocation = Helper.getXClickLocation(
           clientX,
@@ -353,12 +351,12 @@ export const usePageFlip = ({
         );
         const action = Helper.getActionByClick(clickLocation, isRtl);
         if (!action) return;
-        console.log("get page props onClick action", action);
+        // console.log("get page props onClick action", action);
 
         const direction =
           action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
 
-        console.log("direction", direction);
+        // console.log("direction", direction);
         animateNextPage(idx, direction, corner);
       },
 

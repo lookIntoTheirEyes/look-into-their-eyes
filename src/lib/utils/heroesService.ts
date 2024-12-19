@@ -1,6 +1,6 @@
 import { Language } from "../model/language";
 import heroesData from "@/books/heroes.json";
-import { Page } from "../model/book";
+import { IPage } from "../model/book";
 import { getImageUrl } from "./utils";
 
 const BOOK_NO_CONTENT_PAGES = 3;
@@ -52,7 +52,7 @@ export async function getHero(page: string, lang: Language) {
   };
 }
 
-export function getAllPages(lang: Language): Page[] {
+export function getAllPages(lang: Language): IPage[] {
   const pages = heroes.map((hero) => {
     const { name: title, description, longDescription } = hero[lang];
     return {
