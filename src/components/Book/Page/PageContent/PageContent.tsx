@@ -4,11 +4,11 @@ import { useRouter } from "@/i18n/routing";
 import styles from "./PageContent.module.css";
 import StyledButton from "@/components/StyledButton/StyledButton";
 import Image from "@/components/Image/Image";
-import { Page } from "@/lib/model/book";
+import { IPage } from "@/lib/model/book";
 
 interface PageProps {
   pageNum: number;
-  details: Page;
+  details: IPage;
   cta?: string;
   title?: string;
 }

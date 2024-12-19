@@ -1,12 +1,12 @@
 import { forwardRef } from "react";
-import { Page as HeroPage } from "@/lib/model/book";
+import { IPage } from "@/lib/model/book";
 import Page from "@/components/Book/Page/Page";
 import TableOfContents from "./TableOfContents";
 
 export interface TableOfContentsPageProps {
   toc: {
     title: string;
-    pages: HeroPage[];
+    pages: IPage[];
   };
   goToPage: (pageNum: number) => void;
   rtl: boolean;

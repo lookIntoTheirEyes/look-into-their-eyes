@@ -101,7 +101,7 @@ const NewBook: React.FC<BookProps> = ({
           return (
             shouldRender && (
               <AnimatedPage
-                key={`page-${currentPage + i}`}
+                key={`page-${pages[currentPage + i]?.key || currentPage + i}`}
                 isSinglePage={isSinglePage}
                 isRtl={isRtl}
                 pages={pages}

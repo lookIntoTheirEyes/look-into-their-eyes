@@ -1,13 +1,13 @@
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 
-import { Page as BookPage } from "@/lib/model/book";
+import { IPage } from "@/lib/model/book";
 import NewBook from "./NewBook/NewBook";
 
 interface IBookProps {
   rtl: boolean;
   tableOfContentsTitle?: string;
-  pagesContent: BookPage[];
+  pagesContent: IPage[];
   children?: ReactNode;
 }
 

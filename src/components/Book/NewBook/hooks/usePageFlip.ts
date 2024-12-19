@@ -73,8 +73,7 @@ export const usePageFlip = ({
   );
 
   const [props, api] = useSprings(2, () => ({
-    to: { ...getSpringConfig({}) },
-    from: { ...getSpringConfig({}) },
+    ...getSpringConfig({}),
   }));
 
   const animateNextPage = useCallback(

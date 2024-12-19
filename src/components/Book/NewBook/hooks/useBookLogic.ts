@@ -1,13 +1,13 @@
-import { useState, useCallback } from "react";
-import { Page } from "@/lib/model/book";
+import { useState, useCallback, useEffect } from "react";
+import { IPage } from "@/lib/model/book";
 import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/routing";
 
 export interface BookLogicParams {
-  pagesContent: Page[];
+  pagesContent: IPage[];
   toc?: {
     title: string;
-    pages: Page[];
+    pages: IPage[];
   };
   isSinglePage: boolean;
   noContentPages: number;
@@ -21,15 +21,19 @@ export function useBookLogic({
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const queryParamPage = +searchParams.get("page")!;
-  const totalPages = pagesContent.length + noContentPages;
-  const pageNum =
-    (queryParamPage <= 0 || queryParamPage > totalPages ? 1 : queryParamPage) -
-    1;
 
-  const [currentPage, setCurrentPage] = useState(
-    pageNum && pageNum % 2 === 0 ? pageNum - 1 : pageNum
-  );
+  const totalPages = pagesContent.length + noContentPages;
+
+  const [currentPage, setCurrentPage] = useState(0);
+
+  // const createQueryString = useCallback(
+  //   (name: string, value: string) => {
+  //     const params = new URLSearchParams(searchParams.toString());
+  //     params.set(name, value);
+  //     return params.toString();
+  //   },
+  //   [searchParams]
+  // );
 
   const updateUrlWithSearchParams = useCallback(
     (pageNum: number) => {
@@ -50,7 +54,7 @@ export function useBookLogic({
   );
 
   const handleNextPage = useCallback(() => {
-    console.log("handleNextPage");
+    // console.log("handleNextPage");
 
     if (!isSinglePage && currentPage % 2 === 1 && currentPage) {
       if (currentPage + 1 < totalPages) updatePage(2);
@@ -60,7 +64,7 @@ export function useBookLogic({
   }, [isSinglePage, currentPage, totalPages, updatePage]);
 
   const handlePrevPage = useCallback(() => {
-    console.log("handlePrevPage");
+    // console.log("handlePrevPage");
     if (
       !isSinglePage &&
       currentPage % 2 === 1 &&
@@ -72,6 +76,15 @@ export function useBookLogic({
       updatePage(-1);
     }
   }, [isSinglePage, currentPage, totalPages, updatePage]);
+
+  useEffect(() => {
+    const queryParamPage = +(searchParams.get("page") || 1);
+    const initPageNum =
+      queryParamPage <= 0 || queryParamPage > totalPages ? 1 : queryParamPage;
+
+    setCurrentPage(initPageNum - 1);
+    updateUrlWithSearchParams(initPageNum);
+  }, [searchParams, totalPages, updateUrlWithSearchParams]);
 
   return {
     totalPages,

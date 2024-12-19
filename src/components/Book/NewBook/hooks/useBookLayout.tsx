@@ -5,16 +5,6 @@ import PageContent from "../../Page/PageContent/PageContent";
 import PageCover from "../../PageCover/PageCover";
 import TableOfContentsContainer from "../../TableOfContents/TableOfContentsContainer";
 
-export interface StoryBook {
-  Pages: React.JSX.Element[];
-  Front?: React.JSX.Element;
-  Back?: React.JSX.Element;
-  toc?: {
-    title: string;
-    pages: IPage[];
-  };
-}
-
 interface UseBookLayoutParams {
   bookPages: IPage[];
   toc?: {
@@ -50,9 +40,7 @@ export const useBookLayout = ({
   );
 
   useEffect(() => {
-    if (pages.length) {
-      return;
-    }
+    if (pages.length) return;
 
     const Pages = bookPages.map((pageContent, i) => (
       <Page key={`page-${i}`} rtl={isRtl} pageNum={pageNum(i)}>
@@ -82,6 +70,7 @@ export const useBookLayout = ({
 
     setPages(getPages({ Front, Back, Pages }, tocContainer));
   }, [
+    pages.length,
     backDetails,
     bookPages,
     frontDetails,
@@ -91,7 +80,6 @@ export const useBookLayout = ({
     setCurrentPage,
     storyTitle,
     toc,
-    pages.length,
   ]);
 
   return {
@@ -100,8 +88,19 @@ export const useBookLayout = ({
   };
 };
 
-function getPages({ Front, Back, Pages }: StoryBook, toc?: JSX.Element) {
-  const renderPages = [] as React.JSX.Element[];
+function getPages(
+  {
+    Front,
+    Back,
+    Pages,
+  }: {
+    Front?: React.ReactElement;
+    Back?: React.ReactElement;
+    Pages: React.ReactElement[];
+  },
+  toc?: React.ReactElement
+) {
+  const renderPages = [] as React.ReactElement[];
 
   if (Front) {
     renderPages.push(Front);
@@ -111,7 +110,7 @@ function getPages({ Front, Back, Pages }: StoryBook, toc?: JSX.Element) {
     renderPages.push(toc);
   }
 
-  if (renderPages.length) {
+  if (Pages.length) {
     renderPages.push(...Pages);
   }
 
