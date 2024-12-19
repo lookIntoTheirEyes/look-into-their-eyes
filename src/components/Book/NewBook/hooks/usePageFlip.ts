@@ -133,16 +133,6 @@ export const usePageFlip = ({
         },
 
         onResolve: () => {
-          if (nextPageNum >= 0) {
-            setCurrentPage(nextPageNum);
-          } else {
-            if (direction === FlipDirection.BACK) {
-              onPrevPage();
-            } else {
-              onNextPage();
-            }
-          }
-
           api.start((i) => {
             if (i !== idx) return;
             status.current = "";
@@ -153,6 +143,16 @@ export const usePageFlip = ({
               }),
             };
           });
+
+          if (nextPageNum >= 0) {
+            setCurrentPage(nextPageNum);
+          } else {
+            if (direction === FlipDirection.BACK) {
+              onPrevPage();
+            } else {
+              onNextPage();
+            }
+          }
         },
       };
     });
