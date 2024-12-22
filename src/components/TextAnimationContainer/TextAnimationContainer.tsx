@@ -13,20 +13,19 @@ const TextAnimationContainer = ({ text }: { text: string }) => {
     return acc;
   }, []);
 
+  const springs = chunks.map((_, index) =>
+    useSpring({
+      from: { opacity: 0 },
+      to: { opacity: inView ? 1 : 0 },
+      config: config.gentle,
+      delay: index * 200,
+    })
+  );
+
   return (
     <p ref={ref}>
       {chunks.map((chunk, index) => (
-        <a.span
-          key={index}
-          style={useSpring({
-            from: { opacity: 0 },
-            to: {
-              opacity: inView ? 1 : 0,
-            },
-            config: config.gentle,
-            delay: index * 200,
-          })}
-        >
+        <a.span key={index} style={springs[index]}>
           {chunk}
         </a.span>
       ))}

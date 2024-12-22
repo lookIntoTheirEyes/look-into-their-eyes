@@ -1,5 +1,5 @@
 "use client";
-import { useSpring, animated, useScroll } from "@react-spring/web";
+import { animated, useScroll } from "@react-spring/web";
 import { startTransition, useState } from "react";
 import styles from "./Header.module.css";
 import NavLink from "../NavLink/NavLink";
