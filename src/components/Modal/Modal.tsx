@@ -1,12 +1,14 @@
 "use client";
 
 import { useTransition, animated, config } from "@react-spring/web";
-import { startTransition, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { IModalProps } from "@/lib/model/common";
 import { useRouter, usePathname } from "@/i18n/routing";
 import StyledButton from "@/components/StyledButton/StyledButton";
 import styles from "./Modal.module.css";
+
+const ANIMATION_DURATION = 500;
 
 const ModalClient = ({
   children,
@@ -15,7 +17,6 @@ const ModalClient = ({
   center,
 }: IModalProps) => {
   const [isVisible, setIsVisible] = useState(true);
-  const [isClosing, setIsClosing] = useState(false);
   const [hasScrollbar, setHasScrollbar] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
@@ -26,8 +27,9 @@ const ModalClient = ({
     event: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
   ) => {
     event.preventDefault();
-    setIsClosing(true);
-    setTimeout(() => setIsVisible(false), 500);
+    setIsVisible(false);
+    const query = page ? { page } : {};
+    router.push({ pathname: `${next}`, query }, { scroll: false });
   };
 
   const checkScrollbar = () => {
@@ -39,38 +41,23 @@ const ModalClient = ({
   };
 
   useEffect(() => {
-    if (pathname !== curr) {
-      return;
-    }
-
+    if (pathname !== curr) return;
     setIsVisible(true);
-    setIsClosing(false);
     checkScrollbar();
   }, [pathname, curr]);
 
-  useEffect(() => {
-    if (!isVisible && isClosing) {
-      startTransition(() => {
-        const query = page ? { page } : {};
-        router.push({ pathname: `${next}`, query }, { scroll: false });
-      });
-    }
-  }, [isVisible, isClosing, next, page, router]);
-
-  // Modal transition
   const transitions = useTransition(isVisible, {
     from: { opacity: 0, scale: 0 },
     enter: { opacity: 1, scale: 1 },
     leave: { opacity: 0, scale: 0 },
-    config: { tension: 300, friction: 20, duration: 700 },
+    config: { tension: 300, friction: 20, duration: ANIMATION_DURATION },
   });
 
-  // Backdrop transition
   const backdropTransition = useTransition(isVisible, {
     from: { opacity: 0 },
     enter: { opacity: 1 },
     leave: { opacity: 0 },
-    config: { ...config.stiff, duration: 700 },
+    config: { ...config.stiff, duration: ANIMATION_DURATION },
   });
 
   return (
