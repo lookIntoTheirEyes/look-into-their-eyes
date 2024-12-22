@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/routing";
 
@@ -8,6 +8,7 @@ export interface BookLogicParams {
 }
 
 export function useBookLogic({ isSinglePage, pagesAmount }: BookLogicParams) {
+  const isInit = useRef<boolean>(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -54,9 +55,15 @@ export function useBookLogic({ isSinglePage, pagesAmount }: BookLogicParams) {
   };
 
   useEffect(() => {
+    if (isInit.current) {
+      return;
+    }
+
     const queryParamPage = +(searchParams.get("page") || 1);
     const initPageNum =
       queryParamPage <= 0 || queryParamPage > pagesAmount ? 1 : queryParamPage;
+
+    isInit.current = true;
 
     if (initPageNum === queryParamPage && initPageNum - 1 === currentPage) {
       return;

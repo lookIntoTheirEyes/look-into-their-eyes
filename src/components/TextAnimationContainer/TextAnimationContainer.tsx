@@ -1,32 +1,37 @@
 "use client";
-import { motion } from "framer-motion";
 
-const TextAnimationContainer: React.FC<{ text: string }> = ({ text }) => {
-  const charVariants = {
-    hidden: { opacity: 0 },
-    reveal: { opacity: 1 },
-  };
+import { useSpring, a, config } from "@react-spring/web";
+import { useInView } from "@react-spring/web";
+
+const TextAnimationContainer = ({ text }: { text: string }) => {
+  const [ref, inView] = useInView();
+
+  const chunks = text.split(/\s+/).reduce((acc: string[], word, i) => {
+    const chunkIndex = Math.floor(i / 3);
+    if (!acc[chunkIndex]) acc[chunkIndex] = "";
+    acc[chunkIndex] += word + " ";
+    return acc;
+  }, []);
 
   return (
-    <motion.p
-      initial='hidden'
-      whileInView='reveal'
-      viewport={{ once: true }}
-      transition={{ staggerChildren: 0.02 }}
-    >
-      {text.split("").map((c, i) => (
-        <motion.span
-          key={c + i}
-          variants={charVariants}
-          transition={{ duration: 0.1 }}
-          viewport={{ once: true, margin: "-100px" }}
+    <p ref={ref}>
+      {chunks.map((chunk, index) => (
+        <a.span
+          key={index}
+          style={useSpring({
+            from: { opacity: 0 },
+            to: {
+              opacity: inView ? 1 : 0,
+            },
+            config: config.gentle,
+            delay: index * 200,
+          })}
         >
-          {c}
-        </motion.span>
+          {chunk}
+        </a.span>
       ))}
-    </motion.p>
+    </p>
   );
 };
 
-TextAnimationContainer.displayName = "TextAnimationContainer";
 export default TextAnimationContainer;

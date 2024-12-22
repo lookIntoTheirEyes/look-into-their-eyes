@@ -2,7 +2,6 @@
 
 import { useRouter } from "@/i18n/routing";
 import { IPage } from "@/lib/model/book";
-import TextAnimationContainer from "@/components/TextAnimationContainer/TextAnimationContainer";
 import StyledButton from "@/components/StyledButton/StyledButton";
 import Image from "@/components/Image/Image";
 import styles from "./PageContent.module.css";
@@ -27,6 +26,7 @@ const PageContent: React.FC<PageProps> = ({
   const { title, imageUrl, description, imageDescription = title } = details;
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    event.stopPropagation();
     router.push(
       { pathname: "/story/details", query: { page: pageNum } },
       { scroll: false }
@@ -47,11 +47,7 @@ const PageContent: React.FC<PageProps> = ({
               </div>
             </div>
           )}
-          {description && (
-            <div className={styles.pageText}>
-              <TextAnimationContainer text={description} />
-            </div>
-          )}
+          {description && <p className={styles.pageText}>{description}</p>}
           {cta && (
             <StyledButton onClick={handleClick} className={styles.button}>
               {cta}
