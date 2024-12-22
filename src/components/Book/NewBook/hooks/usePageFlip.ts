@@ -389,10 +389,16 @@ export const usePageFlip = ({
 
         const dir = xDir < 0 ? -1 : 1;
 
-        if (!dir && down) return memo;
+        if (!dir && down) {
+          status.current = "";
+          return memo;
+        }
 
         if (!memo) {
-          if (!xDir) return;
+          if (!xDir) {
+            status.current = "";
+            return;
+          }
           const pageNum = currentPage + idx;
 
           const direction = Helper.getDirection(isRtl, xDir);
@@ -439,7 +445,6 @@ export const usePageFlip = ({
     },
     {
       drag: {
-        filterTaps: true,
         bounds: bookRef,
         preventScroll: true,
       },
