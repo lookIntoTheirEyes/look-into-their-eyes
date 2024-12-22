@@ -30,11 +30,11 @@ const ModalPage = async (props: ILanguageProps) => {
       success_1: t(`${formText}success_1`),
       success_2: t(`${formText}success_2`),
       success_3: t(`${formText}success_3`),
-      error_3: t(`${formText}error_3`),
       genericFormMessage_1: t(`common.genericFormMessage_1`),
       genericFormMessage_2: t(`common.genericFormMessage_2`),
       error_1: t(`common.error_1`),
       error_2: t(`common.error_2`),
+      error_3: t(`common.error_3`),
     },
   };
 

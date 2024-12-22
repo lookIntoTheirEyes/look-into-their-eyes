@@ -1,5 +1,4 @@
 import { Pathnames } from "@/i18n/routing";
-import { ImageLoaderProps } from "next/image";
 
 export type SearchParams = Record<string, string | string[] | undefined>;
 

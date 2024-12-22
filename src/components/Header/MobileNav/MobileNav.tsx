@@ -3,7 +3,7 @@
 import styles from "./MobileNav.module.css";
 
 interface HeaderProps {
-  links: JSX.Element[];
+  links: React.JSX.Element[];
   menuOpen: boolean;
   handleToggleMenu: () => void;
 }
@@ -22,8 +22,10 @@ export default function MobileNav({
       </button>
 
       {
-        <aside className={styles.menuContainer}>
-          <ul className={styles.mobileNav}>{links}</ul>
+        <aside onClick={handleToggleMenu} className={styles.menuContainer}>
+          <div className={styles.openNav}>
+            <ul className={styles.mobileNav}>{links}</ul>
+          </div>
         </aside>
       }
     </nav>

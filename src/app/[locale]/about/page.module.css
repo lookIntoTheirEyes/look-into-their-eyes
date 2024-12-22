@@ -1,64 +1,76 @@
 .aboutContainer {
-  display: grid;
-  grid-template-rows: 0.1fr 0.9fr;
-  grid-template-columns: 25rem 1fr;
-  width: 80%;
-  column-gap: 2rem;
-  padding-bottom: 2.3rem;
+  width: 70%;
+  margin: 0 auto;
 
   &:dir(rtl) {
     margin-top: 2.3rem;
   }
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    width: 85%;
+    width: 100%;
+    padding: 0 2rem;
   }
 
-  .artistContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
+  padding-bottom: 2.3rem;
+}
+
+.nameContainer {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  justify-content: center;
+
+  & > * {
+    font-weight: 500;
   }
 
-  .nameContainer {
-    display: flex;
-    align-items: center;
-    gap: 1.6rem;
-    grid-column: 1 / -1;
-    grid-row: 1 / 2;
-    justify-self: center;
+  & > h2,
+  & > span {
+    font-size: 3rem;
+    color: var(--header-text);
+  }
 
-    & > * {
-      font-weight: 500;
+  &:dir(rtl) {
+    margin-top: -2.4rem;
+  }
+}
+
+.artistContainer {
+  @media (min-width: 769px) {
+    &:dir(ltr) {
+      float: left;
+      margin-right: 2rem;
     }
-
-    & > h2,
-    & > span {
-      font-size: 3rem;
-      color: var(--header-text);
-    }
-
     &:dir(rtl) {
-      margin-top: -2.4rem;
+      float: right;
+      margin-left: 2rem;
     }
+  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 25rem;
+
+  @media (max-width: 768px) {
+    float: none;
+    margin-right: 0;
+    margin-left: 0;
+    width: 100%;
+    align-items: center;
+  }
+}
+
+.text {
+  color: var(--header-text);
+  &:dir(ltr) > p {
+    font-size: 1.8rem;
   }
 }
 
 .header {
   font-size: 6rem;
   color: var(--red);
-}
-
-.text {
-  color: var(--header-text);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  &:dir(ltr) > p {
-    font-size: 1.8rem;
-  }
 }
 
 .imageContainer {
@@ -78,6 +90,7 @@
   margin: 0 1.6rem;
   transition: color 0.3s ease;
   font-size: 3.5rem;
+  line-height: 1;
 }
 
 .socialIcons a:hover {

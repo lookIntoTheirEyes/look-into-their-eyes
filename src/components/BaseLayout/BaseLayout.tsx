@@ -14,18 +14,6 @@ type IProps = {
   isMobile: boolean;
 };
 
-export async function generateMetadata() {
-  const t = await getTranslations("Metadata");
-
-  const title = t("layout.title");
-  const description = t("layout.description");
-
-  return {
-    title,
-    description,
-  };
-}
-
 export default async function BaseLayout({
   children,
   locale,
@@ -41,7 +29,6 @@ export default async function BaseLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Header
             isMobile={isMobile}
-            locale={locale}
             links={{
               story: t("story"),
               home: t("home"),
@@ -55,7 +42,7 @@ export default async function BaseLayout({
           <Footer />
 
           <Widgets lang={locale} />
-          {/* <Analytics /> */}
+          <Analytics />
         </NextIntlClientProvider>
       </body>
     </html>

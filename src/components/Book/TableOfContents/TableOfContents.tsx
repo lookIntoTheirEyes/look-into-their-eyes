@@ -13,7 +13,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
   title,
 }) => {
   const navigate = (
-    event: React.MouseEvent<HTMLDivElement>,
+    event: React.MouseEvent<HTMLLIElement>,
     pageNum: number
   ) => {
     event.stopPropagation();
@@ -25,16 +25,13 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
       <h2 className={`pageHeader ${styles.pageHeader}`}>{title}</h2>
       <ul className={styles.tocList}>
         {pages.map(({ pageNum, title }, index) => (
-          <li key={index} className={styles.tocItem}>
-            <div
-              onClick={(ev) => navigate(ev, pageNum)}
-              className={styles.tocEntry}
-            >
-              <div className={styles.tocTitle}>
-                <button className={styles.tocButton}>{title}</button>
-              </div>
-              <div className={styles.pageNumber}>{pageNum}</div>
-            </div>
+          <li
+            onClick={(ev) => navigate(ev, pageNum)}
+            key={index}
+            className={styles.tocItem}
+          >
+            <button className={styles.tocButton}>{title}</button>
+            <span className={styles.pageNumber}>{pageNum}</span>
           </li>
         ))}
       </ul>

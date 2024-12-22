@@ -62,6 +62,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
       book={{ Front, Back, Pages }}
       pagesAmount={pagesAmount}
       toc={toc}
+      isMobile={isMobile}
     />
   );
 };

@@ -72,7 +72,7 @@ const UsersBook: React.FC<IProps> = ({
       book={{ Front, Pages }}
       pagesAmount={pagesAmount}
       rtl={rtl}
-      // isMobile={isMobile}
+      isMobile={isMobile}
     >
       {newButton}
     </BookContainer>

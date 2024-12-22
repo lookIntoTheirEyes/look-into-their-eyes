@@ -2,16 +2,14 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { startTransition, useState } from "react";
 import styles from "./Header.module.css";
-
-import LanguageInput from "../LanguageInput/LanguageInput";
 import NavLink from "../NavLink/NavLink";
-import { Language } from "@/lib/model/language";
 import { getRoute } from "@/lib/utils/utils";
 import MobileNav from "./MobileNav/MobileNav";
 import DesktopNav from "./DesktopNav/DesktopNav";
 import Image from "next/image";
 import logoImg from "/public/images/logo.png";
 import { useRouter } from "@/i18n/routing";
+import LocaleSwitcher from "../LocaleSwitcher/LocaleSwitcher";
 
 interface HeaderProps {
   links: {
@@ -22,13 +20,11 @@ interface HeaderProps {
     families: string;
   };
   logoText: string;
-  locale: Language;
   isMobile: boolean;
 }
 
 export default function Header({
   links: { home, about, story, families, visitors },
-  locale,
   logoText,
   isMobile,
 }: HeaderProps) {
@@ -45,8 +41,9 @@ export default function Header({
     getRoute({ pathname: "/about" }, about),
   ].map(({ href, name }) => (
     <li
-      onClick={() => {
+      onClick={(ev: React.MouseEvent<HTMLLIElement>) => {
         if (isMobile) {
+          ev.stopPropagation();
           handleToggleMenu();
         }
       }}
@@ -97,7 +94,7 @@ export default function Header({
         <DesktopNav links={links.slice(1)}>{Logo}</DesktopNav>
       )}
       {isMobile && Logo}
-      <LanguageInput locale={locale} />
+      <LocaleSwitcher />
     </motion.header>
   );
 }

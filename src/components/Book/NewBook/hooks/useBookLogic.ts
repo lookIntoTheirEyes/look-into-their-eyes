@@ -64,7 +64,7 @@ export function useBookLogic({ isSinglePage, pagesAmount }: BookLogicParams) {
 
     setCurrentPage(initPageNum - 1);
     updateUrlWithSearchParams(initPageNum);
-  }, [searchParams, pagesAmount, updateUrlWithSearchParams]);
+  }, [searchParams, pagesAmount, updateUrlWithSearchParams, currentPage]);
 
   return {
     currentPage,

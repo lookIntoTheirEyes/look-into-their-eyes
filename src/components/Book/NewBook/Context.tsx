@@ -22,6 +22,7 @@ interface BookProviderProps {
       next: string;
       previous: string;
     };
+    isMobile: boolean;
   };
 }
 
@@ -107,6 +108,7 @@ export const BookProvider = ({ children, bookParams }: BookProviderProps) => {
     toc: bookParams.toc,
     isRtl: bookParams.rtl,
     animateNextPage,
+    isMobile: bookParams.isMobile,
   });
 
   return (

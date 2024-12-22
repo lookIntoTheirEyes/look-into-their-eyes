@@ -8,6 +8,10 @@
   "Manifest": {
     "name": "הסתכלו להם בעיניים"
   },
+  "LocaleSwitcher": {
+    "label": "החלף שפה",
+    "locale": "{locale, select, he {עברית 🇮🇱} en {אנגלית 🇺🇸} other {Unknown}}"
+  },
   "HomePage": {
     "title": "ברוכים הבאים לסיפור שלנו"
   },
@@ -42,7 +46,10 @@
       "genericFormMessage_1": "תודה רבה על השיתוף, ומי יתן שכל החטופים ישובו לביתם במהרה.",
       "genericFormMessage_2": "בהערכה רבה, צוות \"הסתכלו להם בעיניים\".",
       "error_1": "נתקלנו בבעיה בזמן השליחה.",
-      "error_2": "בבקשה נסו שוב מאוחר יותר."
+      "error_2": "בבקשה נסו שוב מאוחר יותר.",
+      "error_3": "ניתן גם לפנות אלינו במייל: ",
+      "no_comments_1": "לצערנו, אין עדיין",
+      "no_comments_3": "לחצו על הכפתור מטה להיות הראשונים! "
     },
     "story": {
       "tableOfContents": "תוכן עניינים",
@@ -71,7 +78,8 @@
         "submitHeader": "אנחנו מודים לכם על השיתוף",
         "success_1": "הצוות שלנו בודק בקפידה את כלל השיתופים לפני שהם מפורסמים באתר.",
         "success_2": "לאחר בדיקה מעמיקה של הצוות, נעדכן אתכם בתוצאותיה באמצעות המייל שסופק.",
-        "success_3": "במידה ויש לכם שאלות, ניתן לפנות אלינו במייל: "
+        "success_3": "במידה ויש לכם שאלות, ניתן לפנות אלינו במייל: ",
+        "no_comments_2": "שיתופים"
       }
     },
     "visitors": {
@@ -91,7 +99,7 @@
         "success_1": "הצוות שלנו בודק בקפידה את כל התגובות לפני שהן מפורסמות באתר.",
         "success_2": "לאחר בדיקה מעמיקה של הצוות, נעדכן אותך בתוצאותיה באמצעות המייל שסופק.",
         "success_3": "במידה ויש לך שאלות, ניתן לפנות אלינו במייל: ",
-        "error_3": "ניתן גם לפנות אלינו במייל: "
+        "no_comments_2": "תגובות"
       }
     }
   },

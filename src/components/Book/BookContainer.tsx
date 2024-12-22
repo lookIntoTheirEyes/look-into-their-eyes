@@ -7,6 +7,7 @@ import { BookProvider } from "./NewBook/Context";
 
 interface IBookProps {
   rtl: boolean;
+  isMobile: boolean;
   tableOfContentsTitle?: string;
   pagesAmount: number;
   children?: ReactNode;
@@ -16,6 +17,7 @@ interface IBookProps {
 
 const BookContainer: React.FC<IBookProps> = ({
   rtl,
+  isMobile,
   pagesAmount,
   children,
   book,
@@ -31,6 +33,7 @@ const BookContainer: React.FC<IBookProps> = ({
     book,
     toc,
     text: { next, previous },
+    isMobile,
   };
 
   return (

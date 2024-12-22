@@ -59,23 +59,17 @@ const ModalClient = ({
   return (
     <AnimatePresence mode='wait' onExitComplete={handleExitComplete}>
       {isVisible && (
-        <motion.div
-          key='backdrop'
-          onClick={handleClose}
-          className={styles.backdrop}
-        >
+        <motion.div onClick={handleClose} className={styles.backdrop}>
           <motion.dialog
-            key='modal'
+            aria-modal
             initial={{
               opacity: 0,
-              scale: 0.2,
-              rotate: 180,
+              scale: 0,
             }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{
               opacity: 0,
-              scale: 0.2,
-              rotate: 180,
+              scale: 0,
             }}
             transition={{ duration: 0.5 }}
             onClick={(e) => e.stopPropagation()}
@@ -91,7 +85,7 @@ const ModalClient = ({
               <button
                 onClick={handleClose}
                 className={styles.closeButton}
-                aria-label='Close Modal'
+                aria-label='close'
               >
                 X
               </button>
@@ -100,7 +94,7 @@ const ModalClient = ({
                 <StyledButton
                   onClick={handleClose}
                   className={styles.closeButtonBottom}
-                  aria-label='Close Modal'
+                  aria-label='close'
                 >
                   {closeText}
                 </StyledButton>

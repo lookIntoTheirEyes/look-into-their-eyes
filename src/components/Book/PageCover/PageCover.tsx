@@ -1,9 +1,9 @@
 import { forwardRef } from "react";
 import styles from "./PageCover.module.css";
-import { CoverPage } from "@/lib/model/book";
+import { ICoverPage } from "@/lib/model/book";
 
 interface PageCoverProps {
-  details: CoverPage;
+  details: ICoverPage;
 }
 
 const PageCover = forwardRef<HTMLDivElement, PageCoverProps>(

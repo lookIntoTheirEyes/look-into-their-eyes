@@ -11,7 +11,7 @@ interface UseBookLayoutParams {
     title: string;
     pages: IPage[];
   };
-
+  isMobile: boolean;
   isRtl: boolean;
   animateNextPage: (params: {
     idx: number;
@@ -27,6 +27,7 @@ export const useBookLayout = ({
   toc,
   isRtl,
   animateNextPage,
+  isMobile,
 }: UseBookLayoutParams) => {
   const [pages, setPages] = useState([] as JSX.Element[]);
 
@@ -38,6 +39,7 @@ export const useBookLayout = ({
         key='toc'
         noContentAmount={2}
         rtl={isRtl}
+        isMobile={isMobile}
         goToPage={(pageNum: number) => {
           if (pageNum < 3) {
             return;
@@ -56,7 +58,7 @@ export const useBookLayout = ({
     );
 
     setPages(getPages(book, tocContainer));
-  }, [pages.length, book, isRtl, animateNextPage, toc]);
+  }, [pages.length, book, isRtl, animateNextPage, toc, isMobile]);
 
   return {
     pages,

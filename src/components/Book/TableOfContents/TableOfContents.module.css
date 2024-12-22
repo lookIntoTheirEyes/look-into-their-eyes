@@ -3,25 +3,16 @@
 }
 
 .tocList {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
   display: flex;
   flex-direction: column;
 }
 
 .tocItem {
-  display: flex;
-  align-items: center;
-}
-
-.tocEntry {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  align-items: center;
   position: relative;
-  padding: 0 0.4rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
   &:hover {
     .tocButton,
     .pageNumber {
@@ -30,16 +21,14 @@
   }
 }
 
-.tocEntry::after {
+.tocItem::after {
   content: "";
   position: absolute;
   left: 0;
-  right: 0;
   bottom: 0;
   border-bottom: 1px dotted var(--page-text-color);
   width: 100%;
   display: block;
-  pointer-events: none;
 }
 
 .tocButton {
@@ -47,20 +36,15 @@
   background: transparent;
   color: var(--page-text-color);
   font-size: 1.5rem;
-  padding: 0.4rem 0;
-  cursor: pointer;
   width: 100%;
   text-align: start;
   font-family: "Header-font", sans-serif;
-}
-
-.tocTitle {
-  flex-grow: 1;
-  white-space: nowrap;
+  cursor: pointer;
 }
 
 .pageNumber {
   font-size: 1.8rem;
   color: var(--page-text-color);
-  white-space: nowrap;
+  line-height: 1.2;
+  font-family: "Header-font", sans-serif;
 }

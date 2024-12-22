@@ -1,8 +1,9 @@
 import ModalClient from "@/components/Modal/Modal";
-import Image from "@/components/Image/Image";
 import { redirect } from "@/i18n/routing";
 import { IStoryModalProps } from "@/lib/model/book";
 import { getHero } from "@/lib/utils/heroesService";
+import Image from "@/components/Image/Image";
+import TextAnimationContainer from "@/components/TextAnimationContainer/TextAnimationContainer";
 import styles from "./Modal.module.css";
 
 const StoryModal: React.FC<IStoryModalProps> = async ({
@@ -33,11 +34,12 @@ const StoryModal: React.FC<IStoryModalProps> = async ({
             </div>
           ))}
         </div>
-        <p className={styles.text}>{longDescription}</p>
+        <div className={styles.text}>
+          <TextAnimationContainer text={longDescription || ""} />
+        </div>
       </ModalClient>
     );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch {
     redirect({ href: "/story", locale: lang });
   }
 };

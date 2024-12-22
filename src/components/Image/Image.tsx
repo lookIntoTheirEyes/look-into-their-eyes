@@ -23,9 +23,7 @@ const LocalImage = ({
       alt={alt}
       sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
       fill
-      loader={({ src, width: _w, quality: q }) =>
-        imageLoader({ src, height, quality: q })
-      }
+      loader={({ src, quality: q }) => imageLoader({ src, height, quality: q })}
       priority={priority}
     />
   );
