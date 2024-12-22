@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { useTransition, animated, config } from "@react-spring/web";
 import { startTransition, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { IModalProps } from "@/lib/model/common";
@@ -44,66 +44,84 @@ const ModalClient = ({
     }
 
     setIsVisible(true);
+    setIsClosing(false);
     checkScrollbar();
   }, [pathname, curr]);
 
-  const handleExitComplete = () => {
-    if (!isClosing) return;
+  useEffect(() => {
+    if (!isVisible && isClosing) {
+      startTransition(() => {
+        const query = page ? { page } : {};
+        router.push({ pathname: `${next}`, query }, { scroll: false });
+      });
+    }
+  }, [isVisible, isClosing, next, page, router]);
 
-    startTransition(() => {
-      const query = page ? { page } : {};
-      router.push({ pathname: `${next}`, query }, { scroll: false });
-    });
-  };
+  // Modal transition
+  const transitions = useTransition(isVisible, {
+    from: { opacity: 0, scale: 0 },
+    enter: { opacity: 1, scale: 1 },
+    leave: { opacity: 0, scale: 0 },
+    config: { tension: 300, friction: 20, duration: 700 },
+  });
+
+  // Backdrop transition
+  const backdropTransition = useTransition(isVisible, {
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+    config: { ...config.stiff, duration: 700 },
+  });
 
   return (
-    <AnimatePresence mode='wait' onExitComplete={handleExitComplete}>
-      {isVisible && (
-        <motion.div onClick={handleClose} className={styles.backdrop}>
-          <motion.dialog
-            aria-modal
-            initial={{
-              opacity: 0,
-              scale: 0,
-            }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{
-              opacity: 0,
-              scale: 0,
-            }}
-            transition={{ duration: 0.5 }}
-            onClick={(e) => e.stopPropagation()}
-            className={styles.modal}
-            open
+    <>
+      {backdropTransition((style, item) =>
+        item ? (
+          <animated.div
+            onClick={handleClose}
+            className={styles.backdrop}
+            style={style}
           >
-            <div
-              ref={containerRef}
-              className={`${styles.modalContent} ${
-                hasScrollbar ? styles.scrollbar : ""
-              } ${center ? styles.center : ""}`}
-            >
-              <button
-                onClick={handleClose}
-                className={styles.closeButton}
-                aria-label='close'
-              >
-                X
-              </button>
-              {children}
-              {closeText && (
-                <StyledButton
-                  onClick={handleClose}
-                  className={styles.closeButtonBottom}
-                  aria-label='close'
+            {transitions((modalStyle, modalItem) =>
+              modalItem ? (
+                <animated.dialog
+                  aria-modal
+                  style={modalStyle}
+                  onClick={(e) => e.stopPropagation()}
+                  className={styles.modal}
+                  open
                 >
-                  {closeText}
-                </StyledButton>
-              )}
-            </div>
-          </motion.dialog>
-        </motion.div>
+                  <div
+                    ref={containerRef}
+                    className={`${styles.modalContent} ${
+                      hasScrollbar ? styles.scrollbar : ""
+                    } ${center ? styles.center : ""}`}
+                  >
+                    <button
+                      onClick={handleClose}
+                      className={styles.closeButton}
+                      aria-label='close'
+                    >
+                      X
+                    </button>
+                    {children}
+                    {closeText && (
+                      <StyledButton
+                        onClick={handleClose}
+                        className={styles.closeButtonBottom}
+                        aria-label='close'
+                      >
+                        {closeText}
+                      </StyledButton>
+                    )}
+                  </div>
+                </animated.dialog>
+              ) : null
+            )}
+          </animated.div>
+        ) : null
       )}
-    </AnimatePresence>
+    </>
   );
 };
 
