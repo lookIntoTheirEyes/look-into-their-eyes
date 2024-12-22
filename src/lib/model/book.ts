@@ -1,6 +1,7 @@
 import { IModalProps } from "./common";
 
 export interface IPage {
+  id?: number;
   title?: string;
   description?: string;
   longDescription?: string;

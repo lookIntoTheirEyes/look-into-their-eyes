@@ -1,16 +1,18 @@
 "use client";
 
 import { useRouter } from "@/i18n/routing";
-import styles from "./PageContent.module.css";
+import { IPage } from "@/lib/model/book";
+import TextAnimationContainer from "@/components/TextAnimationContainer/TextAnimationContainer";
 import StyledButton from "@/components/StyledButton/StyledButton";
 import Image from "@/components/Image/Image";
-import { IPage } from "@/lib/model/book";
+import styles from "./PageContent.module.css";
 
 interface PageProps {
   pageNum: number;
   details: IPage;
   cta?: string;
   title?: string;
+  isStory?: boolean;
 }
 
 const PageContent: React.FC<PageProps> = ({
@@ -18,6 +20,7 @@ const PageContent: React.FC<PageProps> = ({
   details,
   cta,
   title: chapter,
+  isStory = true,
 }) => {
   const router = useRouter();
 
@@ -30,15 +33,13 @@ const PageContent: React.FC<PageProps> = ({
     );
   };
 
+  const pageTitle = isStory ? `${chapter} ${pageNum - 2} - ${title}` : title;
+
   return (
     <>
       {Object.keys(details).length && (
         <>
-          {chapter && (
-            <h2 className='pageHeader'>{`${chapter} ${
-              pageNum - 1
-            } - ${title}`}</h2>
-          )}
+          {chapter && <h2 className='pageHeader'>{pageTitle}</h2>}
           {imageUrl && (
             <div className={styles.imageSection}>
               <div className={styles.pageImage}>
@@ -46,10 +47,16 @@ const PageContent: React.FC<PageProps> = ({
               </div>
             </div>
           )}
-          {description && <p className={styles.pageText}>{description}</p>}
-          <StyledButton onClick={handleClick} className={styles.button}>
-            {cta}
-          </StyledButton>
+          {description && (
+            <div className={styles.pageText}>
+              <TextAnimationContainer text={description} />
+            </div>
+          )}
+          {cta && (
+            <StyledButton onClick={handleClick} className={styles.button}>
+              {cta}
+            </StyledButton>
+          )}
         </>
       )}
     </>

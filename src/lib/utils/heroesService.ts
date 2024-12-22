@@ -1,31 +1,33 @@
 import { Language } from "../model/language";
 import heroesData from "@/books/heroes.json";
+import commentsData from "@/books/comments.json";
+import familiesData from "@/books/families.json";
 import { IPage } from "../model/book";
 import { getImageUrl } from "./utils";
 
 const BOOK_NO_CONTENT_PAGES = 3;
 
-const heroes = heroesData as Hero[];
+const heroes = heroesData as BookPage[];
 
 export function getAllHeroes() {
   return heroes;
 }
 
-// if (heroes.length % 2 === 0) {
-//   throw new Error("Heroes amount must be uneven due to styling issues");
-// }
-
-interface Hero {
-  id: number;
-  en: HeroDetails;
-  he: HeroDetails;
-  imageUrls: string[];
+if (heroes.length % 2 === 0) {
+  throw new Error("Heroes amount must be uneven due to styling issues");
 }
 
-interface HeroDetails {
+export interface BookPage {
+  id: number;
+  en: PageDetails;
+  he: PageDetails;
+  imageUrls?: string[];
+}
+
+interface PageDetails {
   name: string;
   description: string;
-  longDescription: string;
+  longDescription?: string;
 }
 
 export function getHeroId(page: number) {
@@ -43,7 +45,9 @@ export async function getHero(page: string, lang: Language) {
 
   const { name, description, longDescription } = hero;
 
-  const imageUrls = heroDetails.imageUrls.map((url) => getImageUrl(url));
+  const imageUrls = (heroDetails.imageUrls || []).map((url) =>
+    getImageUrl(url)
+  );
   return {
     name,
     description,
@@ -52,16 +56,31 @@ export async function getHero(page: string, lang: Language) {
   };
 }
 
-export function getAllPages(lang: Language): IPage[] {
-  const pages = heroes.map((hero) => {
-    const { name: title, description, longDescription } = hero[lang];
+export function getAllPages(lang: Language, type: DataType): IPage[] {
+  const pages = getData(type).map((page) => {
+    const { name: title, description, longDescription } = page[lang];
     return {
+      id: page.id,
       title,
       description,
       longDescription,
-      imageUrl: getImageUrl(hero.imageUrls[0]),
+      imageUrl: getImageUrl(page.imageUrls?.[0]),
     };
   });
 
   return pages;
 }
+
+function getData(type: DataType): BookPage[] {
+  if (type === "family") {
+    return familiesData;
+  }
+
+  if (type === "visitor") {
+    return commentsData;
+  }
+
+  return heroesData;
+}
+
+type DataType = "family" | "visitor" | "heroes";

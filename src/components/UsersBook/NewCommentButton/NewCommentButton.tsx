@@ -7,7 +7,8 @@ import styles from "./NewCommentButton.module.css";
 const NewCommentButton: React.FC<{
   text: string;
   pathname: Pathnames;
-}> = ({ text, pathname }) => {
+  pad?: boolean;
+}> = ({ text, pathname, pad = true }) => {
   const router = useRouter();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -16,8 +17,8 @@ const NewCommentButton: React.FC<{
   };
   return (
     <StyledButton
-      className={styles.button}
-      center={false}
+      className={` ${pad ? styles.marginBottom : ""} `}
+      center={!pad}
       onClick={handleClick}
     >
       {text}
