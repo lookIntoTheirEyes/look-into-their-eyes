@@ -1,5 +1,5 @@
 "use client";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useSpring, animated, useScroll } from "@react-spring/web";
 import { startTransition, useState } from "react";
 import styles from "./Header.module.css";
 import NavLink from "../NavLink/NavLink";
@@ -29,7 +29,6 @@ export default function Header({
   isMobile,
 }: HeaderProps) {
   const { scrollY } = useScroll();
-
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
@@ -71,16 +70,16 @@ export default function Header({
     </div>
   );
 
-  const opacity = useTransform(scrollY, [0, 60], [1, 0.8]);
-
   const handleToggleMenu = () => {
     setMenuOpen((prevState) => !prevState);
   };
 
   return (
-    <motion.header
+    <animated.header
       style={{
-        opacity,
+        opacity: scrollY.to((scrollY) => {
+          return scrollY === 0 ? 1 : 0.8;
+        }),
       }}
       className={`${styles.header} ${isMobile ? styles.mobile : ""}`}
     >
@@ -95,6 +94,6 @@ export default function Header({
       )}
       {isMobile && Logo}
       <LocaleSwitcher />
-    </motion.header>
+    </animated.header>
   );
 }

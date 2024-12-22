@@ -19,7 +19,6 @@
     "@use-gesture/react": "^10.3.1",
     "@vercel/analytics": "^1.3.2",
     "accessibility": "^6.0.7",
-    "framer-motion": "^11.15.0",
     "look-in-their-eyes": "file:",
     "next": "15.1.0",
     "next-intl": "^3.26.1",
