@@ -8,6 +8,17 @@ export interface IPage {
   imageDescription?: string;
 }
 
+export interface IBook {
+  Pages: JSX.Element[];
+  Front: JSX.Element;
+  Back?: JSX.Element;
+}
+
+export interface IToc {
+  title: string;
+  pages: IPage[];
+}
+
 export interface ICoverPage extends IPage {
   author?: string;
 }

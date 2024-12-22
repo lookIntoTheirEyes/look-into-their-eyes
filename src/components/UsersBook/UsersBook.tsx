@@ -1,6 +1,5 @@
 import BookContainer from "@/components/Book/BookContainer";
 import PageCover from "@/components/Book/PageCover/PageCover";
-import { Page as BookPage } from "@/lib/model/book";
 import NewCommentButton from "./NewCommentButton/NewCommentButton";
 import { Pathnames } from "@/i18n/routing";
 
@@ -16,21 +15,15 @@ const UsersBook: React.FC<IProps> = ({ title, rtl, newText, newPath }) => {
     title,
   };
 
-  const Front = rtl ? undefined : <PageCover details={frontDetails} />;
-  const Back = rtl ? <PageCover details={frontDetails} /> : undefined;
+  const Front = <PageCover details={frontDetails} />;
 
   const Pages = [] as JSX.Element[];
-  const pagesContent = [] as BookPage[];
+
+  const noContentPages = 2;
+  const pagesAmount = Pages.length + noContentPages;
 
   return (
-    <BookContainer
-      pagesContent={pagesContent}
-      Pages={Pages}
-      rtl={rtl}
-      Front={Front}
-      Back={Back}
-      noContentAmount={1}
-    >
+    <BookContainer book={{ Front, Pages }} rtl={rtl} pagesAmount={pagesAmount}>
       <NewCommentButton pathname={newPath} text={newText} />
     </BookContainer>
   );

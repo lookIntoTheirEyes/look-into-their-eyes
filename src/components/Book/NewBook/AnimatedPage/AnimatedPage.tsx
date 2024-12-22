@@ -162,6 +162,7 @@ const AnimatedPage: React.FC<IProps> = ({
               calculatedValues,
               direction,
               corner,
+              progress,
             })}
           >
             {pages[belowPageNum]}

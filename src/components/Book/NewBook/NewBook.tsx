@@ -1,90 +1,32 @@
 "use client";
 
-import { useRef } from "react";
-import { ICoverPage, IPage } from "@/lib/model/book";
-import { useBookStyle } from "./hooks/useBookStyle";
-import { useBookLogic } from "./hooks/useBookLogic";
-import { usePageFlip } from "./hooks/usePageFlip";
-import { useBookLayout } from "./hooks/useBookLayout";
 import Controls from "../Controls/Controls";
 import AnimatedPage from "./AnimatedPage/AnimatedPage";
-
-import styles from "./NewBook.module.css";
 import { FlipDirection } from "./model";
 
-interface BookProps {
-  text: {
-    next: string;
-    previous: string;
-  };
-  isRtl: boolean;
-  toc?: {
-    title: string;
-    pages: IPage[];
-  };
-  bookPages: IPage[];
-  storyTitle: string;
-  pageCta: string;
-  backDetails: ICoverPage;
-  frontDetails: ICoverPage;
-  noContentPages: number;
-}
+import styles from "./NewBook.module.css";
+import { useBookContext } from "./Context";
 
-const NewBook: React.FC<BookProps> = ({
-  bookPages,
-  toc,
-  storyTitle,
-  pageCta,
-  backDetails,
-  frontDetails,
-  noContentPages,
-  isRtl,
-  text,
-}) => {
-  const bookRef = useRef<HTMLDivElement>(null);
-
-  const { bookStyle, bookContainerRef, isSinglePage } = useBookStyle();
-  const bookRect = {
-    ...bookStyle,
-    pageWidth: bookStyle.width / (isSinglePage ? 1 : 2),
-  };
-
+const NewBook: React.FC = () => {
   const {
-    totalPages,
-    currentPage,
-    setCurrentPage,
-    handleNextPage,
-    handlePrevPage,
-  } = useBookLogic({ noContentPages, isSinglePage, pagesContent: bookPages });
-
-  const isFirstPage = currentPage === 0;
-  const isLastPage = currentPage === totalPages - 1;
-
-  const { props, bind, animateNextPage } = usePageFlip({
-    isRtl,
-    onNextPage: handleNextPage,
-    onPrevPage: handlePrevPage,
+    props,
+    bind,
     bookRef,
-    currentPage,
-    totalPages,
+    bookStyle,
     bookRect,
-    setCurrentPage,
-  });
-
-  const { pages } = useBookLayout({
-    bookPages,
-    toc,
-    noContentPages,
-    storyTitle,
-    pageCta,
-    backDetails,
-    frontDetails,
-    isRtl,
+    isSinglePage,
+    rtl: isRtl,
+    currentPage,
+    isFirstPage,
+    isLastPage,
+    pagesAmount,
+    text,
     animateNextPage,
-  });
+    pages,
+  } = useBookContext();
 
   return (
-    <div ref={bookContainerRef} className={styles.bookContainer}>
+    <>
       <div
         ref={bookRef}
         key='book'
@@ -140,11 +82,11 @@ const NewBook: React.FC<BookProps> = ({
             isFullAnimate: true,
           });
         }}
-        pageCount={totalPages}
+        pageCount={pagesAmount}
         currPage={currentPage + 1}
         actions={text}
       />
-    </div>
+    </>
   );
 };
 

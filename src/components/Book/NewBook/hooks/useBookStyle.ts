@@ -1,16 +1,22 @@
+"use client";
+
 import { Orientation } from "@/lib/model/book";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export interface BookStyle {
+export interface BookStyle extends IRect {
+  mode: Orientation;
+}
+
+interface IRect {
   height: number;
   width: number;
   top: number;
   left: number;
-  mode: Orientation;
 }
 
 export function useBookStyle() {
   const bookContainerRef = useRef<HTMLDivElement>(null);
+  const prevStyle = useRef({} as BookStyle);
 
   const [bookStyle, setBookStyle] = useState<BookStyle>({
     height: 0,
@@ -20,40 +26,33 @@ export function useBookStyle() {
     mode: Orientation.LANDSCAPE,
   });
 
-  const calculateBookStyle = useCallback(
-    ({
-      width: containerWidth,
-      height: containerHeight,
+  const calculateBookStyle = useCallback(({ width, top, left }: IRect) => {
+    const aspectRatio = 1.7; // Ideal book aspect ratio
+    const isMobile = width <= 600;
+
+    let height = 0;
+
+    if (isMobile) {
+      height = width * aspectRatio;
+    } else {
+      height = width / aspectRatio;
+    }
+
+    const style = {
+      width,
+      height: height + 70,
       top,
       left,
-    }: DOMRectReadOnly) => {
-      const aspectRatio = 1.7; // Ideal book aspect ratio
-      const isMobile = containerWidth <= 600;
+      mode: isMobile ? Orientation.PORTRAIT : Orientation.LANDSCAPE,
+    };
 
-      let height = 0,
-        width = 0;
+    if (areRectsEqual(prevStyle.current, style)) {
+      return;
+    }
 
-      if (isMobile) {
-        height = containerWidth * aspectRatio;
-      } else {
-        height = containerWidth / aspectRatio;
-
-        if (height > containerHeight) {
-          height = containerHeight;
-          width = height * aspectRatio;
-        }
-      }
-
-      setBookStyle({
-        width: width || containerWidth,
-        height: height + 70,
-        top,
-        left,
-        mode: isMobile ? Orientation.PORTRAIT : Orientation.LANDSCAPE,
-      });
-    },
-    []
-  );
+    prevStyle.current = style;
+    setBookStyle(style);
+  }, []);
 
   const handleResize = useCallback(
     (entries: ResizeObserverEntry[]) => {
@@ -66,8 +65,10 @@ export function useBookStyle() {
         const left = rect.left + contentRect.left;
 
         calculateBookStyle({
-          ...contentRect,
-          ...{ width, height, top, left },
+          width,
+          height,
+          top,
+          left,
         });
       }
     },
@@ -77,7 +78,7 @@ export function useBookStyle() {
   const isSinglePage = bookStyle.mode === Orientation.PORTRAIT;
 
   useEffect(() => {
-    const container = bookContainerRef.current; // Capture the current value of the ref
+    const container = bookContainerRef.current;
     const resizeObserver = new ResizeObserver(handleResize);
 
     if (container) {
@@ -86,14 +87,30 @@ export function useBookStyle() {
 
     return () => {
       if (container) {
-        resizeObserver.unobserve(container); // Use the captured container reference
+        resizeObserver.unobserve(container);
       }
     };
   }, [handleResize]);
+
+  const bookRect = {
+    ...bookStyle,
+    pageWidth: bookStyle.width / (isSinglePage ? 1 : 2),
+  };
 
   return {
     bookContainerRef,
     bookStyle,
     isSinglePage,
+    bookRect,
   };
+}
+
+function areRectsEqual(rect1: BookStyle, rect2: BookStyle): boolean {
+  const threshold = 1;
+  return (
+    Math.abs(rect1.width - rect2.width) < threshold &&
+    Math.abs(rect1.height - rect2.height) < threshold &&
+    Math.abs(rect1.top - rect2.top) < threshold &&
+    Math.abs(rect1.left - rect2.left) < threshold
+  );
 }

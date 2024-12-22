@@ -13,22 +13,30 @@ function getBelowPageStyle({
   corner,
   bookRect,
   isRtl,
+  progress,
 }: {
   isRtl: boolean;
   isHardPage: boolean;
   calculatedValues: Interpolation<ICalc | null>;
   direction: SpringValue<FlipDirection>;
   corner: SpringValue<Corner>;
+  progress: SpringValue<number>;
   bookRect: PageRect;
 }) {
   const pageWidth = bookRect.pageWidth;
 
   return {
-    zIndex: calculatedValues.to((calc: ICalc) => {
-      return !isHardPage && calc && calc.shadow.progress > MIN_SHADOW_PROGRESS
-        ? 10
-        : 1;
-    }),
+    zIndex: to(
+      [calculatedValues, progress],
+      (calc: ICalc, progress: number) => {
+        return !isHardPage &&
+          calc &&
+          calc.shadow.progress > MIN_SHADOW_PROGRESS &&
+          progress > MIN_SHADOW_PROGRESS
+          ? 10
+          : 1;
+      }
+    ),
     clipPath: to(
       [corner, direction, calculatedValues],
       (corner, direction, calc) => {

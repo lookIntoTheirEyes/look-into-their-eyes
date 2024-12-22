@@ -1,28 +1,16 @@
 import { useState, useCallback, useEffect } from "react";
-import { IPage } from "@/lib/model/book";
 import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/routing";
 
 export interface BookLogicParams {
-  pagesContent: IPage[];
-  toc?: {
-    title: string;
-    pages: IPage[];
-  };
   isSinglePage: boolean;
-  noContentPages: number;
+  pagesAmount: number;
 }
 
-export function useBookLogic({
-  pagesContent,
-  isSinglePage,
-  noContentPages,
-}: BookLogicParams) {
+export function useBookLogic({ isSinglePage, pagesAmount }: BookLogicParams) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-
-  const totalPages = pagesContent.length + noContentPages;
 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -46,9 +34,9 @@ export function useBookLogic({
 
   const handleNextPage = () => {
     if (!isSinglePage && currentPage % 2 === 1 && currentPage) {
-      if (currentPage + 1 < totalPages) updatePage(2);
+      if (currentPage + 1 < pagesAmount) updatePage(2);
     } else {
-      if (currentPage < totalPages - 1) updatePage(1);
+      if (currentPage < pagesAmount - 1) updatePage(1);
     }
   };
 
@@ -57,7 +45,7 @@ export function useBookLogic({
       !isSinglePage &&
       currentPage % 2 === 1 &&
       currentPage !== 1 &&
-      currentPage !== totalPages
+      currentPage !== pagesAmount
     ) {
       updatePage(-2);
     } else {
@@ -68,14 +56,17 @@ export function useBookLogic({
   useEffect(() => {
     const queryParamPage = +(searchParams.get("page") || 1);
     const initPageNum =
-      queryParamPage <= 0 || queryParamPage > totalPages ? 1 : queryParamPage;
+      queryParamPage <= 0 || queryParamPage > pagesAmount ? 1 : queryParamPage;
+
+    if (initPageNum === queryParamPage) {
+      return;
+    }
 
     setCurrentPage(initPageNum - 1);
     updateUrlWithSearchParams(initPageNum);
-  }, [searchParams, totalPages, updateUrlWithSearchParams]);
+  }, [searchParams, pagesAmount, updateUrlWithSearchParams]);
 
   return {
-    totalPages,
     currentPage,
     setCurrentPage: updatePage,
     handleNextPage,
