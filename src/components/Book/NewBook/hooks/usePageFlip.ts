@@ -438,7 +438,12 @@ export const usePageFlip = ({
       },
     },
     {
-      drag: { filterTaps: true, bounds: bookRef, capture: true },
+      drag: {
+        filterTaps: true,
+        bounds: bookRef,
+        capture: true,
+        preventScroll: true,
+      },
       eventOptions: { passive: true },
     }
   );
