@@ -77,8 +77,8 @@ const NewBook: React.FC = () => {
             direction,
             corner:
               (direction === FlipDirection.FORWARD) === !isRtl
-                ? "top-right"
-                : "top-left",
+                ? "bottom-right"
+                : "bottom-left",
             isFullAnimate: true,
           });
         }}

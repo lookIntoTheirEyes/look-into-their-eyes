@@ -25,9 +25,9 @@ export function useBookLogic({ isSinglePage, pagesAmount }: BookLogicParams) {
   );
 
   const updatePage = useCallback(
-    (pageNum: number) => {
-      setCurrentPage((prev) => prev + pageNum);
-      updateUrlWithSearchParams(currentPage + pageNum + 1);
+    (pageNum: number, usePrev = true) => {
+      setCurrentPage((prev) => (usePrev ? prev + pageNum : pageNum));
+      updateUrlWithSearchParams((usePrev ? currentPage : 0) + pageNum + 1);
     },
     [currentPage, updateUrlWithSearchParams]
   );
@@ -58,7 +58,7 @@ export function useBookLogic({ isSinglePage, pagesAmount }: BookLogicParams) {
     const initPageNum =
       queryParamPage <= 0 || queryParamPage > pagesAmount ? 1 : queryParamPage;
 
-    if (initPageNum === queryParamPage) {
+    if (initPageNum === queryParamPage && initPageNum - 1 === currentPage) {
       return;
     }
 

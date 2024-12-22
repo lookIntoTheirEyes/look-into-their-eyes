@@ -12,7 +12,7 @@ interface UsePageFlipParams {
   onPrevPage: () => void;
   bookRef: RefObject<HTMLDivElement>;
   bookRect: PageRect;
-  setCurrentPage: (pageNum: number) => void;
+  setCurrentPage: (pageNum: number, usePrev?: boolean) => void;
 }
 const CORNER_FACTOR = 150;
 const ANIMATION_DURATION = 500;
@@ -136,8 +136,6 @@ export const usePageFlip = ({
             }
           : to;
 
-        console.log("animateNextPage", config);
-
         return {
           ...config,
           config: {
@@ -158,10 +156,8 @@ export const usePageFlip = ({
               };
             });
 
-            console.log("setting new page", nextPageNum);
-
             if (nextPageNum >= 0) {
-              setCurrentPage(nextPageNum);
+              setCurrentPage(nextPageNum, false);
             } else {
               if (direction === FlipDirection.BACK) {
                 onPrevPage();

@@ -113,9 +113,6 @@ function getSoftPageStyle(
       }px, 0) rotate(${angle}rad)`;
     }),
     zIndex: corner.to((corner) => {
-      // console.log("corner", corner);
-      // console.log("isFront", isFront);
-
       if (isFront) return 3;
       return corner !== "none" ? 4 : 2;
     }),

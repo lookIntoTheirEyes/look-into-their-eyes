@@ -39,7 +39,6 @@ export const useBookLayout = ({
         noContentAmount={2}
         rtl={isRtl}
         goToPage={(pageNum: number) => {
-          console.log("pageNum", pageNum);
           if (pageNum < 3) {
             return;
           }
@@ -55,7 +54,6 @@ export const useBookLayout = ({
         toc={toc}
       />
     );
-    console.log("setting pages");
 
     setPages(getPages(book, tocContainer));
   }, [pages.length, book, isRtl, animateNextPage, toc]);
