@@ -1,4 +1,6 @@
-import { motion } from "framer-motion";
+"use client";
+
+import { useSpring, animated } from "@react-spring/web";
 import styles from "./StyledButton.module.css";
 
 interface IProps {
@@ -18,18 +20,38 @@ const StyledButton: React.FC<IProps> = ({
   isDisabled = false,
   ...props
 }) => {
+  const red = "var(--red)";
+
+  const [springProps, api] = useSpring(() => ({
+    from: { scale: 1, backgroundColor: red },
+    config: {
+      tension: 300,
+      friction: 10,
+    },
+  }));
+
   return (
-    <motion.button
-      whileHover={isDisabled ? {} : { backgroundColor: "#b21d1d", scale: 1.1 }}
+    <animated.button
       type={type}
       className={`${className} ${styles.button} ${
         center ? styles.center : ""
       } ${isDisabled ? styles.disabled : ""}`}
       disabled={isDisabled}
+      style={springProps}
+      onMouseEnter={() => {
+        if (!isDisabled) {
+          api.start({ scale: 1.1, backgroundColor: "#b21d1d" });
+        }
+      }}
+      onMouseLeave={() => {
+        if (!isDisabled) {
+          api.start({ scale: 1, backgroundColor: red });
+        }
+      }}
       {...props}
     >
       {children}
-    </motion.button>
+    </animated.button>
   );
 };
 

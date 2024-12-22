@@ -89,7 +89,7 @@ export const CommentForm: React.FC<IProps> = ({
         <textarea id='comment' name='comment' rows={10} required></textarea>
       </p>
 
-      <StyledButton center={false} type={pending ? "button" : "submit"}>
+      <StyledButton center type={pending ? "button" : "submit"}>
         {pending ? loading : submit}
       </StyledButton>
     </form>
