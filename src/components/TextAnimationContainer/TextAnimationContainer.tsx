@@ -1,6 +1,6 @@
 "use client";
 
-import { useSpring, a, config } from "@react-spring/web";
+import { useSprings, a, config } from "@react-spring/web";
 import { useInView } from "@react-spring/web";
 
 const TextAnimationContainer = ({ text }: { text: string }) => {
@@ -13,20 +13,21 @@ const TextAnimationContainer = ({ text }: { text: string }) => {
     return acc;
   }, []);
 
-  const springs = chunks.map((_, index) =>
-    useSpring({
+  const springs = useSprings(
+    chunks.length,
+    chunks.map((_, index) => ({
       from: { opacity: 0 },
       to: { opacity: inView ? 1 : 0 },
       config: config.gentle,
       delay: index * 200,
-    })
+    }))
   );
 
   return (
     <p ref={ref}>
-      {chunks.map((chunk, index) => (
-        <a.span key={index} style={springs[index]}>
-          {chunk}
+      {springs.map((spring, index) => (
+        <a.span key={index} style={spring}>
+          {chunks[index]}
         </a.span>
       ))}
     </p>
