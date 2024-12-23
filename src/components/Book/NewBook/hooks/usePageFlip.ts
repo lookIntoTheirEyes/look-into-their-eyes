@@ -6,6 +6,7 @@ import Helper from "../Helper";
 
 interface UsePageFlipParams {
   isRtl: boolean;
+  isSinglePage: boolean;
   currentPage: number;
   pagesAmount: number;
   onNextPage: () => void;
@@ -26,6 +27,7 @@ export const usePageFlip = ({
   pagesAmount,
   bookRect,
   setCurrentPage,
+  isSinglePage,
 }: UsePageFlipParams) => {
   const status = useRef<"" | "drag" | "hover" | "animation">("");
 
@@ -378,11 +380,15 @@ export const usePageFlip = ({
         // console.log("clickLocation", clickLocation);
         // console.log("bookRect", bookRect);
 
-        const action = Helper.getActionByClick(clickLocation, isRtl);
-        if (!action) return;
-
+        const action = Helper.getActionByClick(
+          clickLocation,
+          isRtl,
+          isSinglePage
+        );
         const direction =
           action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
+
+        if (!action || isBlockMove(currentPage, pagesAmount, direction)) return;
 
         animateNextPage({ idx, direction, corner, isFullAnimate: true });
       },
@@ -416,7 +422,7 @@ export const usePageFlip = ({
           const pageNum = currentPage + idx;
 
           const direction = Helper.getDirection(isRtl, xDir);
-          if (!isMoveAllowed(pageNum, pagesAmount, direction)) {
+          if (!isMoveAllowed(pageNum, pagesAmount, direction, isSinglePage)) {
             return;
           }
 
@@ -469,7 +475,7 @@ export const usePageFlip = ({
   return { props, bind, api, animateNextPage, status };
 };
 
-function isMoveAllowed(
+function isBlockMove(
   currentPage: number,
   totalPages: number,
   direction: FlipDirection
@@ -478,10 +484,25 @@ function isMoveAllowed(
     (currentPage === totalPages - 1 && direction === FlipDirection.FORWARD) ||
     (currentPage === 0 && direction === FlipDirection.BACK)
   ) {
+    return true;
+  }
+  return false;
+}
+
+function isMoveAllowed(
+  currentPage: number,
+  totalPages: number,
+  direction: FlipDirection,
+  isSinglePage: boolean
+) {
+  if (isBlockMove(currentPage, totalPages, direction)) {
     return false;
   }
 
-  return !((currentPage % 2 === 1) === (direction === FlipDirection.FORWARD));
+  return (
+    isSinglePage ||
+    !((currentPage % 2 === 1) === (direction === FlipDirection.FORWARD))
+  );
 }
 
 function getPageProps({

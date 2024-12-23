@@ -101,6 +101,7 @@ export const BookProvider = ({ children, bookParams }: BookProviderProps) => {
     pagesAmount: bookParams.pagesAmount,
     bookRect,
     setCurrentPage,
+    isSinglePage,
   });
 
   const { pages } = useBookLayout({

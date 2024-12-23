@@ -295,19 +295,35 @@ const getXClickLocation = (
     : "rightPageLeft";
 };
 
-function getActionByClick(clickLocation: PageMouseLocation, isRtl: boolean) {
+function getSinglePageAction(clickLocation: PageMouseLocation, isRtl: boolean) {
+  return getActionHelper(clickLocation, isRtl);
+}
+
+function getActionByClick(
+  clickLocation: PageMouseLocation,
+  isRtl: boolean,
+  isSinglePage: boolean
+) {
+  if (isSinglePage) {
+    return getSinglePageAction(clickLocation, isRtl);
+  }
+
   if (clickLocation === "leftPageRight" || clickLocation === "rightPageLeft") {
     return;
   }
 
+  return getActionHelper(clickLocation, isRtl);
+}
+
+function getActionHelper(clickLocation: PageMouseLocation, isRtl: boolean) {
   if (isRtl) {
-    if (clickLocation === "leftPageLeft") {
+    if (clickLocation.includes("Left")) {
       return "next";
     } else {
       return "prev";
     }
   } else {
-    if (clickLocation === "leftPageLeft") {
+    if (clickLocation.includes("Left")) {
       return "prev";
     } else {
       return "next";
