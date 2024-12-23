@@ -48,43 +48,44 @@ const PrivacyPolicy = () => {
           {EMAIL}.
         </a>
       </p>
+      <section className='infoSection'>
+        <h2 className='infoTitle'>{t("cookie_policy.title")}</h2>
+        <p className='infoParagraph'>{t("cookie_policy.intro")}</p>
 
-      <h2 className='infoTitle'>{t("cookie_policy.title")}</h2>
-      <p className='infoParagraph'>{t("cookie_policy.intro")}</p>
+        <h3 className='infoSubTitle'>
+          {t("cookie_policy.essential_cookies.title")}
+        </h3>
+        <p className='infoParagraph'>
+          {t("cookie_policy.essential_cookies.content")}
+        </p>
 
-      <h3 className='infoSubTitle'>
-        {t("cookie_policy.essential_cookies.title")}
-      </h3>
-      <p className='infoParagraph'>
-        {t("cookie_policy.essential_cookies.content")}
-      </p>
+        <h3 className='infoSubTitle'>
+          {t("cookie_policy.analytics_cookies.title")}
+        </h3>
+        <p className='infoParagraph'>
+          {t("cookie_policy.analytics_cookies.content")}
+        </p>
 
-      <h3 className='infoSubTitle'>
-        {t("cookie_policy.analytics_cookies.title")}
-      </h3>
-      <p className='infoParagraph'>
-        {t("cookie_policy.analytics_cookies.content")}
-      </p>
+        <h3 className='infoSubTitle'>
+          {t("cookie_policy.managing_cookies.title")}
+        </h3>
+        <p className='infoParagraph'>
+          {t("cookie_policy.managing_cookies.content")}
+        </p>
 
-      <h3 className='infoSubTitle'>
-        {t("cookie_policy.managing_cookies.title")}
-      </h3>
-      <p className='infoParagraph'>
-        {t("cookie_policy.managing_cookies.content")}
-      </p>
+        <h3 className='infoSubTitle'>{t("cookie_policy.opt_out_ga.title")}</h3>
+        <p className='infoParagraph'>{t("cookie_policy.opt_out_ga.content")}</p>
 
-      <h3 className='infoSubTitle'>{t("cookie_policy.opt_out_ga.title")}</h3>
-      <p className='infoParagraph'>{t("cookie_policy.opt_out_ga.content")}</p>
+        <h3 className='infoSubTitle'>{t("cookie_policy.contact.title")}</h3>
+        <p className='infoParagraph'>
+          {t("cookie_policy.contact.content")}{" "}
+          <a href={`mailto:${EMAIL}`} className='infoLink'>
+            {EMAIL}.
+          </a>
+        </p>
 
-      <h3 className='infoSubTitle'>{t("cookie_policy.contact.title")}</h3>
-      <p className='infoParagraph'>
-        {t("cookie_policy.contact.content")}{" "}
-        <a href={`mailto:${EMAIL}`} className='infoLink'>
-          {EMAIL}.
-        </a>
-      </p>
-
-      <p className='infoParagraph'>{t("cookie_policy.consent")}</p>
+        <p className='infoParagraph'>{t("cookie_policy.consent")}</p>
+      </section>
     </>
   );
 };

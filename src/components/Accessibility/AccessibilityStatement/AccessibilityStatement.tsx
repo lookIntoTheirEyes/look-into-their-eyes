@@ -36,29 +36,31 @@ const AccessibilityStatement = () => {
         </a>{" "}
         {t("accessibility_initiative_2")}
       </p>
+      <section className='infoSection'>
+        <h2 className='infoSubTitle'>{t("accessibility_features_title")}</h2>
+        <ul>
+          {features.map((feature) => (
+            <li key={feature}>{t(feature)}</li>
+          ))}
+        </ul>
+      </section>
+      <section className='infoSection'>
+        <h2 className='infoSubTitle'>{t("contact_us_title")}</h2>
+        <p className='infoParagraph'>{t("contact_us_paragraph")}</p>
 
-      <h2 className='infoSubTitle'>{t("accessibility_features_title")}</h2>
-      <ul>
-        {features.map((feature) => (
-          <li key={feature}>{t(feature)}</li>
-        ))}
-      </ul>
+        <p className='infoSubTitle'>{t("contact_info_title")}</p>
+        <ul>
+          <li>{t("company_name")}</li>
+          <li>
+            {t("email_label")}
+            <a className='infoLink' href={`mailto:${EMAIL}`} rel='nofollow'>
+              {EMAIL}
+            </a>
+          </li>
+        </ul>
 
-      <h2 className='infoSubTitle'>{t("contact_us_title")}</h2>
-      <p className='infoParagraph'>{t("contact_us_paragraph")}</p>
-
-      <p className='infoSubTitle'>{t("contact_info_title")}</p>
-      <ul>
-        <li>{t("company_name")}</li>
-        <li>
-          {t("email_label")}
-          <a className='infoLink' href={`mailto:${EMAIL}`} rel='nofollow'>
-            {EMAIL}
-          </a>
-        </li>
-      </ul>
-
-      <p className='infoParagraph'>{t("accessibility_commitment")}</p>
+        <p className='infoParagraph'>{t("accessibility_commitment")}</p>
+      </section>
     </>
   );
 };

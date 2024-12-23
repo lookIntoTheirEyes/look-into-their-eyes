@@ -22,6 +22,10 @@
   }
 }
 
+.infoSection {
+  padding-top: 2rem;
+}
+
 @media (max-width: 768px) {
   .infoTitle {
     font-size: 2.5rem;
