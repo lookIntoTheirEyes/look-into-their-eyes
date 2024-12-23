@@ -80,7 +80,8 @@ function getSoftPageStyle(
   direction: SpringValue<FlipDirection>,
   bookRect: PageRect,
   isFront: boolean,
-  isRtl: boolean
+  isRtl: boolean,
+  progress: SpringValue<number>
 ) {
   const { pageWidth, height: pageHeight, width } = bookRect;
   return {
@@ -112,9 +113,9 @@ function getSoftPageStyle(
         activePos!.y
       }px, 0) rotate(${angle}rad)`;
     }),
-    zIndex: corner.to((corner) => {
+    zIndex: to([corner, progress], (corner, progress) => {
       if (isFront) return 3;
-      return corner !== "none" ? 4 : 2;
+      return corner !== "none" && (progress as number) > 0 ? 4 : 2;
     }),
   };
 }

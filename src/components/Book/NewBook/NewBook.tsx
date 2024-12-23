@@ -25,6 +25,23 @@ const NewBook: React.FC = () => {
     pages,
   } = useBookContext();
 
+  const flipPage = (dir: "next" | "previous") => {
+    const direction =
+      dir === "next" ? FlipDirection.FORWARD : FlipDirection.BACK;
+    const idx =
+      isFirstPage || isLastPage ? 0 : direction === FlipDirection.BACK ? 0 : 1;
+
+    animateNextPage({
+      idx,
+      direction,
+      corner:
+        (direction === FlipDirection.FORWARD) === !isRtl
+          ? "bottom-right"
+          : "bottom-left",
+      isFullAnimate: true,
+    });
+  };
+
   return (
     <>
       <div
@@ -62,26 +79,7 @@ const NewBook: React.FC = () => {
         })}
       </div>
       <Controls
-        flipPage={(dir) => {
-          const direction =
-            dir === "next" ? FlipDirection.FORWARD : FlipDirection.BACK;
-          const idx =
-            isFirstPage || isLastPage
-              ? 0
-              : direction === FlipDirection.BACK
-              ? 0
-              : 1;
-
-          animateNextPage({
-            idx,
-            direction,
-            corner:
-              (direction === FlipDirection.FORWARD) === !isRtl
-                ? "bottom-right"
-                : "bottom-left",
-            isFullAnimate: true,
-          });
-        }}
+        flipPage={flipPage}
         pageCount={pagesAmount}
         currPage={currentPage + 1}
         actions={text}

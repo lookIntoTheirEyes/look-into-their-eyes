@@ -14,7 +14,7 @@ interface UsePageFlipParams {
   bookRect: PageRect;
   setCurrentPage: (pageNum: number, usePrev?: boolean) => void;
 }
-const CORNER_FACTOR = 150;
+
 const ANIMATION_DURATION = 500;
 
 export const usePageFlip = ({
@@ -122,6 +122,8 @@ export const usePageFlip = ({
             direction,
           }),
         };
+
+        const topMargins = height / 10;
         const config = isFullAnimate
           ? {
               to,
@@ -129,9 +131,7 @@ export const usePageFlip = ({
                 ...to,
                 x: getEndX(direction, left, width, true),
                 progress: 0,
-                y: corner.includes("top")
-                  ? y + CORNER_FACTOR
-                  : y - CORNER_FACTOR,
+                y: corner.includes("top") ? y + topMargins : y - topMargins,
               },
             }
           : to;
@@ -324,7 +324,7 @@ export const usePageFlip = ({
             y,
             isLeftPage,
             bookRect,
-            CORNER_FACTOR
+            bookRect.height / 10
           );
 
           api.start((i) => {

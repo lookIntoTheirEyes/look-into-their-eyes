@@ -82,7 +82,7 @@ const AnimatedPage: React.FC<IProps> = ({
 
         return calc;
       } catch {
-        return prevCalc.current;
+        return progress > 0 ? prevCalc.current : null;
       }
     }
   );
@@ -104,7 +104,8 @@ const AnimatedPage: React.FC<IProps> = ({
           direction,
           bookRect,
           isFront,
-          isRtl
+          isRtl,
+          progress
         );
   };
 
