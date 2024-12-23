@@ -55,6 +55,11 @@ interface BookContextState {
   isFirstPage: boolean;
   isLastPage: boolean;
   pages: JSX.Element[];
+  pagesConfig: {
+    mainPageNum: number;
+    backPageNum: number;
+    belowPageNum: number;
+  };
   setCurrentPage: (pageNum: number) => void;
   handleNextPage: () => void;
   handlePrevPage: () => void;
@@ -92,7 +97,7 @@ export const BookProvider = ({ children, bookParams }: BookProviderProps) => {
   const isFirstPage = currentPage === 0;
   const isLastPage = currentPage === bookParams.pagesAmount - 1;
 
-  const { props, bind, animateNextPage } = usePageFlip({
+  const { props, bind, animateNextPage, pagesConfig } = usePageFlip({
     isRtl: bookParams.rtl,
     onNextPage: handleNextPage,
     onPrevPage: handlePrevPage,
@@ -131,6 +136,7 @@ export const BookProvider = ({ children, bookParams }: BookProviderProps) => {
         handlePrevPage,
         animateNextPage,
         pages,
+        pagesConfig,
       }}
     >
       <div ref={bookContainerRef} className={styles.bookContainer}>

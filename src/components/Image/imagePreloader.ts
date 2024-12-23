@@ -17,7 +17,7 @@ export const preloadImage = (
     const img = new Image();
     img.onload = () => resolve();
     img.onerror = reject;
-    img.src = imageLoader({ src: imageUrl, height, quality: 75 });
+    img.src = imageLoader({ src: imageUrl, height, quality: 100 });
   });
 };
 
@@ -48,7 +48,6 @@ export const usePreloadPages = ({
       }
     }
 
-    Promise.all(imagesToPreload)
-    .catch();
+    Promise.all(imagesToPreload).catch();
   }, [currentPage, pages, isSinglePage]);
 };

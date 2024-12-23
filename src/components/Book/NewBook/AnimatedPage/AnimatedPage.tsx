@@ -25,6 +25,11 @@ interface IProps {
   bind: (...args: unknown[]) => ReactDOMAttributes;
   i: number;
   bookRect: PageRect;
+  pagesConfig: {
+    mainPageNum: number;
+    backPageNum: number;
+    belowPageNum: number;
+  };
 }
 
 const AnimatedPage: React.FC<IProps> = ({
@@ -40,24 +45,13 @@ const AnimatedPage: React.FC<IProps> = ({
   i,
   bookRect,
   corner,
+  pagesConfig,
 }) => {
   const { pageWidth } = bookRect;
   const prevCalc = useRef<ICalc | null>(null);
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
   const isHardPage = Helper.isHardPage(pageNum, pages.length);
-  const backPageNum = Helper.getHiddenPageNum(
-    pageNum,
-    isSinglePage,
-    isLeftPage,
-    isRtl,
-    true
-  );
-  const belowPageNum = Helper.getHiddenPageNum(
-    pageNum,
-    isSinglePage,
-    isLeftPage,
-    isRtl
-  );
+  const { backPageNum, belowPageNum } = pagesConfig;
   const adjustOrigin = pageNum === pages.length - 1 || pageNum === 1;
 
   usePreloadPages({
@@ -161,7 +155,7 @@ const AnimatedPage: React.FC<IProps> = ({
           {pages[backPageNum]}
         </animated.div>
 
-        {belowPageNum > -1 && belowPageNum < pages.length - 1 && (
+        {belowPageNum > -1 && belowPageNum < pages.length && (
           <animated.div
             className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
               styles.below

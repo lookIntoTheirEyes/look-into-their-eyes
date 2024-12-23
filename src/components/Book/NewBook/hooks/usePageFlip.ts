@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useRef } from "react";
+import { RefObject, useCallback, useRef, useState } from "react";
 import { useSprings } from "@react-spring/web";
 import { useGesture } from "@use-gesture/react";
 import { Corner, FlipDirection, PageRect } from "../model";
@@ -30,6 +30,42 @@ export const usePageFlip = ({
   isSinglePage,
 }: UsePageFlipParams) => {
   const status = useRef<"" | "drag" | "hover" | "animation">("");
+
+  const [pagesConfig, setPagesConfig] = useState(() => ({
+    mainPageNum: currentPage,
+    backPageNum: currentPage - 1,
+    belowPageNum: currentPage + 1,
+  }));
+
+  const setPageNums = (pageNum: number, direction: FlipDirection) => {
+    const backPageNum = Helper.getHiddenPageNum(
+      pageNum,
+      isSinglePage,
+      direction,
+      true
+    );
+    const belowPageNum = Helper.getHiddenPageNum(
+      pageNum,
+      isSinglePage,
+      direction
+    );
+
+    const config = {
+      mainPageNum: pageNum,
+      backPageNum: backPageNum,
+      belowPageNum: belowPageNum,
+    };
+
+    if (
+      config.backPageNum === pagesConfig.backPageNum &&
+      config.belowPageNum === pagesConfig.belowPageNum &&
+      config.mainPageNum === pagesConfig.mainPageNum
+    ) {
+      return;
+    }
+
+    setPagesConfig(config);
+  };
 
   const getSpringConfig = ({
     direction = FlipDirection.FORWARD,
@@ -322,6 +358,7 @@ export const usePageFlip = ({
           rect: bookRect,
         });
         const direction = getDirByPoint(isLeftPage);
+        setPageNums(pageNum, direction);
         const progress = Helper.getProgress(x, !isLeftPage, bookRef);
 
         if (progress > 10) {
@@ -388,6 +425,8 @@ export const usePageFlip = ({
         const direction =
           action === "prev" ? FlipDirection.BACK : FlipDirection.FORWARD;
 
+        setPageNums(pageNum, direction);
+
         if (!action || isBlockMove(currentPage, pagesAmount, direction)) return;
 
         animateNextPage({ idx, direction, corner, isFullAnimate: true });
@@ -422,6 +461,7 @@ export const usePageFlip = ({
           const pageNum = currentPage + idx;
 
           const direction = Helper.getDirection(isRtl, xDir);
+          setPageNums(pageNum, direction);
           if (!isMoveAllowed(pageNum, pagesAmount, direction, isSinglePage)) {
             return;
           }
@@ -472,7 +512,7 @@ export const usePageFlip = ({
     }
   );
 
-  return { props, bind, api, animateNextPage, status };
+  return { props, bind, api, animateNextPage, pagesConfig };
 };
 
 function isBlockMove(

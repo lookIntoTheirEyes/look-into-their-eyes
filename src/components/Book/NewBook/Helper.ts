@@ -338,13 +338,12 @@ function isLeftPage(pageNum: number, isRtl: boolean) {
 function getHiddenPageNum(
   pageNum: number,
   isSinglePage: boolean,
-  isLeftPage: boolean,
-  isRtl: boolean,
+  direction: FlipDirection,
   isBack = false
 ) {
   const factor = isBack || isSinglePage ? 1 : 2;
-  const isLeftOrSingle = isSinglePage || isLeftPage;
-  const sign = isLeftOrSingle !== isRtl ? -1 : 1;
+
+  const sign = direction === FlipDirection.BACK ? -1 : 1;
 
   return pageNum + factor * sign;
 }

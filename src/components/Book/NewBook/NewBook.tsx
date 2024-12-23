@@ -23,6 +23,7 @@ const NewBook: React.FC = () => {
     text,
     animateNextPage,
     pages,
+    pagesConfig,
   } = useBookContext();
 
   const flipPage = (dir: "next" | "previous") => {
@@ -73,6 +74,7 @@ const NewBook: React.FC = () => {
                 bind={bind}
                 pageNum={currentPage + i}
                 bookRect={bookRect}
+                pagesConfig={pagesConfig}
               />
             )
           );
