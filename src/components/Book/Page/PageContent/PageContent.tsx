@@ -43,7 +43,11 @@ const PageContent: React.FC<PageProps> = ({
           {imageUrl && (
             <div className={styles.imageSection}>
               <div className={styles.pageImage}>
-                <Image imageUrl={imageUrl!} alt={imageDescription} />
+                <Image
+                  imageUrl={imageUrl}
+                  alt={imageDescription}
+                  height={250}
+                />
               </div>
             </div>
           )}

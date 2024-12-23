@@ -12,13 +12,5 @@
 }
 
 .imageContainer {
-  position: relative;
-  width: 70.7rem;
-  min-height: 40rem;
   margin-bottom: 2rem;
-
-  @media (max-width: 768px) {
-    min-height: 25rem;
-    width: 44.2rem;
-  }
 }

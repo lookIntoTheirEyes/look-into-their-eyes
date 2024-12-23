@@ -29,7 +29,7 @@ const StoryModal: React.FC<IStoryModalProps> = async ({
           {imageUrls.map((imageUrl, i) => (
             <div key={imageUrl + i} className={styles.imageBackground}>
               <div className={styles.pageImage}>
-                <Image imageUrl={imageUrl} alt={title} priority />
+                <Image height={250} imageUrl={imageUrl} alt={title} priority />
               </div>
             </div>
           ))}

@@ -21,36 +21,31 @@
 }
 
 .imageBackground {
-  min-height: 25rem;
-  width: 33.2rem;
-  border-radius: 0.4rem;
   background-color: var(--image-background);
   padding: 1.6rem;
+  border-radius: 0.4rem;
+  display: flex;
+  justify-content: center;
 }
 
 .pageImage {
-  justify-self: center;
-  position: relative;
-  width: 30rem;
-  min-height: 25rem;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
   border-radius: 0.4rem;
-
-  @media (max-width: 768px) {
-    width: calc(100% - 1.6rem);
-  }
 }
 
 .title {
   align-self: center;
   color: var(--red);
   font-size: 3rem;
-  justify-self: center;
 }
 
 .text {
   padding: 0 2rem;
   line-height: 1.1;
   font-size: 1.8rem;
+  color: var(--page-text-color);
 
   @media (max-width: 768px) {
     padding: 1rem 0.5rem;
