@@ -1,3 +1,5 @@
+"use client";
+
 import { animated, SpringValue, to } from "@react-spring/web";
 import { ReactDOMAttributes } from "@use-gesture/react/dist/declarations/src/types";
 import styles from "./AnimatedPage.module.css";
@@ -8,6 +10,7 @@ import ShadowStyle from "../shadow";
 import FlipCalculation, { ICalc } from "../FlipCalculation";
 import { useRef } from "react";
 import PageStyle from "../pageStyle";
+import { usePreloadPages } from "@/components/Image/imagePreloader";
 
 interface IProps {
   pageNum: number;
@@ -57,6 +60,12 @@ const AnimatedPage: React.FC<IProps> = ({
   );
   const adjustOrigin = pageNum === pages.length - 1 || pageNum === 1;
 
+  usePreloadPages({
+    pages,
+    currentPage: pageNum,
+    isSinglePage,
+  });
+
   const calculatedValues = to(
     [x, y, direction, corner, progress],
     (x, y, direction, corner, progress) => {
@@ -73,13 +82,12 @@ const AnimatedPage: React.FC<IProps> = ({
           y,
           direction,
           corner,
-          containerRect: bookRect,
+          containerRect: { ...bookRect, top: bookRect.top + scrollY },
           isRtl,
           progress,
         });
 
         prevCalc.current = calc;
-
         return calc;
       } catch {
         return progress > 0 ? prevCalc.current : null;
@@ -131,12 +139,14 @@ const AnimatedPage: React.FC<IProps> = ({
     <>
       <animated.div
         className={`
-        ${styles.pageWrapper} 
-        ${isLeftPage ? "" : styles.right} 
-        ${isSinglePage ? styles.onePage : ""}
-      `}
+          ${styles.pageWrapper} 
+          ${isLeftPage ? "" : styles.right} 
+          ${isSinglePage ? styles.onePage : ""}
+        `}
         {...bind(i)}
-        style={{ zIndex: progress.to((p) => (p > 50 ? 9 : !p ? 6 : 8)) }}
+        style={{
+          zIndex: progress.to((p) => (p > 50 ? 9 : !p ? 6 : 8)),
+        }}
       >
         <animated.div className={`${styles.page}`} style={getPageStyle(true)}>
           {pages[pageNum]}
@@ -151,7 +161,7 @@ const AnimatedPage: React.FC<IProps> = ({
           {pages[backPageNum]}
         </animated.div>
 
-        {belowPageNum > 0 && belowPageNum < pages.length - 1 && (
+        {belowPageNum > -1 && belowPageNum < pages.length - 1 && (
           <animated.div
             className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
               styles.below

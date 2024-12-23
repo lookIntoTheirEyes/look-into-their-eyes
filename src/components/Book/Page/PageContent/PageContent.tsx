@@ -12,6 +12,7 @@ interface PageProps {
   cta?: string;
   title?: string;
   isStory?: boolean;
+  priority?: boolean;
 }
 
 const PageContent: React.FC<PageProps> = ({
@@ -20,6 +21,7 @@ const PageContent: React.FC<PageProps> = ({
   cta,
   title: chapter,
   isStory = true,
+  priority = false,
 }) => {
   const router = useRouter();
 
@@ -43,7 +45,11 @@ const PageContent: React.FC<PageProps> = ({
           {imageUrl && (
             <div className={styles.imageSection}>
               <div className={styles.pageImage}>
-                <Image imageUrl={imageUrl!} alt={imageDescription} />
+                <Image
+                  imageUrl={imageUrl!}
+                  alt={imageDescription}
+                  priority={priority}
+                />
               </div>
             </div>
           )}

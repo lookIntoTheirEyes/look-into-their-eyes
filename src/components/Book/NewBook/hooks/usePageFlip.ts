@@ -29,8 +29,6 @@ export const usePageFlip = ({
 }: UsePageFlipParams) => {
   const status = useRef<"" | "drag" | "hover" | "animation">("");
 
-  const { left: bookLeft, width: bookWidth, pageWidth } = bookRect;
-
   const getSpringConfig = ({
     direction = FlipDirection.FORWARD,
     immediate = false,
@@ -90,6 +88,11 @@ export const usePageFlip = ({
       isFullAnimate?: boolean;
       nextPageNum?: number;
     }) => {
+      if (status.current === "animation") {
+        return;
+      }
+
+      status.current = "animation";
       const {
         idx,
         direction,
@@ -108,10 +111,16 @@ export const usePageFlip = ({
 
       api.start((i) => {
         if (i !== idx) return;
-        status.current = "animation";
+
         const x = getEndX(direction, left, width);
 
         const y = corner.includes("top") ? top : top + height;
+
+        // console.log(
+        //   "bookRef.current!.getBoundingClientRect()",
+        //   bookRef.current!.getBoundingClientRect()
+        // );
+        // console.log("y", y);
 
         const to = {
           ...getSpringConfig({
@@ -360,10 +369,15 @@ export const usePageFlip = ({
         const clickLocation = Helper.getXClickLocation(
           clientX,
           isLeftPage,
-          pageWidth / 2,
-          bookLeft,
-          bookWidth
+          bookRect.pageWidth / 2,
+          bookRect.left,
+          bookRect.width
         );
+        // console.log("clientY", clientY);
+        // console.log("corner", corner);
+        // console.log("clickLocation", clickLocation);
+        // console.log("bookRect", bookRect);
+
         const action = Helper.getActionByClick(clickLocation, isRtl);
         if (!action) return;
 
@@ -452,7 +466,7 @@ export const usePageFlip = ({
     }
   );
 
-  return { props, bind, api, animateNextPage };
+  return { props, bind, api, animateNextPage, status };
 };
 
 function isMoveAllowed(

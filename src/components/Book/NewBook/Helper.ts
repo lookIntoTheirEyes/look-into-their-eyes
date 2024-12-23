@@ -326,14 +326,11 @@ function getHiddenPageNum(
   isRtl: boolean,
   isBack = false
 ) {
-  const factor = isBack ? 1 : 2;
-  return !isRtl
-    ? isSinglePage || isLeftPage
-      ? pageNum - factor
-      : pageNum + factor
-    : isSinglePage || isLeftPage
-    ? pageNum + factor
-    : pageNum - factor;
+  const factor = isBack || isSinglePage ? 1 : 2;
+  const isLeftOrSingle = isSinglePage || isLeftPage;
+  const sign = isLeftOrSingle !== isRtl ? -1 : 1;
+
+  return pageNum + factor * sign;
 }
 
 function getAngle(

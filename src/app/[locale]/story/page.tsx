@@ -7,6 +7,8 @@ import Page from "@/components/Book/Page/Page";
 import PageContent from "@/components/Book/Page/PageContent/PageContent";
 import PageCover from "@/components/Book/PageCover/PageCover";
 import { cookies } from "next/headers";
+import { imageLoader } from "@/lib/utils/utils";
+import Head from "next/head";
 
 interface IProps extends ILanguageProps {
   searchParams: Promise<SearchParams>;
@@ -23,6 +25,15 @@ const BookComponent: React.FC<IProps> = async (props) => {
 
   const pageNum = (i: number) => i + noContentPages;
 
+  const preloadUrls = bookPages
+    .slice(0, 4)
+    .map((content) =>
+      content.imageUrl
+        ? imageLoader({ src: content.imageUrl, quality: 100 })
+        : undefined
+    )
+    .filter(Boolean);
+
   const Pages = structuredClone(bookPages).map((content, i) => (
     <Page isMobile={isMobile} rtl={rtl} key={content.id} pageNum={pageNum(i)}>
       <PageContent
@@ -30,6 +41,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
         details={content}
         pageNum={pageNum(i)}
         title={t("story.title")}
+        priority={i < 4}
       />
     </Page>
   ));
@@ -46,8 +58,8 @@ const BookComponent: React.FC<IProps> = async (props) => {
     longDescription: t("story.back.longDescription"),
   };
 
-  const Front = <PageCover key={"front"} details={frontDetails} />;
-  const Back = <PageCover key={"back"} details={backDetails} />;
+  const Front = <PageCover key='front' details={frontDetails} />;
+  const Back = <PageCover key='back' details={backDetails} />;
 
   const pagesAmount = Pages.length + noContentPages;
 
@@ -57,13 +69,21 @@ const BookComponent: React.FC<IProps> = async (props) => {
   };
 
   return (
-    <BookContainer
-      rtl={rtl}
-      book={{ Front, Back, Pages }}
-      pagesAmount={pagesAmount}
-      toc={toc}
-      isMobile={isMobile}
-    />
+    <>
+      <Head>
+        {preloadUrls.map((url, index) => (
+          <link key={`preload-${index}`} rel='preload' as='image' href={url} />
+        ))}
+      </Head>
+
+      <BookContainer
+        rtl={rtl}
+        book={{ Front, Back, Pages }}
+        pagesAmount={pagesAmount}
+        toc={toc}
+        isMobile={isMobile}
+      />
+    </>
   );
 };
 

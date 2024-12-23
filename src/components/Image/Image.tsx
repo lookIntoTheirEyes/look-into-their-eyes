@@ -2,20 +2,30 @@
 
 import { imageLoader } from "@/lib/utils/utils";
 import Image from "next/image";
+import { useEffect } from "react";
+import { preloadImage } from "./imagePreloader";
 
-const LocalImage = ({
-  alt = "imageUrl",
-  imageUrl,
-  height,
-  priority = false,
-  borderRadius = "4px",
-}: {
+interface LocalImageProps {
   alt?: string;
   imageUrl: string;
   borderRadius?: string;
   height?: number;
   priority?: boolean;
+}
+
+const LocalImage: React.FC<LocalImageProps> = ({
+  alt = "imageUrl",
+  imageUrl,
+  height,
+  priority = true,
+  borderRadius = "4px",
 }) => {
+  useEffect(() => {
+    if (!imageUrl) return;
+
+    preloadImage(imageUrl, height).catch(() => {});
+  }, [imageUrl, height]);
+
   return (
     <Image
       style={{ borderRadius }}
