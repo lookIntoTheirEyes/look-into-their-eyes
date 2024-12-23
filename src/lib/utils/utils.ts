@@ -1,5 +1,4 @@
 import { Pathnames } from "@/i18n/routing";
-import { ImageLoaderProps } from "next/image";
 
 export type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -31,13 +30,19 @@ export function getImageUrl(url?: string) {
   return `https://res.cloudinary.com/${imageUrl}/image/upload/${url}`;
 }
 
+interface CloudinaryImageLoaderProps {
+  src: string;
+  height?: number;
+  quality?: number;
+}
+
 export function imageLoader({
   src,
   quality = 100,
-  width = 300,
-}: ImageLoaderProps) {
+  height = 250,
+}: CloudinaryImageLoaderProps) {
   const urlStart = src.split("upload/")[0];
   const urlEnd = src.split("upload/")[1];
-  const transformations = `w_${width},q_${quality}`;
+  const transformations = `c_scale,h_${height},q_${quality}`;
   return `${urlStart}upload/${transformations}/${urlEnd}`;
 }

@@ -33,6 +33,7 @@ export default function About() {
             imageUrl={getImageUrl(
               "v1731753364/Photo_by_Clemens_Hirmke_1_unwdvq.jpg"
             )}
+            height={300}
             alt={t("artist")}
             borderRadius='20px'
           />
