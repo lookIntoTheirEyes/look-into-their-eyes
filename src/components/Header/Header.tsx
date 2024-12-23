@@ -1,15 +1,16 @@
 "use client";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { startTransition, useState } from "react";
-import styles from "./Header.module.css";
+import { useState } from "react";
+import Image from "next/image";
+import { usePathname, useRouter } from "@/i18n/routing";
 import NavLink from "../NavLink/NavLink";
-import { getRoute } from "@/lib/utils/utils";
 import MobileNav from "./MobileNav/MobileNav";
 import DesktopNav from "./DesktopNav/DesktopNav";
-import Image from "next/image";
-import logoImg from "/public/images/logo.png";
-import { useRouter } from "@/i18n/routing";
 import LocaleSwitcher from "../LocaleSwitcher/LocaleSwitcher";
+import logoImg from "/public/images/logo.png";
+import { getRoute } from "@/lib/utils/utils";
+
+import styles from "./Header.module.css";
 
 interface HeaderProps {
   links: {
@@ -29,9 +30,9 @@ export default function Header({
   isMobile,
 }: HeaderProps) {
   const { scrollY } = useScroll();
-
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
+  const path = usePathname();
 
   const links = [
     getRoute({ pathname: "/" }, home),
@@ -41,26 +42,25 @@ export default function Header({
     getRoute({ pathname: "/about" }, about),
   ].map(({ href, name }) => (
     <li
-      onClick={(ev: React.MouseEvent<HTMLLIElement>) => {
+      key={name}
+      onClick={(ev) => {
         if (isMobile) {
           ev.stopPropagation();
-          handleToggleMenu();
+          setMenuOpen(false);
         }
       }}
-      key={name}
     >
       <NavLink href={href}>{name}</NavLink>
     </li>
   ));
 
-  const onLogoClick = () => {
-    startTransition(() => {
-      router.push("/", { scroll: false });
-    });
-  };
+  const isNotHomePage = path !== "/";
 
-  const Logo = (
-    <div onClick={onLogoClick} className={styles.logoContainer}>
+  const Logo = isNotHomePage && (
+    <div
+      onClick={() => router.push("/", { scroll: false })}
+      className={styles.logoContainer}
+    >
       <Image
         sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
         src={logoImg}
@@ -73,27 +73,21 @@ export default function Header({
 
   const opacity = useTransform(scrollY, [0, 60], [1, 0.8]);
 
-  const handleToggleMenu = () => {
-    setMenuOpen((prevState) => !prevState);
-  };
-
   return (
     <motion.header
-      style={{
-        opacity,
-      }}
+      style={{ opacity }}
       className={`${styles.header} ${isMobile ? styles.mobile : ""}`}
     >
       {isMobile ? (
         <MobileNav
           menuOpen={menuOpen}
-          handleToggleMenu={handleToggleMenu}
+          handleToggleMenu={() => setMenuOpen(!menuOpen)}
           links={links}
         />
       ) : (
         <DesktopNav links={links.slice(1)}>{Logo}</DesktopNav>
       )}
-      {isMobile && Logo}
+      {isNotHomePage && isMobile && Logo}
       <LocaleSwitcher />
     </motion.header>
   );
