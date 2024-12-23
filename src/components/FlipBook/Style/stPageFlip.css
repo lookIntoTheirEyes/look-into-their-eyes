@@ -4,7 +4,6 @@
   box-sizing: border-box;
   transform: translateZ(0);
   user-select: none;
-  touch-action: none;
 }
 
 .sft__wrapper {
