@@ -149,6 +149,21 @@ export abstract class UI {
     this.update();
   }
 
+  public isWithinBounds = (e: TouchEvent | MouseEvent) => {
+    const rect = this.distElement.getBoundingClientRect();
+    const clientY =
+      "touches" in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+    const clientX =
+      "touches" in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+
+    return (
+      clientX >= rect.left &&
+      clientX <= rect.right &&
+      clientY >= rect.top &&
+      clientY <= rect.bottom
+    );
+  };
+
   private checkTarget(targer: EventTarget): boolean {
     if (!this.app.getSettings().clickEventForward) return true;
 
@@ -201,12 +216,18 @@ export abstract class UI {
   };
 
   private onMouseMove = (e: MouseEvent): void => {
+    if (this.isWithinBounds(e)) {
+      e.preventDefault();
+    }
     const pos = this.getMousePos(e.clientX, e.clientY);
 
     this.app.userMove(pos, false);
   };
 
   private onTouchMove = (e: TouchEvent): void => {
+    if (this.isWithinBounds(e)) {
+      e.preventDefault();
+    }
     if (e.changedTouches.length > 0) {
       const t = e.changedTouches[0];
       const pos = this.getMousePos(t.clientX, t.clientY);
