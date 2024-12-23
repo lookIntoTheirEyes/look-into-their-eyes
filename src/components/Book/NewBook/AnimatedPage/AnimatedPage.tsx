@@ -146,14 +146,16 @@ const AnimatedPage: React.FC<IProps> = ({
           {pages[pageNum]}
         </animated.div>
 
-        <animated.div
-          className={`${styles.page} ${styles.back} ${
-            adjustOrigin === isRtl ? "" : styles.right
-          }`}
-          style={getPageStyle(false)}
-        >
-          {pages[backPageNum]}
-        </animated.div>
+        {(!isHardPage || belowPageNum !== backPageNum) && (
+          <animated.div
+            className={`${styles.page} ${styles.back} ${
+              adjustOrigin === isRtl ? "" : styles.right
+            }`}
+            style={getPageStyle(false)}
+          >
+            {pages[backPageNum]}
+          </animated.div>
+        )}
 
         {belowPageNum > -1 && belowPageNum < pages.length && (
           <animated.div
