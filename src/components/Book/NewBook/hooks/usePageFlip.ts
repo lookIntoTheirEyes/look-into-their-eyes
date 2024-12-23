@@ -37,35 +37,45 @@ export const usePageFlip = ({
     belowPageNum: currentPage + 1,
   }));
 
-  const setPageNums = (pageNum: number, direction: FlipDirection) => {
-    const backPageNum = Helper.getHiddenPageNum(
-      pageNum,
+  const setPageNums = useCallback(
+    (pageNum: number, direction: FlipDirection) => {
+      const backPageNum = Helper.getHiddenPageNum(
+        pageNum,
+        isSinglePage,
+        direction,
+        true
+      );
+      const belowPageNum = Helper.getHiddenPageNum(
+        pageNum,
+        isSinglePage,
+        direction
+      );
+
+      const config = {
+        mainPageNum: pageNum,
+        backPageNum: backPageNum,
+        belowPageNum: belowPageNum,
+      };
+
+      if (
+        config.backPageNum === pagesConfig.backPageNum &&
+        config.belowPageNum === pagesConfig.belowPageNum &&
+        config.mainPageNum === pagesConfig.mainPageNum
+      ) {
+        return;
+      }
+
+      console.log("config", config);
+
+      setPagesConfig(config);
+    },
+    [
       isSinglePage,
-      direction,
-      true
-    );
-    const belowPageNum = Helper.getHiddenPageNum(
-      pageNum,
-      isSinglePage,
-      direction
-    );
-
-    const config = {
-      mainPageNum: pageNum,
-      backPageNum: backPageNum,
-      belowPageNum: belowPageNum,
-    };
-
-    if (
-      config.backPageNum === pagesConfig.backPageNum &&
-      config.belowPageNum === pagesConfig.belowPageNum &&
-      config.mainPageNum === pagesConfig.mainPageNum
-    ) {
-      return;
-    }
-
-    setPagesConfig(config);
-  };
+      pagesConfig.backPageNum,
+      pagesConfig.belowPageNum,
+      pagesConfig.mainPageNum,
+    ]
+  );
 
   const getSpringConfig = ({
     direction = FlipDirection.FORWARD,
@@ -139,6 +149,10 @@ export const usePageFlip = ({
         nextPageNum = -1,
       } = params;
 
+      if (nextPageNum > -1) {
+        setPageNums(nextPageNum - 1, direction);
+      }
+
       const {
         top: origTop,
         height,
@@ -153,6 +167,8 @@ export const usePageFlip = ({
         const x = getEndX(direction, left, width);
 
         const y = corner.includes("top") ? top : top + height;
+
+        console.log("nextPageNum", nextPageNum);
 
         // console.log(
         //   "bookRef.current!.getBoundingClientRect()",
@@ -216,7 +232,7 @@ export const usePageFlip = ({
         };
       });
     },
-    [api, bookRef, getEndX, onNextPage, onPrevPage, setCurrentPage]
+    [api, bookRef, getEndX, onNextPage, onPrevPage, setCurrentPage, setPageNums]
   );
 
   const handleDragEnd = ({
@@ -263,7 +279,6 @@ export const usePageFlip = ({
     x,
     y,
     corner,
-    isDrag = true,
   }: {
     idx: number;
     progress: number;
@@ -271,7 +286,6 @@ export const usePageFlip = ({
     x: number;
     y: number;
     corner: Corner;
-    isDrag?: boolean;
   }) => {
     api.start((i) => {
       if (idx !== i) return;
@@ -279,7 +293,7 @@ export const usePageFlip = ({
       return {
         ...getSpringConfig({
           direction,
-          immediate: isDrag,
+          immediate: true,
           x,
           y,
           corner,
@@ -304,7 +318,7 @@ export const usePageFlip = ({
     {
       onMouseLeave: ({ args: [idx] }) => {
         if (status.current !== "hover") return;
-        const pageNum = currentPage + idx;
+        const pageNum: number = currentPage + idx;
         const isLeft = Helper.isLeftPage(pageNum, isRtl);
         const direction = getDirByPoint(isLeft);
 
@@ -318,7 +332,7 @@ export const usePageFlip = ({
           status.current = "hover";
         }
         y = y + scrollY;
-        const pageNum = currentPage + idx;
+        const pageNum: number = currentPage + idx;
 
         const { isLeftPage } = getPageProps({
           pageNum,
@@ -360,7 +374,7 @@ export const usePageFlip = ({
         if (status.current === "drag" || status.current === "animation") return;
         clientY = clientY + scrollY;
 
-        const pageNum = currentPage + idx;
+        const pageNum: number = currentPage + idx;
 
         const { isLeftPage, corner } = getPageProps({
           pageNum,
@@ -423,7 +437,7 @@ export const usePageFlip = ({
             status.current = "";
             return;
           }
-          const pageNum = currentPage + idx;
+          const pageNum: number = currentPage + idx;
 
           const direction = Helper.getDirection(isRtl, xDir);
           setPageNums(pageNum, direction);
@@ -460,7 +474,7 @@ export const usePageFlip = ({
         if (!down) {
           handleDragEnd(props);
         } else {
-          animateDrag({ ...props, isDrag: true });
+          animateDrag(props);
         }
 
         return memo;
