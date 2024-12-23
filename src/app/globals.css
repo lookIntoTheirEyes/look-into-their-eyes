@@ -50,6 +50,7 @@
 }
 
 @import "./book.css";
+@import "./info.css";
 
 html,
 body {

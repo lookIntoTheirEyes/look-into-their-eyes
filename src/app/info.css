@@ -1,56 +1,51 @@
-.title {
+.infoTitle {
   font-size: 3em;
   font-weight: bold;
-  margin-bottom: 1.6rem;
   color: var(--contrast-red);
 }
 
-.subTitle {
+.infoSubTitle {
   font-weight: bold;
   font-size: 2.2rem;
   color: var(--contrast-red);
+  padding-top: 0.5rem;
 }
 
-.paragraph {
+.infoParagraph {
   font-size: 1.8rem;
-  margin-bottom: 0.8rem;
 }
 
-.link {
+.infoLink {
   color: var(--contrast-red);
   &:hover {
     text-decoration: underline;
   }
 }
 
-.link:hover {
-  text-decoration: underline;
-}
-
 @media (max-width: 768px) {
-  .title {
+  .infoTitle {
     font-size: 2.5rem;
   }
 
-  .subTitle {
+  .infoSubTitle {
     font-size: 1.9rem;
   }
 
-  .paragraph {
+  .infoParagraph {
     font-size: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .title {
+  .infoTitle {
     font-size: 2rem;
   }
 
-  .subTitle {
+  .infoSubTitle {
     font-size: 1.6rem;
   }
 
-  .paragraph {
+  .infoParagraph {
     font-size: 1.2rem;
   }
 }
