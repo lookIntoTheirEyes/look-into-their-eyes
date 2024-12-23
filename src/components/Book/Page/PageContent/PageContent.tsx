@@ -57,7 +57,11 @@ const PageContent: React.FC<PageProps> = ({
             </div>
           )}
           {cta && (
-            <StyledButton onClick={handleClick} className={styles.button}>
+            <StyledButton
+              label={cta}
+              onClick={handleClick}
+              className={styles.button}
+            >
               {cta}
             </StyledButton>
           )}

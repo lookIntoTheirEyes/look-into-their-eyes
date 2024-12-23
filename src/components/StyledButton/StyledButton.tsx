@@ -8,6 +8,7 @@ interface IProps {
   type?: "submit" | "reset" | "button";
   center?: boolean;
   isDisabled?: boolean;
+  label?: string;
 }
 
 const StyledButton: React.FC<IProps> = ({
@@ -16,6 +17,7 @@ const StyledButton: React.FC<IProps> = ({
   type = "button",
   center = true,
   isDisabled = false,
+  label = "close",
   ...props
 }) => {
   return (
@@ -27,6 +29,7 @@ const StyledButton: React.FC<IProps> = ({
       } ${isDisabled ? styles.disabled : ""}`}
       disabled={isDisabled}
       {...props}
+      aria-label={label}
     >
       {children}
     </motion.button>

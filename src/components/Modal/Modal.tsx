@@ -94,7 +94,6 @@ const ModalClient = ({
                 <StyledButton
                   onClick={handleClose}
                   className={styles.closeButtonBottom}
-                  aria-label='close'
                 >
                   {closeText}
                 </StyledButton>

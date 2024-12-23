@@ -87,6 +87,7 @@ const Controls = forwardRef<
           className={styles.height}
           isDisabled={currPage === 1}
           onClick={handleClick}
+          label={previous}
         >
           {previous}
         </StyledButton>
@@ -102,6 +103,7 @@ const Controls = forwardRef<
           className={styles.height}
           isDisabled={currPage === pageCount}
           onClick={() => flipPage("next")}
+          label={next}
         >
           {next}
         </StyledButton>
