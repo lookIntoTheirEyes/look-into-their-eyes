@@ -65,8 +65,6 @@ export const usePageFlip = ({
         return;
       }
 
-      console.log("config", config);
-
       setPagesConfig(config);
     },
     [
@@ -167,8 +165,6 @@ export const usePageFlip = ({
         const x = getEndX(direction, left, width);
 
         const y = corner.includes("top") ? top : top + height;
-
-        console.log("nextPageNum", nextPageNum);
 
         // console.log(
         //   "bookRef.current!.getBoundingClientRect()",
