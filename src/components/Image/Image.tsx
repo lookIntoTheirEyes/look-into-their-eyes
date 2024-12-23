@@ -21,11 +21,11 @@ const LocalImage: React.FC<LocalImageProps> = ({
 }) => {
   return (
     <Image
-      style={{ borderRadius, width: "auto", height }}
       src={imageUrl}
       alt={alt}
-      height={220}
-      width={440}
+      style={{ borderRadius, width: "auto", height }}
+      height={500}
+      width={500}
       loader={({ src, quality: q }) => imageLoader({ src, height, quality: q })}
       priority={priority}
     />
