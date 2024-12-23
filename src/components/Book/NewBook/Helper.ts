@@ -408,7 +408,7 @@ function getShadowBackground(progress: number, isInner = false) {
 }
 
 function isHardPage(pageNum: number, totalPages: number) {
-  return pageNum >= totalPages - 2 || pageNum < 2;
+  return pageNum >= totalPages - 1 || pageNum < 1;
 }
 
 function getDirection(isRtl: boolean, xDir: number) {

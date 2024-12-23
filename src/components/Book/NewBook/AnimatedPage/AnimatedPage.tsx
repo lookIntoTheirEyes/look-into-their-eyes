@@ -50,8 +50,10 @@ const AnimatedPage: React.FC<IProps> = ({
   const { pageWidth } = bookRect;
   const prevCalc = useRef<ICalc | null>(null);
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
-  const isHardPage = Helper.isHardPage(pageNum, pages.length);
   const { backPageNum, belowPageNum } = pagesConfig;
+  const isHardPage =
+    Helper.isHardPage(pageNum, pages.length) ||
+    Helper.isHardPage(belowPageNum, pages.length);
   const adjustOrigin = pageNum === pages.length - 1 || pageNum === 1;
 
   usePreloadPages({
