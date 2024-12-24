@@ -50,10 +50,7 @@ export class PageFlip extends EventObject {
     this.update();
   }
 
-  public loadFromHTML(
-    items: HTMLElement[],
-    blankPage: HTMLElement | null
-  ): void {
+  public loadFromHTML(items: HTMLElement[]): void {
     this.ui = new HTMLUI(this.block, this, this.setting, items);
 
     this.render = new HTMLRender(this, this.setting, this.ui.getDistElement());

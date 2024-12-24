@@ -82,7 +82,7 @@ const HTMLFlipBookForward = React.forwardRef<
       }
 
       if (!pageFlip.current?.getFlipController()) {
-        pageFlip.current?.loadFromHTML(childRef.current, blankPageRef.current);
+        pageFlip.current?.loadFromHTML(childRef.current);
         isInitialized.current = true;
         setLoading(false);
       }
