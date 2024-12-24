@@ -38,7 +38,7 @@ const Book: React.FC<BookProps> = ({
   children,
 }) => {
   const [pagesAmount, setPagesAmount] = useState(
-    book.Pages.length + noContentAmount
+    book.Pages.length + noContentAmount + (book.blankPage ? 1 : 0)
   );
 
   const controlsRef = useRef<{
@@ -74,8 +74,11 @@ const Book: React.FC<BookProps> = ({
   }, []);
 
   const updatePageCount = (object: PageFlip) => {
-    const num = object.getPageCount();
-    setPagesAmount(num);
+    const pageCount = object.getPageCount();
+    if (pagesAmount === pageCount) {
+      return;
+    }
+    setPagesAmount(pageCount);
   };
 
   return (
