@@ -12,9 +12,10 @@ export class HTMLPageCollection extends PageCollection {
     app: PageFlip,
     render: Render,
     element: HTMLElement,
-    items: HTMLElement[]
+    items: HTMLElement[],
+    blankPage: HTMLElement | null
   ) {
-    super(app, render);
+    super(app, render, blankPage, element);
 
     this.element = element;
     this.pagesElement = items;

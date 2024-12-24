@@ -37,8 +37,9 @@ const Book: React.FC<BookProps> = ({
   isMobile,
   children,
 }) => {
+  const hasBlankPage = book.Pages.length % 2 === 0;
   const [pagesAmount, setPagesAmount] = useState(
-    book.Pages.length + noContentAmount
+    book.Pages.length + noContentAmount + (hasBlankPage ? 1 : 0)
   );
 
   const controlsRef = useRef<{

@@ -71,9 +71,8 @@ const Controls = forwardRef<
         return;
       }
       setCurrPage(pageNum);
-      updateUrlWithSearchParams(pageNum);
     },
-    [updateUrlWithSearchParams, currPage]
+    [currPage]
   );
 
   useEffect(() => {

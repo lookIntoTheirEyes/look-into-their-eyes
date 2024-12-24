@@ -13,10 +13,6 @@ export function getAllHeroes() {
   return heroes;
 }
 
-if (heroes.length % 2 === 0) {
-  throw new Error("Heroes amount must be uneven due to styling issues");
-}
-
 export interface BookPage {
   id: number;
   en: PageDetails;
