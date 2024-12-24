@@ -9,6 +9,7 @@ interface IBookProps {
   Pages: React.JSX.Element[];
   Front: React.JSX.Element;
   Back?: React.JSX.Element;
+  blankPage?: React.JSX.Element;
   toc?: {
     title: string;
     pages: IPage[];
@@ -26,6 +27,7 @@ const BookContainer: React.FC<IBookProps> = ({
   Back,
   noContentAmount,
   children,
+  blankPage,
 }) => {
   const t = useTranslations("Book");
 
@@ -39,6 +41,7 @@ const BookContainer: React.FC<IBookProps> = ({
         Back,
         Pages,
         toc,
+        blankPage,
       }}
       rtl={rtl}
       isMobile={isMobile}

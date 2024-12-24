@@ -13,8 +13,9 @@ import { PageFlip } from "../FlipBook/PageFlip";
 
 export interface StoryBook {
   Pages: React.JSX.Element[];
-  Front?: React.JSX.Element;
+  Front: React.JSX.Element;
   Back?: React.JSX.Element;
+  blankPage?: React.JSX.Element;
   toc?: {
     title: string;
     pages: IPage[];
@@ -37,9 +38,8 @@ const Book: React.FC<BookProps> = ({
   isMobile,
   children,
 }) => {
-  const hasBlankPage = book.Pages.length % 2 === 0;
   const [pagesAmount, setPagesAmount] = useState(
-    book.Pages.length + noContentAmount + (hasBlankPage ? 1 : 0)
+    book.Pages.length + noContentAmount
   );
 
   const controlsRef = useRef<{
@@ -74,11 +74,6 @@ const Book: React.FC<BookProps> = ({
     controlsRef.current?.setCurrPage(pageNum || 1);
   }, []);
 
-  const blankPage =
-    book.Pages.length % 2 === 0 ? (
-      <Page key='blank' pageNum={pages.length} isMobile={isMobile} />
-    ) : undefined;
-
   const updatePageCount = (object: PageFlip) => {
     const num = object.getPageCount();
     setPagesAmount(num);
@@ -100,7 +95,7 @@ const Book: React.FC<BookProps> = ({
         rtl={rtl}
         onFlip={handleFlip}
         controls={controls}
-        blankPage={blankPage}
+        blankPage={book.blankPage}
         onInit={({ object }) => {
           updatePageCount(object);
         }}

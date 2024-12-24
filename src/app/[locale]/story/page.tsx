@@ -53,6 +53,10 @@ const BookComponent: React.FC<IProps> = async (props) => {
 
   const Front = <PageCover key={"front"} details={frontDetails} />;
   const Back = <PageCover key={"back"} details={backDetails} />;
+  const blankPage =
+    Pages.length % 2 === 0 ? (
+      <Page key='blank' pageNum={bookPages.length} isMobile={isMobile} />
+    ) : undefined;
 
   return (
     <BookContainer
@@ -63,6 +67,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
       Front={Front}
       Back={Back}
       noContentAmount={noContentPages}
+      blankPage={blankPage}
     />
   );
 };
