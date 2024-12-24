@@ -1,8 +1,6 @@
 "use client";
 
-import { imageLoader } from "@/lib/utils/utils";
 import Image from "next/image";
-// import styles from "./Image.module.css";
 
 interface LocalImageProps {
   alt?: string;
@@ -19,14 +17,22 @@ const LocalImage: React.FC<LocalImageProps> = ({
   priority = true,
   borderRadius = "4px",
 }) => {
+  const getTransformedUrl = (src: string, height: number) => {
+    const [urlStart, urlEnd] = src.split("upload/");
+    const transformations = `c_scale,h_${height},q_100`;
+    return `${urlStart}upload/${transformations}/${urlEnd}`;
+  };
+
+  const optimizedUrl = getTransformedUrl(imageUrl, height);
+
   return (
     <Image
-      src={imageUrl}
+      src={optimizedUrl}
       alt={alt}
       style={{ borderRadius, width: "auto", height }}
-      height={500}
       width={500}
-      loader={({ src, quality: q }) => imageLoader({ src, height, quality: q })}
+      height={500}
+      unoptimized
       priority={priority}
     />
   );
