@@ -119,7 +119,6 @@ export abstract class PageCollection {
 
   public prevBy(current: HTMLPage): HTMLPage | null {
     const idx = this.pages.indexOf(current);
-    this.hasBlankPage() && idx === this.getPagesLength() - 2;
 
     if (idx > 0)
       return this.hasBlankPage() && idx === this.getPagesLength() - 2
