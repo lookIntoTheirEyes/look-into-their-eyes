@@ -8,7 +8,6 @@ import FlipBook from "@/components/FlipBook/ReactFlipBook/index";
 import { SizeType } from "@/components/FlipBook/Settings";
 import { useCallback, useRef, useState } from "react";
 import { WidgetEvent } from "../FlipBook/Event/EventObject";
-import Page from "./Page/Page";
 import { PageFlip } from "../FlipBook/PageFlip";
 
 export interface StoryBook {
