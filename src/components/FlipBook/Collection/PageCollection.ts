@@ -198,6 +198,7 @@ export abstract class PageCollection {
     }
 
     const spreadIndex = this.getSpreadIndexByPage(pageNum);
+
     if (spreadIndex !== null && spreadIndex >= 0) {
       this.currentSpreadIndex = spreadIndex;
       this.showSpread();
@@ -245,7 +246,7 @@ export abstract class PageCollection {
 
     this.currentPageIndex =
       this.hasBlankPage() && spread[0] === this.getPagesLength() - 2
-        ? this.getPagesLength() - 1
+        ? this.getPagesLength() - 2
         : spread[0];
 
     this.app.updatePageIndex(this.currentPageIndex);
