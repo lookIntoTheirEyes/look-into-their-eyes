@@ -6,11 +6,13 @@ import { IPage } from "@/lib/model/book";
 interface IBookProps {
   rtl: boolean;
   isMobile: boolean;
-  tableOfContentsTitle?: string;
   Pages: React.JSX.Element[];
   Front: React.JSX.Element;
   Back?: React.JSX.Element;
-  pagesContent: IPage[];
+  toc?: {
+    title: string;
+    pages: IPage[];
+  };
   noContentAmount: number;
   children?: ReactNode;
 }
@@ -18,22 +20,14 @@ interface IBookProps {
 const BookContainer: React.FC<IBookProps> = ({
   rtl,
   isMobile,
-  tableOfContentsTitle,
+  toc,
   Pages,
-  pagesContent,
   Front,
   Back,
   noContentAmount,
   children,
 }) => {
   const t = useTranslations("Book");
-
-  const toc = tableOfContentsTitle
-    ? {
-        title: tableOfContentsTitle,
-        pages: pagesContent,
-      }
-    : undefined;
 
   const next = t("common.next");
   const previous = t("common.previous");

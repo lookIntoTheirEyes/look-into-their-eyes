@@ -21,7 +21,7 @@ const TableOfContentsContainer = forwardRef<
 >(({ rtl, toc, goToPage, noContentAmount, isMobile }, ref) => {
   const getPageNum = (i: number) => i + noContentAmount;
   return (
-    <Page isMobile={isMobile} rtl={rtl} pageNum={2} ref={ref}>
+    <Page isMobile={isMobile} pageNum={2} ref={ref}>
       <TableOfContents
         title={toc.title}
         rtl={rtl}

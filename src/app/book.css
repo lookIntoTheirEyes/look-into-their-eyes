@@ -13,12 +13,12 @@
     padding: 0.8rem;
   }
 
-  &.left {
+  &.--left {
     box-shadow: inset -7px 0 30px -7px rgba(0, 0, 0, 0.4),
       7px 0 30px -7px rgba(0, 0, 0, 0.4);
   }
 
-  &.right {
+  &.--right {
     box-shadow: inset 7px 0 30px -7px rgba(0, 0, 0, 0.4),
       7px 0 30px -7px rgba(0, 0, 0, 0.4);
   }

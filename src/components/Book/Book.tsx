@@ -6,8 +6,10 @@ import { IPage } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
 import FlipBook from "@/components/FlipBook/ReactFlipBook/index";
 import { SizeType } from "@/components/FlipBook/Settings";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { WidgetEvent } from "../FlipBook/Event/EventObject";
+import Page from "./Page/Page";
+import { PageFlip } from "../FlipBook/PageFlip";
 
 export interface StoryBook {
   Pages: React.JSX.Element[];
@@ -35,7 +37,10 @@ const Book: React.FC<BookProps> = ({
   isMobile,
   children,
 }) => {
-  const pagesAmount = book.Pages.length + noContentAmount;
+  const [pagesAmount, setPagesAmount] = useState(
+    book.Pages.length + noContentAmount
+  );
+
   const controlsRef = useRef<{
     setCurrPage(pageNum: number): void;
   }>(null);
@@ -68,6 +73,16 @@ const Book: React.FC<BookProps> = ({
     controlsRef.current?.setCurrPage(pageNum || 1);
   }, []);
 
+  const blankPage =
+    book.Pages.length % 2 === 0 ? (
+      <Page key='blank' pageNum={pages.length} isMobile={isMobile} />
+    ) : undefined;
+
+  const updatePageCount = (object: PageFlip) => {
+    const num = object.getPageCount();
+    setPagesAmount(num);
+  };
+
   return (
     <div className={styles.storyContainer}>
       {children}
@@ -84,6 +99,13 @@ const Book: React.FC<BookProps> = ({
         rtl={rtl}
         onFlip={handleFlip}
         controls={controls}
+        blankPage={blankPage}
+        onInit={({ object }) => {
+          updatePageCount(object);
+        }}
+        onChangeOrientation={({ object }) => {
+          updatePageCount(object);
+        }}
       >
         {pages}
       </FlipBook>

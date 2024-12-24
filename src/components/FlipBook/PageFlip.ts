@@ -50,7 +50,10 @@ export class PageFlip extends EventObject {
     this.update();
   }
 
-  public loadFromHTML(items: HTMLElement[]): void {
+  public loadFromHTML(
+    items: HTMLElement[],
+    blankPage: HTMLElement | null
+  ): void {
     this.ui = new HTMLUI(this.block, this, this.setting, items);
 
     this.render = new HTMLRender(this, this.setting, this.ui.getDistElement());
@@ -63,6 +66,8 @@ export class PageFlip extends EventObject {
       this.ui.getDistElement(),
       items
     );
+    this.ui.update();
+
     this.pages.load();
 
     this.render.start();
@@ -70,26 +75,8 @@ export class PageFlip extends EventObject {
     this.pages.show(this.setting.startPage);
 
     setTimeout(() => {
-      this.ui.update();
       this.trigger("init", this, this.render.getOrientation());
     }, 0);
-  }
-
-  public updateFromHtml(items: HTMLElement[]): void {
-    const current = this.pages.getCurrentPageIndex();
-
-    this.pages.destroy();
-    this.pages = new HTMLPageCollection(
-      this,
-      this.render,
-      this.ui.getDistElement(),
-      items
-    );
-    this.pages.load();
-    (this.ui as HTMLUI).updateItems(items);
-    this.render.reload();
-
-    this.pages.show(current);
   }
 
   public clear(): void {

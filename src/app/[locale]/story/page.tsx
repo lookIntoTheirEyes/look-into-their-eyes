@@ -21,10 +21,15 @@ const BookComponent: React.FC<IProps> = async (props) => {
   const rtl = locale === Language.he;
   const noContentPages = 3;
 
-  const pageNum = (i: number) => i + 1 + noContentPages - 1;
+  const pageNum = (i: number) => i + noContentPages;
 
-  const Pages = structuredClone(bookPages).map((content, i) => (
-    <Page isMobile={isMobile} rtl={rtl} key={content.id} pageNum={pageNum(i)}>
+  const toc = {
+    title: t("story.tableOfContents"),
+    pages: bookPages,
+  };
+
+  const Pages = bookPages.map((content, i) => (
+    <Page isMobile={isMobile} key={content.id} pageNum={pageNum(i)}>
       <PageContent
         cta={t("common.pageCta")}
         details={content}
@@ -53,11 +58,10 @@ const BookComponent: React.FC<IProps> = async (props) => {
     <BookContainer
       rtl={rtl}
       isMobile={isMobile}
-      tableOfContentsTitle={t("story.tableOfContents")}
+      toc={toc}
       Pages={Pages}
       Front={Front}
       Back={Back}
-      pagesContent={bookPages}
       noContentAmount={noContentPages}
     />
   );

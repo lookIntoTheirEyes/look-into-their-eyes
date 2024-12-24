@@ -31,8 +31,8 @@ const UsersBook: React.FC<IProps> = ({
   const frontDetails = {
     title,
   };
-  const noContentPages = 2;
-  const pageNum = (i: number) => i + 1 + noContentPages - 1;
+  const noContentPages = 1;
+  const pageNum = (i: number) => i + noContentPages + 1;
 
   const Front = <PageCover details={frontDetails} />;
   const pages = getAllPages(
@@ -40,8 +40,8 @@ const UsersBook: React.FC<IProps> = ({
     isComment ? "visitor" : "family"
   );
 
-  const Pages = structuredClone(pages).map((content, i) => (
-    <Page isMobile={isMobile} rtl={rtl} key={content.id} pageNum={pageNum(i)}>
+  const Pages = pages.map((content, i) => (
+    <Page isMobile={isMobile} key={content.id} pageNum={pageNum(i)}>
       {
         <PageContent
           details={content}
@@ -68,12 +68,11 @@ const UsersBook: React.FC<IProps> = ({
 
   return (
     <BookContainer
-      pagesContent={pages}
       Pages={Pages}
       rtl={rtl}
       isMobile={isMobile}
       Front={Front}
-      noContentAmount={1}
+      noContentAmount={noContentPages}
     >
       {newButton}
     </BookContainer>

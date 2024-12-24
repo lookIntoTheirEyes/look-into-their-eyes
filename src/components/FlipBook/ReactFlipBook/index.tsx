@@ -8,13 +8,13 @@ import React, {
 } from "react";
 import { IFlipSetting, IEventProps } from "./settings";
 import { PageFlip } from "../PageFlip";
-import { WidgetEvent } from "../Event/EventObject";
 
 import styles from "./index.module.css";
 
 interface IProps extends IFlipSetting, IEventProps {
   children: React.ReactNode;
   controls: React.ReactNode;
+  blankPage?: React.ReactElement;
 }
 
 interface FlipPageElement extends ReactElement {
@@ -27,6 +27,7 @@ const HTMLFlipBookForward = React.forwardRef<
 >((props, ref) => {
   const htmlElementRef = useRef<HTMLDivElement | null>(null);
   const childRef = useRef<HTMLElement[]>([]);
+  const blankPageRef = useRef<HTMLElement | null>(null);
   const pageFlip = useRef<PageFlip | null>(null);
   const [pages, setPages] = useState<FlipPageElement[]>([]);
   const [isLoading, setLoading] = useState(true);
@@ -44,49 +45,30 @@ const HTMLFlipBookForward = React.forwardRef<
   }, []);
 
   useEffect(() => {
-    if (pages.length === childRef.current.length && pages.length > 0) {
-      return;
-    }
     childRef.current = [];
 
-    if (props.children) {
-      const childList = React.Children.map(props.children, (child) => {
-        if (!React.isValidElement(child)) {
-          return child;
-        }
+    if (!props.children) return;
 
-        return React.cloneElement(child, {
-          ref: (dom: HTMLElement | null) => {
-            if (dom) {
-              childRef.current.push(dom);
-            }
-          },
-        } as { ref: (dom: HTMLElement | null) => void });
-      });
+    const childList = React.Children.map(props.children, (child) => {
+      if (!React.isValidElement(child)) return child;
+      return React.cloneElement(child, {
+        ref: (dom: HTMLElement | null) => {
+          if (dom) childRef.current.push(dom);
+        },
+      } as { ref: (dom: HTMLElement | null) => void });
+    });
 
-      setPages((childList || []) as FlipPageElement[]);
-    }
-  }, [props.children, props.rtl]);
+    setPages(childList as FlipPageElement[]);
+  }, [props.children]);
 
   useEffect(() => {
     const setHandlers = () => {
       const flip = pageFlip.current;
       if (flip) {
-        if (props.onFlip) {
-          flip.on("flip", (e: WidgetEvent) => {
-            props.onFlip?.(e);
-          });
-        }
-        if (props.onChangeOrientation) {
-          flip.on("changeOrientation", (e: WidgetEvent) => {
-            props.onChangeOrientation?.(e);
-          });
-        }
-        if (props.onInit) {
-          flip.on("init", (e: WidgetEvent) => {
-            props.onInit?.(e);
-          });
-        }
+        if (props.onFlip) flip.on("flip", props.onFlip);
+        if (props.onChangeOrientation)
+          flip.on("changeOrientation", props.onChangeOrientation);
+        if (props.onInit) flip.on("init", props.onInit);
       }
     };
 
@@ -100,11 +82,9 @@ const HTMLFlipBookForward = React.forwardRef<
       }
 
       if (!pageFlip.current?.getFlipController()) {
-        pageFlip.current?.loadFromHTML(childRef.current);
+        pageFlip.current?.loadFromHTML(childRef.current, blankPageRef.current);
         isInitialized.current = true;
         setLoading(false);
-      } else {
-        pageFlip.current.updateFromHtml(childRef.current);
       }
     }
 
@@ -115,17 +95,24 @@ const HTMLFlipBookForward = React.forwardRef<
       setHandlers();
     }
 
-    return () => {
-      removeHandlers();
-    };
+    return () => removeHandlers();
   }, [pages.length, removeHandlers, props]);
 
   return (
     <>
+      {props.blankPage && (
+        <div style={{ display: "none" }}>
+          {React.cloneElement(props.blankPage, {
+            ref: (dom: HTMLElement | null) => {
+              if (dom) blankPageRef.current = dom;
+            },
+          })}
+        </div>
+      )}
       {isLoading && <div className={styles.loader} />}
       <div
-        style={{ display: !isLoading ? "block" : "none" }}
         ref={htmlElementRef}
+        style={{ display: !isLoading ? "block" : "none" }}
       >
         {pages}
       </div>
