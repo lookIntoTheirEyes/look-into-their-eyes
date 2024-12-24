@@ -1,5 +1,5 @@
 import { Orientation, Render } from "../Render/Render";
-import { PageDensity, PageOrientation } from "../Page/Page";
+import { PageDensity } from "../Page/Page";
 import { PageFlip } from "../PageFlip";
 import { FlipDirection } from "../Flip/Flip";
 import { HTMLPage } from "../Page/HTMLPage";
