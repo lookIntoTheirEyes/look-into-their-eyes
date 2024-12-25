@@ -156,12 +156,27 @@ export abstract class UI {
     const clientX =
       "touches" in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
 
-    return (
+    const isInBounds =
       clientX >= rect.left &&
       clientX <= rect.right &&
       clientY >= rect.top &&
-      clientY <= rect.bottom
-    );
+      clientY <= rect.bottom;
+
+    if (!isInBounds) {
+      return false;
+    }
+
+    const target = "touches" in e ? e.touches[0].target : e.target;
+    if (!(target instanceof Element)) return false;
+
+    let currentElement: Element | null = target;
+    while (currentElement) {
+      if (currentElement === this.distElement) {
+        return true;
+      }
+      currentElement = currentElement.parentElement;
+    }
+    return false;
   };
 
   private checkTarget(targer: EventTarget): boolean {
