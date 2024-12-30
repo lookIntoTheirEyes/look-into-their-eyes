@@ -41,6 +41,10 @@ export class PageFlip extends EventObject {
   }
 
   public update(): void {
+    this.pages.getPages().forEach((page) => {
+      page.resetDensity();
+    });
+
     this.render.update();
     this.pages.show();
   }

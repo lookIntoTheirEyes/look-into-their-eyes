@@ -73,6 +73,11 @@ export class HTMLPage extends Page {
     }
   }
 
+  public resetDensity(): void {
+    this.nowDrawingDensity = this.createdDensity;
+    this.setDrawingDensity(this.nowDrawingDensity);
+  }
+
   private drawHard(commonStyle = ""): void {
     const pos = this.render.getRect().left + this.render.getRect().width / 2;
 
@@ -170,7 +175,10 @@ export class HTMLPage extends Page {
   }
 
   public setDrawingDensity(density: PageDensity): void {
-    this.element.classList.remove("--soft", "--hard");
+    this.element.classList.remove(
+      `--${PageDensity.HARD}`,
+      `--${PageDensity.SOFT}`
+    );
     this.element.classList.add("--" + density);
 
     super.setDrawingDensity(density);
