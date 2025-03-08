@@ -1,54 +1,8 @@
 .loader {
-  position: absolute;
+  position: relative;
   left: 50%;
   top: 50%; /* Changed from 40% to 50% */
-  transform: translate(-50%, -50%); /* Changed to -50% to center perfectly */
-  width: 80px;
-  height: 80px;
-
-  &::before,
-  &::after {
-    content: "";
-    position: absolute;
-    border: 3px solid #1a1a1a;
-    border-radius: 50%; /* Changed from 4em to 50% for perfect circles */
-    left: 50%; /* Added to center the circles */
-    top: 50%; /* Added to center the circles */
-  }
-
-  &::before {
-    width: 50px;
-    height: 50px;
-    border-bottom-color: transparent;
-    animation: animate-inner 1.4s linear infinite;
-    transform: translate(-50%, -50%); /* Added to center the inner circle */
-  }
-
-  &::after {
-    width: 80px;
-    height: 80px;
-    border-top-color: transparent;
-    animation: animate-outer 1.8s linear infinite;
-    transform: translate(-50%, -50%); /* Added to center the outer circle */
-  }
-}
-
-@keyframes animate-inner {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg); /* Added translation to maintain centering */
-  }
-
-  to {
-    transform: translate(-50%, -50%) rotate(360deg); /* Added translation to maintain centering */
-  }
-}
-
-@keyframes animate-outer {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg); /* Added translation to maintain centering */
-  }
-
-  to {
-    transform: translate(-50%, -50%) rotate(-360deg); /* Added translation to maintain centering */
-  }
+  transform: translate(-50%, 50%);
+  width: 100px;
+  height: 100px;
 }
