@@ -73,13 +73,15 @@ const Book: React.FC<BookProps> = ({
     controlsRef.current?.setCurrPage(pageNum || 1);
   }, []);
 
-  const updatePageCount = (object: PageFlip) => {
-    const pageCount = object.getPageCount();
-    if (pagesAmount === pageCount) {
-      return;
-    }
-    setPagesAmount(pageCount);
-  };
+  const updatePageCount = useCallback(
+    (object: PageFlip, forceUpdate = false) => {
+      const pageCount = object.getPageCount();
+      if (forceUpdate || pagesAmount !== pageCount) {
+        setPagesAmount(pageCount);
+      }
+    },
+    [pagesAmount]
+  );
 
   return (
     <div className={styles.storyContainer}>
@@ -102,7 +104,7 @@ const Book: React.FC<BookProps> = ({
           updatePageCount(object);
         }}
         onChangeOrientation={({ object }) => {
-          updatePageCount(object);
+          updatePageCount(object, true);
         }}
       >
         {pages}

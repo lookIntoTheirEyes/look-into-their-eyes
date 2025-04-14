@@ -22,6 +22,9 @@ const HTMLFlipBookForward = React.forwardRef<FlipBookRef, IFlipBookProps>(
     const initAttempts = useRef(0);
     const maxInitAttempts = 5;
 
+    // Used to prevent multi-initialization
+    const isInitializing = useRef(false);
+
     // Fix for direct page load: track if component is mounted
     const isMounted = useRef(false);
 
@@ -36,15 +39,58 @@ const HTMLFlipBookForward = React.forwardRef<FlipBookRef, IFlipBookProps>(
       }
     }, []);
 
-    // Initialize PageFlip function - defined outside useEffect to fix dependency issues
+    // Create blank page element properly attached to DOM
+    const createBlankPage = useCallback(() => {
+      // Only create if we have a blank page prop and it doesn't already exist
+      if (!props.blankPage || blankPageRef.current) return null;
+
+      // Create a container element that will be hidden but contain our blank page
+      const container = document.createElement("div");
+      container.id = "flipbook-blank-page-container";
+      container.style.position = "absolute";
+      container.style.visibility = "hidden";
+      container.style.pointerEvents = "none";
+      document.body.appendChild(container);
+
+      // Create the blank page element
+      const blankPageElement = document.createElement("div");
+      blankPageElement.id = "flipbook-blank-page";
+      blankPageElement.className = "bookPage";
+      blankPageElement.style.position = "relative";
+      blankPageElement.style.width = "100%";
+      blankPageElement.style.height = "100%";
+
+      // Add necessary child elements to match normal Page structure
+      blankPageElement.innerHTML = '<div class="pageContent"></div>';
+
+      // Add to DOM and update ref
+      container.appendChild(blankPageElement);
+      blankPageRef.current = blankPageElement;
+
+      return container;
+    }, [props.blankPage]);
+
+    // Initialize PageFlip function - refactored to avoid infinite loops
     const initializePageFlip = useCallback(() => {
+      // Return early if conditions aren't met or initialization is already in progress
       if (
-        childNodesRef.current.length > 0 &&
-        htmlElementRef.current &&
-        !pageFlip.current &&
-        !isInitialized.current &&
-        isMounted.current
+        isInitializing.current ||
+        isInitialized.current ||
+        !isMounted.current ||
+        childNodesRef.current.length === 0 ||
+        !htmlElementRef.current ||
+        pageFlip.current
       ) {
+        return;
+      }
+
+      // Set flag to prevent re-entrancy
+      isInitializing.current = true;
+
+      try {
+        // Make sure we have the blank page created if needed
+        createBlankPage();
+
         // Create settings object to pass to PageFlip
         const settings: Record<string, unknown> = {
           startPage: props.startPage,
@@ -90,64 +136,102 @@ const HTMLFlipBookForward = React.forwardRef<FlipBookRef, IFlipBookProps>(
         if (props.swipeDirectionThreshold !== undefined)
           settings.swipeDirectionThreshold = props.swipeDirectionThreshold;
 
-        try {
-          // Create PageFlip instance
-          pageFlip.current = new PageFlip(htmlElementRef.current, settings);
+        // Create PageFlip instance
+        pageFlip.current = new PageFlip(htmlElementRef.current, settings);
 
-          // Load pages
-          pageFlip.current.loadFromHTML(
-            childNodesRef.current,
-            blankPageRef.current
-          );
+        // Load pages
+        pageFlip.current.loadFromHTML(
+          childNodesRef.current,
+          blankPageRef.current
+        );
 
-          // Set event handlers
-          if (props.onFlip) pageFlip.current.on("flip", props.onFlip);
-          if (props.onChangeOrientation)
-            pageFlip.current.on("changeOrientation", props.onChangeOrientation);
-          if (props.onInit) pageFlip.current.on("init", props.onInit);
+        // Set event handlers
+        if (props.onFlip) pageFlip.current.on("flip", props.onFlip);
 
-          isInitialized.current = true;
-          setLoading(false);
-        } catch (error) {
-          console.error("Error initializing PageFlip:", error);
-
-          // If initialization fails but we still have the component mounted,
-          // retry after a delay (useful for direct page loads)
-          if (isMounted.current && initAttempts.current < maxInitAttempts) {
-            initAttempts.current++;
-            setTimeout(initializePageFlip, 200 * initAttempts.current);
+        // Add handler for orientation changes
+        pageFlip.current.on("changeOrientation", (e) => {
+          if (props.onChangeOrientation) {
+            props.onChangeOrientation(e);
           }
+        });
+
+        if (props.onInit) pageFlip.current.on("init", props.onInit);
+
+        isInitialized.current = true;
+        setLoading(false);
+      } catch (error) {
+        console.error("Error initializing PageFlip:", error);
+
+        // Release PageFlip reference if initialization failed
+        pageFlip.current = null;
+
+        // If initialization fails but we still have the component mounted,
+        // retry after a delay
+        if (isMounted.current && initAttempts.current < maxInitAttempts) {
+          initAttempts.current++;
+          setTimeout(() => {
+            isInitializing.current = false;
+            initializePageFlip();
+          }, 200 * initAttempts.current);
+        }
+      } finally {
+        // Reset initialization flag if we're fully initialized or we're not going to retry
+        if (isInitialized.current || initAttempts.current >= maxInitAttempts) {
+          isInitializing.current = false;
         }
       }
-    }, [
-      props.startPage,
-      props.size,
-      props.width,
-      props.height,
-      props.minWidth,
-      props.maxWidth,
-      props.minHeight,
-      props.maxHeight,
-      props.rtl,
-      props.drawShadow,
-      props.flippingTime,
-      props.usePortrait,
-      props.startZIndex,
-      props.autoSize,
-      props.maxShadowOpacity,
-      props.showCover,
-      props.mobileScrollSupport,
-      props.clickEventForward,
-      props.useMouseEvents,
-      props.swipeDistance,
-      props.showPageCorners,
-      props.swipeVerticalTolerance,
-      props.swipeDetectionTime,
-      props.swipeDirectionThreshold,
-      props.onFlip,
-      props.onChangeOrientation,
-      props.onInit,
-    ]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [createBlankPage]); // Only depend on createBlankPage
+
+    // Create or update blank page when needed
+    useEffect(() => {
+      if (props.blankPage && isMounted.current) {
+        // Clean up any existing blank page
+        const existingContainer = document.getElementById(
+          "flipbook-blank-page-container"
+        );
+        if (existingContainer) {
+          document.body.removeChild(existingContainer);
+          blankPageRef.current = null;
+        }
+
+        // Create the blank page element - it will be available for PageFlip to use
+        // but PageFlip will decide whether to use it based on orientation
+        const container = createBlankPage();
+
+        // Add handler for orientation changes
+        const handleOrientationChange = () => {
+          // If we're already initialized, we need to force a full update when orientation changes
+          if (pageFlip.current && isInitialized.current) {
+            // Short delay to ensure DOM has updated
+            setTimeout(() => {
+              // Recreate blank page to ensure it's properly included
+              if (blankPageRef.current === null) {
+                createBlankPage();
+              }
+
+              // Force the PageFlip to update
+              try {
+                pageFlip.current?.update();
+              } catch (err) {
+                console.error("Error updating PageFlip:", err);
+              }
+            }, 100);
+          }
+        };
+
+        // Listen for resize events which happen during orientation changes
+        window.addEventListener("resize", handleOrientationChange);
+
+        return () => {
+          window.removeEventListener("resize", handleOrientationChange);
+          if (container && document.body.contains(container)) {
+            document.body.removeChild(container);
+            blankPageRef.current = null;
+          }
+        };
+      }
+    }, [props.blankPage, createBlankPage]);
 
     // Mark component as mounted
     useEffect(() => {
@@ -182,14 +266,6 @@ const HTMLFlipBookForward = React.forwardRef<FlipBookRef, IFlipBookProps>(
             (el): el is HTMLElement => el instanceof HTMLElement
           );
 
-          // If we found child elements, process blank page as well
-          if (props.blankPage) {
-            const blankElement = document.querySelector(".blankPage");
-            if (blankElement instanceof HTMLElement) {
-              blankPageRef.current = blankElement;
-            }
-          }
-
           // Trigger initialization
           initializePageFlip();
         } else if (initAttempts.current < maxInitAttempts) {
@@ -203,26 +279,16 @@ const HTMLFlipBookForward = React.forwardRef<FlipBookRef, IFlipBookProps>(
       const timer = setTimeout(collectPageElements, 100);
 
       return () => clearTimeout(timer);
-    }, [props.children, props.blankPage, initializePageFlip]);
+    }, [props.children, initializePageFlip]);
 
     // Cleanup on unmount
     useEffect(() => {
       return () => {
         removeHandlers();
         isInitialized.current = false;
+        isInitializing.current = false;
       };
     }, [removeHandlers]);
-
-    // Render blank page in a hidden container
-    const renderBlankPage = () => {
-      if (!props.blankPage) return null;
-
-      return (
-        <div style={{ display: "none" }}>
-          <div className='blankPage'>{props.blankPage}</div>
-        </div>
-      );
-    };
 
     // Reset and retry initialization if needed
     useEffect(() => {
@@ -230,6 +296,7 @@ const HTMLFlipBookForward = React.forwardRef<FlipBookRef, IFlipBookProps>(
       const directLoadDelay = setTimeout(() => {
         if (
           !isInitialized.current &&
+          !isInitializing.current &&
           isMounted.current &&
           childNodesRef.current.length === 0
         ) {
@@ -244,14 +311,10 @@ const HTMLFlipBookForward = React.forwardRef<FlipBookRef, IFlipBookProps>(
                   (el): el is HTMLElement => el instanceof HTMLElement
                 );
 
-                if (props.blankPage) {
-                  const blankElement = document.querySelector(".blankPage");
-                  if (blankElement instanceof HTMLElement) {
-                    blankPageRef.current = blankElement;
-                  }
+                // Only initialize if we're not currently in the process
+                if (!isInitializing.current) {
+                  initializePageFlip();
                 }
-
-                initializePageFlip();
               } else if (initAttempts.current < maxInitAttempts * 2) {
                 // Try harder for direct navigation
                 initAttempts.current++;
@@ -265,12 +328,10 @@ const HTMLFlipBookForward = React.forwardRef<FlipBookRef, IFlipBookProps>(
       }, 500); // Longer initial delay for direct navigation
 
       return () => clearTimeout(directLoadDelay);
-    }, [initializePageFlip, props.blankPage]);
+    }, [initializePageFlip]);
 
     return (
       <>
-        {renderBlankPage()}
-
         {isLoading && (
           <>
             <div className={styles.loader}>
