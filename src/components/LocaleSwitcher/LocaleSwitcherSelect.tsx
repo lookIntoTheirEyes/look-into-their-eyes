@@ -1,8 +1,9 @@
 "use client";
 
 import { ChangeEvent, ReactNode, useTransition } from "react";
-import { Locale, usePathname, useRouter } from "@/i18n/routing";
+import { usePathname, useRouter } from "@/i18n/routing";
 import styles from "./LocaleSwitcherSelect.module.css";
+import { Locale } from "next-intl";
 
 type Props = {
   children: ReactNode;
