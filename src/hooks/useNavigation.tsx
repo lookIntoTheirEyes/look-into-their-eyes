@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, JSX } from "react";
 import { useSearchParams } from "next/navigation";
 import { PageFlip } from "@/components/FlipBook/PageFlip";
 import TableOfContentsContainer from "@/components/Book/TableOfContents/TableOfContentsContainer";
