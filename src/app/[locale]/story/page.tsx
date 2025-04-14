@@ -8,7 +8,7 @@ import PageContent from "@/components/Book/Page/PageContent/PageContent";
 import PageCover from "@/components/Book/PageCover/PageCover";
 import { cookies } from "next/headers";
 import { imageLoader } from "@/lib/utils/utils";
-import Head from "next/head";
+import { ImagePreloader } from "@/components/Book/ImagePreloader/ImagePreloader";
 
 interface IProps extends ILanguageProps {
   searchParams: Promise<SearchParams>;
@@ -32,7 +32,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
         ? imageLoader({ src: content.imageUrl, quality: 100 })
         : undefined
     )
-    .filter(Boolean);
+    .filter(Boolean) as string[];
 
   const Pages = structuredClone(bookPages).map((content, i) => (
     <Page isMobile={isMobile} rtl={rtl} key={content.id} pageNum={pageNum(i)}>
@@ -70,11 +70,7 @@ const BookComponent: React.FC<IProps> = async (props) => {
 
   return (
     <>
-      <Head>
-        {preloadUrls.map((url, index) => (
-          <link key={`preload-${index}`} rel='preload' as='image' href={url} />
-        ))}
-      </Head>
+      <ImagePreloader urls={preloadUrls} />
 
       <BookContainer
         rtl={rtl}
