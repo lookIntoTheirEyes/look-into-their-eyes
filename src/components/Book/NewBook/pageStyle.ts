@@ -6,6 +6,9 @@ import Helper from "./Helper";
 
 const MIN_SHADOW_PROGRESS = 0.5;
 
+/**
+ * Get styles for the page below the current flipping page
+ */
 function getBelowPageStyle({
   calculatedValues,
   isHardPage,
@@ -28,7 +31,7 @@ function getBelowPageStyle({
   return {
     zIndex: to(
       [calculatedValues, progress],
-      (calc: ICalc, progress: number) => {
+      (calc: ICalc | null, progress: number) => {
         return !isHardPage &&
           calc &&
           calc.shadow.progress > MIN_SHADOW_PROGRESS &&
@@ -42,15 +45,21 @@ function getBelowPageStyle({
       (corner, direction, calc) => {
         if (corner === "none" || !calc || isHardPage) return "none";
         const pageHeight = bookRect.height;
-        calc = calc as ICalc;
-        corner = corner as Corner;
-        direction = direction as FlipDirection;
 
-        const { intersectPoints, pos } = calc;
+        // Safe type assertions
+        const calcValue = calc as ICalc;
+        const cornerValue = corner as Corner;
+        const directionValue = direction as FlipDirection;
+
+        const { intersectPoints, pos } = calcValue;
+
+        const topBottomCorner = cornerValue.includes("top")
+          ? FlipCorner.TOP
+          : FlipCorner.BOTTOM;
 
         const area = FlipCalculation.getFrontClipArea({
           ...intersectPoints,
-          corner: corner.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
+          corner: topBottomCorner,
           pageHeight,
           pageWidth,
         });
@@ -60,10 +69,10 @@ function getBelowPageStyle({
           pageWidth,
           pageHeight,
           area,
-          direction,
+          direction: directionValue,
           angle: 0,
           factorPosition: FlipCalculation.getBottomPagePosition(
-            direction,
+            directionValue,
             pageWidth,
             isRtl
           ),
@@ -74,6 +83,9 @@ function getBelowPageStyle({
   };
 }
 
+/**
+ * Get styles for a soft (foldable) page
+ */
 function getSoftPageStyle(
   calc: Interpolation<ICalc | null>,
   corner: SpringValue<Corner>,
@@ -89,11 +101,11 @@ function getSoftPageStyle(
       if (corner === "none" || !calc || isFront) return "none";
 
       return getBackSoftClipPath({
-        calc,
-        corner,
+        calc: calc as ICalc,
+        corner: corner as Corner,
         pageWidth,
         pageHeight,
-        direction,
+        direction: direction as FlipDirection,
         isRtl,
       });
     }),
@@ -101,16 +113,21 @@ function getSoftPageStyle(
     transform: to([calc, corner, direction], (calc, corner, direction) => {
       if (corner === "none" || !calc || isFront) return "none";
 
-      const { angle, rect } = calc;
+      const calcValue = calc as ICalc;
+      const directionValue = direction as FlipDirection;
+
+      const { angle, rect } = calcValue;
       const activePos = FlipCalculation.convertToGlobal(
-        FlipCalculation.getActiveCorner(direction, rect, isRtl),
-        direction,
+        FlipCalculation.getActiveCorner(directionValue, rect, isRtl),
+        directionValue,
         width,
         isRtl
       );
 
-      return `translate3d(${activePos!.x}px, ${
-        activePos!.y
+      if (!activePos) return "none";
+
+      return `translate3d(${activePos.x}px, ${
+        activePos.y
       }px, 0) rotate(${angle}rad)`;
     }),
     zIndex: to([corner, progress], (corner, progress) => {
@@ -120,6 +137,9 @@ function getSoftPageStyle(
   };
 }
 
+/**
+ * Get the clip path for the back of a soft page
+ */
 function getBackSoftClipPath({
   calc,
   corner,
@@ -158,79 +178,9 @@ function getBackSoftClipPath({
   });
 }
 
-// function getFrontSoftClipPath({
-//   calc,
-//   pageHeight,
-//   corner,
-//   pageWidth,
-// }: {
-//   calc: ICalc;
-//   pageHeight: number;
-//   corner: Corner;
-//   pageWidth: number;
-// }): string {
-//   const { intersectPoints } = calc;
-
-//   const area = FlipCalculation.getFrontClipArea({
-//     ...intersectPoints,
-//     corner: corner.includes("top") ? FlipCorner.TOP : FlipCorner.BOTTOM,
-//     pageHeight,
-//     pageWidth,
-//   });
-
-//   const invertedPath = invertClipPath(area, pageWidth, pageHeight, corner);
-
-//   return `polygon(${invertedPath
-//     .filter((p): p is Point => !!p)
-//     .map((p) => `${p!.x}px ${p!.y}px`)
-//     .join(", ")})`;
-// }
-
-// function invertClipPath(
-//   originalPoints: (Point | null)[],
-//   pageWidth: number,
-//   pageHeight: number,
-//   corner: Corner = "top-right"
-// ): Point[] {
-//   if (!originalPoints.length) return [];
-//   const points = originalPoints.filter((p) => p !== null);
-//   if (!points.length) return [];
-
-//   switch (corner) {
-//     case "bottom-right": {
-//       const bottomIntersect = points.find((p) => p?.y === pageHeight) ?? {
-//         x: pageWidth,
-//         y: pageHeight,
-//       };
-//       const sideIntersect = points.find((p) => p?.x === pageWidth) ?? {
-//         x: pageWidth,
-//         y: pageHeight,
-//       };
-
-//       return [
-//         { x: 0, y: 0 },
-//         { x: pageWidth, y: 0 },
-//         { x: pageWidth, y: sideIntersect.y },
-//         sideIntersect,
-//         bottomIntersect,
-//         { x: 0, y: pageHeight },
-//       ];
-//     }
-
-//     case "top-right":
-//       return [
-//         { x: pageWidth, y: 0 },
-//         ...points,
-//         { x: 0, y: 0 },
-//         { x: 0, y: pageHeight },
-//         { x: pageWidth, y: pageHeight },
-//       ];
-
-//     default:
-//       return [];
-//   }
-// }
-
+/**
+ * Get styles for a hard (non-foldable) page
+ */
 function getHardPageStyle(
   x: SpringValue<number>,
   progress: SpringValue<number>,
@@ -241,9 +191,13 @@ function getHardPageStyle(
   isFront: boolean
 ) {
   return {
-    display: progress.to((p) =>
-      (isFront ? p < 50 : p >= 50) ? "block" : "none"
-    ),
+    // Fix: Better handling of display property to ensure both sides render correctly
+    display: progress.to((p) => {
+      // Show front when p < 50 for front side or p >= 50 for back side
+      const showCondition = (isFront && p < 50) || (!isFront && p >= 50);
+      // Using block/none instead of opacity for better performance
+      return showCondition ? "block" : "none";
+    }),
     transformOrigin: progress.to((p) =>
       Helper.getOrigin(isLeftPage, p, pageWidth)
     ),
@@ -256,10 +210,30 @@ function getHardPageStyle(
       pageWidth,
       isRtl
     ),
-    zIndex: isFront ? 3 : progress.to((p) => (p > 50 ? 4 : 2)),
+    zIndex: to([direction, progress], (dir, p) => {
+      // Fix: Better z-index management for hard pages
+      const progressValue = p as number;
+      const dirValue = dir as FlipDirection;
+      // Ensure proper stacking during flip
+      const baseZ = isFront ? 3 : 2;
+      // Pages being flipped need higher z-index
+      const flipZ = progressValue > 0 && progressValue < 100 ? 2 : 0;
+      // Front pages that have been flipped past halfway need to be on top
+      const frontPastHalfZ = isFront && progressValue >= 50 ? 1 : 0;
+      // Back pages that haven't been flipped halfway yet need to be above
+      const backBeforeHalfZ = !isFront && progressValue < 50 ? 1 : 0;
+
+      return baseZ + flipZ + frontPastHalfZ + backBeforeHalfZ;
+    }),
+    // Fix: Add will-change for performance optimization
+    willChange: progress.to((p) => (p > 0 && p < 100 ? "transform" : "auto")),
   };
 }
 
+/**
+ * Calculate transform for hard pages during animation
+ * Fixed to properly handle both front and back faces
+ */
 function getHardPageTransform(
   x: SpringValue<number>,
   progress: SpringValue<number>,
@@ -278,8 +252,8 @@ function getHardPageTransform(
       isRtl
         ? dir
         : dir === FlipDirection.FORWARD
-        ? FlipDirection.BACK
-        : FlipDirection.FORWARD,
+          ? FlipDirection.BACK
+          : FlipDirection.FORWARD,
       !isFront
     );
 

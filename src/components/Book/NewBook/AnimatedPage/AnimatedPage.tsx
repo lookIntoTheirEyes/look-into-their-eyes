@@ -65,6 +65,9 @@ const AnimatedPage: React.FC<IProps> = ({
   );
 
   const adjustOrigin = pageNum === pages.length - 1 || pageNum === 0;
+  const belowPageCondition = isSinglePage
+    ? belowPageNum > -1 && belowPageNum < pages.length
+    : belowPageNum > 0 && belowPageNum < pages.length - 1;
 
   // Preload images for nearby pages to improve performance
   usePreloadPages({
@@ -226,7 +229,7 @@ const AnimatedPage: React.FC<IProps> = ({
         {isHardPage ? renderHardPages() : renderSoftPages()}
 
         {/* Below page (visible under current page) */}
-        {belowPageNum > 0 && belowPageNum < pages.length - 1 && (
+        {belowPageCondition && (
           <animated.div
             className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
               styles.below
