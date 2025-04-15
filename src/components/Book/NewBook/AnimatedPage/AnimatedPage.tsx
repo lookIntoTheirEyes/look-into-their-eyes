@@ -164,16 +164,13 @@ const AnimatedPage: React.FC<IProps> = ({
     return (
       <>
         {/* Front side of the hard page */}
-        <animated.div
-          className={`${styles.page} ${styles.hardPage} ${styles.front}`}
-          style={getPageStyle(true)}
-        >
+        <animated.div className={styles.page} style={getPageStyle(true)}>
           {pages[pageNum]}
         </animated.div>
 
         {/* Back side of the hard page - crucial for proper hard page animation */}
         <animated.div
-          className={`${styles.page} ${styles.hardPage} ${styles.back}`}
+          className={`${styles.page} ${styles.back}`}
           style={getPageStyle(false)}
         >
           {backPageNum >= 0 && backPageNum < pages.length
@@ -218,7 +215,6 @@ const AnimatedPage: React.FC<IProps> = ({
           ${styles.pageWrapper} 
           ${isLeftPage ? "" : styles.right} 
           ${isSinglePage ? styles.onePage : ""}
-          ${isHardPage ? styles.hardPageWrapper : ""}
         `}
         {...bind(i)}
         style={{
@@ -230,7 +226,7 @@ const AnimatedPage: React.FC<IProps> = ({
         {isHardPage ? renderHardPages() : renderSoftPages()}
 
         {/* Below page (visible under current page) */}
-        {belowPageNum > -1 && belowPageNum < pages.length && (
+        {belowPageNum > 0 && belowPageNum < pages.length - 1 && (
           <animated.div
             className={`${styles.page} ${isLeftPage ? "" : styles.right} ${
               styles.below

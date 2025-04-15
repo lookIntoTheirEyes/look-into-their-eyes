@@ -17,6 +17,7 @@ interface UsePageFlipParams {
 }
 
 const ANIMATION_DURATION = 500;
+const DRAG_THRESHOLD = 20; // Distance in pixels to determine if a drag is intentional
 
 export const usePageFlip = ({
   isRtl,
@@ -51,10 +52,17 @@ export const usePageFlip = ({
         direction
       );
 
+      // Fix: Ensure page numbers are within valid range
+      const validBackPage = Math.max(0, Math.min(pagesAmount - 1, backPageNum));
+      const validBelowPage = Math.max(
+        0,
+        Math.min(pagesAmount - 1, belowPageNum)
+      );
+
       const config = {
         mainPageNum: pageNum,
-        backPageNum: backPageNum,
-        belowPageNum: belowPageNum,
+        backPageNum: validBackPage,
+        belowPageNum: validBelowPage,
       };
 
       if (
@@ -69,6 +77,7 @@ export const usePageFlip = ({
     },
     [
       isSinglePage,
+      pagesAmount,
       pagesConfig.backPageNum,
       pagesConfig.belowPageNum,
       pagesConfig.mainPageNum,
@@ -104,12 +113,17 @@ export const usePageFlip = ({
         ? FlipDirection.FORWARD
         : FlipDirection.BACK
       : isRtl
-      ? FlipDirection.BACK
-      : FlipDirection.FORWARD;
+        ? FlipDirection.BACK
+        : FlipDirection.FORWARD;
   };
 
+  // Initialize with default spring values
   const [props, api] = useSprings(2, () => ({
     ...getSpringConfig({}),
+    config: {
+      tension: 280,
+      friction: 25,
+    },
   }));
 
   const getEndX = useCallback(
@@ -134,6 +148,7 @@ export const usePageFlip = ({
       isFullAnimate?: boolean;
       nextPageNum?: number;
     }) => {
+      // Prevent multiple animations
       if (status.current === "animation") {
         return;
       }
@@ -151,26 +166,15 @@ export const usePageFlip = ({
         setPageNums(nextPageNum - 1, direction);
       }
 
-      const {
-        top: origTop,
-        height,
-        left,
-        width,
-      } = bookRef.current!.getBoundingClientRect();
+      const rect = bookRef.current!.getBoundingClientRect();
+      const { top: origTop, height, left, width } = rect;
       const top = origTop + scrollY;
 
       api.start((i) => {
-        if (i !== idx) return;
+        if (i !== idx) return {};
 
         const x = getEndX(direction, left, width);
-
         const y = corner.includes("top") ? top : top + height;
-
-        // console.log(
-        //   "bookRef.current!.getBoundingClientRect()",
-        //   bookRef.current!.getBoundingClientRect()
-        // );
-        // console.log("y", y);
 
         const to = {
           ...getSpringConfig({
@@ -198,30 +202,32 @@ export const usePageFlip = ({
         return {
           ...config,
           config: {
-            tension: 200,
+            tension: 180,
             friction: 25,
             duration: ANIMATION_DURATION,
           },
+          onRest: () => {
+            // Only process animation completion for the specific spring being animated
+            if (i === idx) {
+              api.start((j) => {
+                if (j !== idx) return {};
+                status.current = "";
 
-          onResolve: () => {
-            api.start((i) => {
-              if (i !== idx) return;
-              status.current = "";
+                return {
+                  ...getSpringConfig({
+                    immediate: true,
+                  }),
+                };
+              });
 
-              return {
-                ...getSpringConfig({
-                  immediate: true,
-                }),
-              };
-            });
-
-            if (nextPageNum >= 0) {
-              setCurrentPage(nextPageNum, false);
-            } else {
-              if (direction === FlipDirection.BACK) {
-                onPrevPage();
+              if (nextPageNum >= 0) {
+                setCurrentPage(nextPageNum, false);
               } else {
-                onNextPage();
+                if (direction === FlipDirection.BACK) {
+                  onPrevPage();
+                } else {
+                  onNextPage();
+                }
               }
             }
           },
@@ -243,27 +249,35 @@ export const usePageFlip = ({
     corner: Corner;
   }) => {
     if (progress < 50) {
+      // Not far enough to flip - animate back to start
       api.start((i) => {
-        if (idx !== i) return;
+        if (idx !== i) return {};
         status.current = "animation";
 
         const x = getEndX(direction, bookRect.left, bookRect.width, true);
-
         const y = corner.includes("top")
           ? bookRect.top
           : bookRect.top + bookRect.height;
 
         return {
           to: getSpringConfig({ direction, corner, x, y }),
-          onResolve: () => {
-            status.current = "";
-            return {
-              ...getSpringConfig({ corner: "none", immediate: true }),
-            };
+          config: {
+            tension: 280,
+            friction: 25,
+            duration: ANIMATION_DURATION / 2,
+          },
+          onRest: () => {
+            if (i === idx) {
+              status.current = "";
+              return {
+                ...getSpringConfig({ corner: "none", immediate: true }),
+              };
+            }
           },
         };
       });
     } else {
+      // Far enough to complete the flip
       animateNextPage({ idx, direction, corner });
     }
   };
@@ -284,7 +298,7 @@ export const usePageFlip = ({
     corner: Corner;
   }) => {
     api.start((i) => {
-      if (idx !== i) return;
+      if (idx !== i) return {};
 
       return {
         ...getSpringConfig({
@@ -301,7 +315,7 @@ export const usePageFlip = ({
 
   const resetLocation = (idx: number, direction: FlipDirection) => {
     api.start((i) => {
-      if (idx !== i) return;
+      if (idx !== i) return {};
 
       return {
         ...getSpringConfig({ direction }),
@@ -327,6 +341,8 @@ export const usePageFlip = ({
         if (status.current !== "hover") {
           status.current = "hover";
         }
+
+        // Adjust for scroll position
         y = y + scrollY;
         const pageNum: number = currentPage + idx;
 
@@ -342,11 +358,13 @@ export const usePageFlip = ({
         setPageNums(pageNum, direction);
         const progress = Helper.getProgress(x, !isLeftPage, bookRef);
 
+        // Only trigger hover effects if within a certain threshold
         if (progress > 10) {
           resetLocation(idx, direction);
           return;
         }
 
+        // Get the corner where the mouse is hovering
         const corner = Helper.getCorner(
           x,
           y,
@@ -356,7 +374,7 @@ export const usePageFlip = ({
         );
 
         api.start((i) => {
-          if (idx !== i) return;
+          if (idx !== i) return {};
           return {
             ...getSpringConfig({ direction, corner, immediate: true }),
             x,
@@ -368,6 +386,8 @@ export const usePageFlip = ({
 
       onClick: ({ args: [idx], event: { clientX, clientY } }) => {
         if (status.current === "drag" || status.current === "animation") return;
+
+        // Adjust for scroll position
         clientY = clientY + scrollY;
 
         const pageNum: number = currentPage + idx;
@@ -387,10 +407,6 @@ export const usePageFlip = ({
           bookRect.left,
           bookRect.width
         );
-        // console.log("clientY", clientY);
-        // console.log("corner", corner);
-        // console.log("clickLocation", clickLocation);
-        // console.log("bookRect", bookRect);
 
         const action = Helper.getActionByClick(
           clickLocation,
@@ -410,34 +426,43 @@ export const usePageFlip = ({
       onDrag: ({
         down,
         args: [idx],
-        _direction: [xDir],
+        direction: [xDir],
         xy: [px, py],
         memo,
         tap,
+        movement: [mx, my],
       }) => {
+        // Adjust for scroll position
         py = py + scrollY;
         idx = idx as number;
 
+        // Don't process drags during animation or for taps
         if (tap || status.current === "animation") return;
         status.current = "drag";
 
+        // Determine drag direction (horizontal)
         const dir = xDir < 0 ? -1 : 1;
 
-        if (!dir && down) {
-          status.current = "";
-          return memo;
-        }
-
+        // Initialize drag state if not yet initialized
         if (!memo) {
+          // Require a minimum drag distance before starting the animation
+          if (Math.abs(mx) < DRAG_THRESHOLD && Math.abs(my) < DRAG_THRESHOLD) {
+            status.current = "";
+            return;
+          }
+
           if (!xDir) {
             status.current = "";
             return;
           }
-          const pageNum: number = currentPage + idx;
 
+          const pageNum: number = currentPage + idx;
           const direction = Helper.getDirection(isRtl, xDir);
           setPageNums(pageNum, direction);
+
+          // Don't allow flipping if we're at a boundary page or in certain configurations
           if (!isMoveAllowed(pageNum, pagesAmount, direction, isSinglePage)) {
+            status.current = "";
             return;
           }
 
@@ -449,6 +474,7 @@ export const usePageFlip = ({
             rect: bookRect,
           });
 
+          // Return initial drag state
           return {
             direction,
             isLeftPage,
@@ -457,8 +483,10 @@ export const usePageFlip = ({
           };
         }
 
+        // Calculate progress based on position
         const progress = Helper.getProgress(px, !memo.isLeftPage, bookRef);
 
+        // Set up props for drag animation or completion
         const props = {
           progress,
           idx,
@@ -467,9 +495,12 @@ export const usePageFlip = ({
           y: py,
           corner: memo.corner as Corner,
         };
+
         if (!down) {
+          // When drag ends, determine if we should complete the flip
           handleDragEnd(props);
         } else {
+          // Continue animating during drag
           animateDrag(props);
         }
 
@@ -480,6 +511,7 @@ export const usePageFlip = ({
       drag: {
         bounds: bookRef,
         preventScroll: true,
+        threshold: DRAG_THRESHOLD,
       },
       eventOptions: { passive: true },
     }
@@ -488,6 +520,9 @@ export const usePageFlip = ({
   return { props, bind, api, animateNextPage, pagesConfig };
 };
 
+/**
+ * Checks if movement is blocked due to being at a boundary page
+ */
 function isBlockMove(
   currentPage: number,
   totalPages: number,
@@ -502,22 +537,30 @@ function isBlockMove(
   return false;
 }
 
+/**
+ * Checks if page movement is allowed in the current state
+ */
 function isMoveAllowed(
   currentPage: number,
   totalPages: number,
   direction: FlipDirection,
   isSinglePage: boolean
 ) {
+  // Check boundary conditions
   if (isBlockMove(currentPage, totalPages, direction)) {
     return false;
   }
 
+  // In single page mode, or if page configuration aligns with direction, allow movement
   return (
     isSinglePage ||
     !((currentPage % 2 === 1) === (direction === FlipDirection.FORWARD))
   );
 }
 
+/**
+ * Gets page properties based on current state
+ */
 function getPageProps({
   pageNum,
   isRtl,
@@ -532,7 +575,6 @@ function getPageProps({
   rect: PageRect;
 }) {
   const isLeftPage = Helper.isLeftPage(pageNum, isRtl);
-
   const corner = Helper.getCorner(x, y, isLeftPage, rect);
 
   return { isLeftPage, corner, rect };

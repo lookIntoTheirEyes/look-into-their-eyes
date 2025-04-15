@@ -58,6 +58,11 @@ function GetSegmentLength(segment: Segment): number {
  * @param {Segment} line2
  */
 function GetAngleBetweenTwoLine(line1: Segment, line2: Segment): number {
+  // Fix: Make sure we have valid points
+  if (!line1[0] || !line1[1] || !line2[0] || !line2[1]) {
+    return 0;
+  }
+
   const adjustedLine10 = handleNull(line1[0]);
   const adjustedLine20 = handleNull(line2[0]);
   const adjustedLine11 = handleNull(line1[1]);
@@ -68,10 +73,14 @@ function GetAngleBetweenTwoLine(line1: Segment, line2: Segment): number {
   const B1 = adjustedLine11.x - adjustedLine10.x;
   const B2 = adjustedLine21.x - adjustedLine20.x;
 
-  return Math.acos(
-    (A1 * A2 + B1 * B2) /
-      (Math.sqrt(A1 * A1 + B1 * B1) * Math.sqrt(A2 * A2 + B2 * B2))
-  );
+  // Fix: Avoid division by zero and handle edge cases
+  const denominator =
+    Math.sqrt(A1 * A1 + B1 * B1) * Math.sqrt(A2 * A2 + B2 * B2);
+  if (denominator === 0) return 0;
+
+  const cosAngle = (A1 * A2 + B1 * B2) / denominator;
+  // Fix: Ensure cosAngle is within valid range for Math.acos
+  return Math.acos(Math.max(-1, Math.min(1, cosAngle)));
 }
 
 /**
@@ -142,6 +151,11 @@ function LimitPointToCircle(
   radius: number,
   limitedPoint: Point
 ): Point {
+  // Fix: Handle null or undefined inputs
+  if (!startPoint || !limitedPoint) {
+    return { x: 0, y: 0 };
+  }
+
   // If "linePoint" enters the circle, do nothing
   if (GetDistanceBetweenTwoPoint(startPoint, limitedPoint) <= radius) {
     return limitedPoint;
@@ -155,22 +169,54 @@ function LimitPointToCircle(
   const n = adjustedLimitedPoint.x;
   const m = adjustedLimitedPoint.y;
 
-  // Find the intersection between the line at two points: (startPoint and limitedPoint) and the circle.
-  let x =
-    Math.sqrt(
-      (Math.pow(radius, 2) * Math.pow(a - n, 2)) /
-        (Math.pow(a - n, 2) + Math.pow(b - m, 2))
-    ) + a;
-  if (adjustedLimitedPoint.x < 0) {
-    x *= -1;
+  // Fix: Handle edge cases to prevent NaN
+  if (a === n && b === m) {
+    return {
+      x: a + radius,
+      y: b,
+    };
   }
 
-  let y = ((x - a) * (b - m)) / (a - n) + b;
-  if (a - n + b === 0) {
-    y = radius;
-  }
+  try {
+    // Find the intersection between the line at two points: (startPoint and limitedPoint) and the circle.
+    let x = a;
 
-  return { x, y };
+    // Fix: Prevent division by zero and handle special cases
+    if (a !== n) {
+      const term =
+        (Math.pow(radius, 2) * Math.pow(a - n, 2)) /
+        (Math.pow(a - n, 2) + Math.pow(b - m, 2));
+
+      if (term >= 0) {
+        x = Math.sqrt(term) + a;
+        if (adjustedLimitedPoint.x < a) {
+          x = a - Math.sqrt(term);
+        }
+      }
+    } else {
+      // Vertical line case
+      x = a;
+    }
+
+    let y = b;
+
+    if (a !== n) {
+      y = ((x - a) * (b - m)) / (a - n) + b;
+    } else if (b !== m) {
+      // Vertical line case
+      const sign = m > b ? 1 : -1;
+      y = b + sign * radius;
+    }
+
+    return { x, y };
+  } catch {
+    // Fallback in case of calculation error
+    const angle = Math.atan2(m - b, n - a);
+    return {
+      x: a + radius * Math.cos(angle),
+      y: b + radius * Math.sin(angle),
+    };
+  }
 }
 
 /**
@@ -187,7 +233,12 @@ function GetIntersectBetweenTwoSegment(
   one: Segment,
   two: Segment
 ): Point | null {
-  return PointInRect(rectBorder, GetIntersectBetweenTwoLine(one, two));
+  try {
+    return PointInRect(rectBorder, GetIntersectBetweenTwoLine(one, two));
+  } catch {
+    // Fix: Handle the "Segment included" error gracefully
+    return null;
+  }
 }
 
 /**
@@ -200,6 +251,11 @@ function GetIntersectBetweenTwoSegment(
  * @throws Error if the segments are on the same line
  */
 function GetIntersectBetweenTwoLine(one: Segment, two: Segment): Point | null {
+  // Fix: Handle null inputs
+  if (!one[0] || !one[1] || !two[0] || !two[1]) {
+    return null;
+  }
+
   const segmentOne0 = handleNull(one[0]);
   const segmentTwo0 = handleNull(two[0]);
   const segmentOne1 = handleNull(one[1]);
@@ -214,16 +270,21 @@ function GetIntersectBetweenTwoLine(one: Segment, two: Segment): Point | null {
   const C1 = segmentOne0.x * segmentOne1.y - segmentOne1.x * segmentOne0.y;
   const C2 = segmentTwo0.x * segmentTwo1.y - segmentTwo1.x * segmentTwo0.y;
 
-  const det1 = A1 * C2 - A2 * C1;
-  const det2 = B1 * C2 - B2 * C1;
+  // Fix: Check for edge cases where lines are parallel or identical
+  const denominator = A1 * B2 - A2 * B1;
+  if (Math.abs(denominator) < 1e-10) {
+    // Lines are parallel or identical
+    const det1 = A1 * C2 - A2 * C1;
+    const det2 = B1 * C2 - B2 * C1;
+    if (Math.abs(det1 - det2) < 0.1) throw new Error("Segment included");
+    return null;
+  }
 
-  const x = -((C1 * B2 - C2 * B1) / (A1 * B2 - A2 * B1));
-  const y = -((A1 * C2 - A2 * C1) / (A1 * B2 - A2 * B1));
+  const x = -((C1 * B2 - C2 * B1) / denominator);
+  const y = -((A1 * C2 - A2 * C1) / denominator);
 
   if (isFinite(x) && isFinite(y)) {
     return { x, y };
-  } else {
-    if (Math.abs(det1 - det2) < 0.1) throw new Error("Segment included");
   }
 
   return null;
@@ -238,12 +299,20 @@ function GetIntersectBetweenTwoLine(one: Segment, two: Segment): Point | null {
  * @returns {Point[]}
  */
 function GetCordsFromTwoPoint(pointOne: Point, pointTwo: Point): Point[] {
+  // Fix: Handle null inputs
+  if (!pointOne || !pointTwo) {
+    return [];
+  }
+
   const adjustedPointOne = handleNull(pointOne);
   const adjustedPointTwo = handleNull(pointTwo);
   const sizeX = Math.abs(adjustedPointOne.x - adjustedPointTwo.x);
   const sizeY = Math.abs(adjustedPointOne.y - adjustedPointTwo.y);
 
   const lengthLine = Math.max(sizeX, sizeY);
+  if (lengthLine === 0) {
+    return [pointOne];
+  }
 
   const result: Point[] = [pointOne];
 
@@ -272,7 +341,8 @@ function GetCordsFromTwoPoint(pointOne: Point, pointTwo: Point): Point[] {
 
   return result;
 }
-function handleNull(point: Point | null) {
+
+function handleNull(point: Point | null): Point {
   if (!point) {
     return { x: 0, y: 0 };
   }
@@ -354,6 +424,11 @@ function getAngle(
   direction: FlipDirection | undefined,
   isBack = false
 ): number {
+  // Fix: Handle undefined direction gracefully
+  if (direction === undefined) {
+    return 0;
+  }
+
   const baseAngle = ((isLeft ? -1 : 1) * 90 * (200 - progress * 2)) / 100;
 
   const withOffset =
@@ -408,6 +483,10 @@ function getShadowBackground(progress: number, isInner = false) {
 }
 
 function isHardPage(pageNum: number, totalPages: number) {
+  // Fix: Check if pageNum is valid
+  if (pageNum < 0 || totalPages <= 0) {
+    return false;
+  }
   return pageNum >= totalPages - 1 || pageNum < 1;
 }
 
@@ -444,6 +523,11 @@ function getCorner(
 ): Corner {
   const localX = x - left;
   const localY = y - top;
+
+  // Fix: Prevent NaN values with proper defaults
+  if (width === 0 || height === 0) {
+    return "none";
+  }
 
   if (threshold !== undefined) {
     if (!isLeftPage) {
