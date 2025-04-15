@@ -4,6 +4,12 @@
   align-items: center;
   width: 100%;
   padding-top: 1.6rem;
+  /* Add spacing for better touch targets */
+  margin: 0.5rem 0;
+  /* Center controls */
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .pageCount {
@@ -16,13 +22,75 @@
   border-radius: 0.4rem;
   min-width: 9rem;
   padding-top: 0.4rem;
+  /* Improve shadow for depth */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  /* Subtle transition for visual feedback */
+  transition: transform 0.15s ease;
 
   &:dir(rtl) {
     flex-direction: row-reverse;
+  }
+
+  /* Add subtle hover effect */
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
   }
 }
 
 .height {
   line-height: 1;
   height: 3.2rem;
+}
+
+/* Style for disabled buttons to make them clearly inactive */
+.disabledButton {
+  opacity: 0.5;
+  cursor: not-allowed;
+  /* Keep shadow subtle for disabled state */
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Add visual feedback for button on active/press state */
+.button:active:not(.disabledButton) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Optimize for mobile */
+@media (max-width: 768px) {
+  .controls {
+    padding-top: 1rem;
+  }
+
+  .pageCount {
+    font-size: 2.4rem;
+    min-width: 8rem;
+  }
+
+  .height {
+    height: 2.8rem;
+  }
+}
+
+/* Add larger touch targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .button,
+  .pageCount {
+    min-height: 44px; /* Minimum recommended touch target size */
+    padding: 0.5rem 1.2rem;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .pageCount {
+    border: 1px solid ButtonText;
+  }
+
+  .disabledButton {
+    opacity: 1;
+    color: GrayText;
+  }
 }

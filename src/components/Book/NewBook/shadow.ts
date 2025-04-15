@@ -3,8 +3,12 @@ import { FlipDirection, PageRect, Point } from "./model";
 import FlipCalculation, { ICalc } from "./FlipCalculation";
 import Helper from "./Helper";
 
+// Minimum progress threshold to show shadows
 const MIN_SHADOW_PROGRESS = 0.5;
 
+/**
+ * Get styles for soft page shadows (curved shadows during page flip)
+ */
 function getSoftShadowStyle(
   direction: SpringValue<FlipDirection>,
   isRtl: boolean,
@@ -17,12 +21,18 @@ function getSoftShadowStyle(
     : getSoftOuterShadow({ direction, calc, rect, isRtl });
 }
 
+/**
+ * Create base styles common to all shadows
+ */
 function createShadowBaseStyles(rect: PageRect) {
   return {
     height: `${rect.height * 2}px`,
   };
 }
 
+/**
+ * Calculate shadow translation position
+ */
 function calculateShadowTranslate(
   direction: FlipDirection,
   shadowWidth: number,
@@ -38,6 +48,9 @@ function calculateShadowTranslate(
   return (direction === FlipDirection.BACK) !== isRtl ? shadowWidth : 0;
 }
 
+/**
+ * Create transform for shadows
+ */
 function createShadowTransform(
   shadowPos: Point | null,
   shadowTranslate: number,
@@ -51,6 +64,9 @@ function createShadowTransform(
   }px, 0) rotate(${angle}rad)`;
 }
 
+/**
+ * Get styles for the inner shadow of a soft page
+ */
 function getSoftInnerShadow(
   direction: SpringValue<FlipDirection>,
   isRtl: boolean,
@@ -65,7 +81,7 @@ function getSoftInnerShadow(
     transformOrigin: to([direction, calc], (direction, calc) => {
       if (!calc) return "0px 0px";
       const shadowTranslate = calculateShadowTranslate(
-        direction,
+        direction as FlipDirection,
         calc.shadow.width,
         true,
         isRtl
@@ -76,7 +92,7 @@ function getSoftInnerShadow(
       if (!calc) return "none";
       const shadow = calc.shadow;
       const gradientDirection =
-        (direction === FlipDirection.FORWARD) !== isRtl
+        ((direction as FlipDirection) === FlipDirection.FORWARD) !== isRtl
           ? "to left"
           : "to right";
 
@@ -91,14 +107,14 @@ function getSoftInnerShadow(
       if (!calc) return "none";
       const { shadow } = calc;
       const shadowTranslate = calculateShadowTranslate(
-        direction,
+        direction as FlipDirection,
         shadow.width,
         true,
         isRtl
       );
       const shadowPos = FlipCalculation.convertToGlobal(
         shadow.pos,
-        direction,
+        direction as FlipDirection,
         rect.width,
         isRtl
       );
@@ -116,7 +132,7 @@ function getSoftInnerShadow(
         rectPoints.bottomLeft,
       ];
       const shadowTranslate = calculateShadowTranslate(
-        direction,
+        direction as FlipDirection,
         shadow.width,
         true,
         isRtl
@@ -125,7 +141,7 @@ function getSoftInnerShadow(
 
       return createClipPath(
         clip,
-        direction,
+        direction as FlipDirection,
         shadow.pos,
         shadowTranslate,
         angle,
@@ -138,6 +154,9 @@ function getSoftInnerShadow(
   };
 }
 
+/**
+ * Get styles for the outer shadow of a soft page
+ */
 function getSoftOuterShadow({
   rect,
   calc,
@@ -163,7 +182,7 @@ function getSoftOuterShadow({
       if (!calc) return "none";
       const { shadow } = calc;
       const gradientDirection =
-        (direction === FlipDirection.FORWARD) !== isRtl
+        ((direction as FlipDirection) === FlipDirection.FORWARD) !== isRtl
           ? "to right"
           : "to left";
       return `linear-gradient(${gradientDirection}, rgba(0, 0, 0, ${shadow.opacity}), rgba(0, 0, 0, 0))`;
@@ -171,7 +190,7 @@ function getSoftOuterShadow({
     transformOrigin: to([calc, direction], (calc, direction) => {
       if (!calc) return "0px 0px";
       const shadowTranslate = calculateShadowTranslate(
-        direction,
+        direction as FlipDirection,
         calc.shadow.width,
         false,
         isRtl
@@ -183,14 +202,14 @@ function getSoftOuterShadow({
 
       const { shadow } = calc;
       const shadowTranslate = calculateShadowTranslate(
-        direction,
+        direction as FlipDirection,
         shadow.width,
         false,
         isRtl
       );
       const shadowPos = FlipCalculation.convertToGlobal(
         shadow.pos,
-        direction,
+        direction as FlipDirection,
         rect.width,
         isRtl
       );
@@ -202,7 +221,7 @@ function getSoftOuterShadow({
       if (!calc) return "none";
       const { shadow } = calc;
       const shadowTranslate = calculateShadowTranslate(
-        direction,
+        direction as FlipDirection,
         shadow.width,
         false,
         isRtl
@@ -211,7 +230,7 @@ function getSoftOuterShadow({
 
       return createClipPath(
         staticClip,
-        direction,
+        direction as FlipDirection,
         shadow.pos,
         shadowTranslate,
         angle,
@@ -224,15 +243,23 @@ function getSoftOuterShadow({
   };
 }
 
+/**
+ * Creates a CSS clip path for shadows
+ */
 function createClipPath(
   points: Point[],
   direction: FlipDirection,
-  shadowPos: Point,
+  shadowPos: Point | null,
   shadowTranslate: number,
   angle: number,
   isRtl: boolean
 ): string {
-  const polygon = points.reduce((acc, p) => {
+  if (!shadowPos) return "none";
+
+  // Filter any nulls in advance to prevent errors
+  const validPoints = points.filter((p) => p !== null);
+
+  const polygon = validPoints.reduce((acc, p) => {
     if (!p) return acc;
 
     const g = {
@@ -255,6 +282,9 @@ function createClipPath(
   return polygon.slice(0, -2) + ")";
 }
 
+/**
+ * Get styles for hard page shadows
+ */
 function getHardShadowStyle(
   progress: SpringValue<number>,
   direction: SpringValue<FlipDirection>,
