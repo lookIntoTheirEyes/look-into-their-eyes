@@ -159,7 +159,6 @@ function calculateAngle({
   pageWidth,
   corner,
 }: GeoParams): number {
-  // verified
   pos = Helper.handleNull(pos);
   const left = pageWidth - pos.x + 1;
   const top = corner === FlipCorner.BOTTOM ? pageHeight - pos.y : pos.y;
@@ -182,7 +181,6 @@ function getRectFromBasePoint(
   localPos: Point,
   angle: number
 ): RectPoints {
-  // verified
   return {
     topLeft: getRotatedPoint(points[0], localPos, angle),
     topRight: getRotatedPoint(points[1], localPos, angle),
@@ -198,7 +196,6 @@ function getPageRect({
   corner,
   angle,
 }: AngleGeoParams): RectPoints {
-  // verified
   if (corner === FlipCorner.TOP) {
     return getRectFromBasePoint(
       [
@@ -352,7 +349,8 @@ function checkPositionAtCenterLine({
 
   const tmp = Helper.LimitPointToCircle(centerOne, pageWidth, result);
 
-  if (result?.x !== tmp?.x || result?.y !== tmp?.y) {
+  // Fix: Check if result exists to prevent null comparison issues
+  if (result && tmp && (result.x !== tmp.x || result.y !== tmp.y)) {
     result = tmp;
     const res = getAngleAndGeometry({
       pos: result,
@@ -374,14 +372,20 @@ function checkPositionAtCenterLine({
     checkPointTwo = rect.bottomLeft;
   }
 
-  if (checkPointOne!.x <= 0) {
+  // Fix: Add null check for checkPointOne
+  if (checkPointOne && checkPointOne.x <= 0) {
     const bottomPoint = Helper.LimitPointToCircle(
       centerTwo,
       rad,
       checkPointTwo
     );
 
-    if (bottomPoint?.x !== result?.x || bottomPoint?.y !== result?.y) {
+    // Fix: Check if bottomPoint and result exist
+    if (
+      bottomPoint &&
+      result &&
+      (bottomPoint.x !== result.x || bottomPoint.y !== result.y)
+    ) {
       result = bottomPoint;
       const res = getAngleAndGeometry({
         pos: result,
@@ -423,7 +427,10 @@ function getAnglePositionAndRect(
     topBottomCorner,
   });
 
-  validatePosition(checkedPosition.pos, pageWidth);
+  // Make sure position is valid before proceeding
+  if (checkedPosition.pos) {
+    validatePosition(checkedPosition.pos, pageWidth);
+  }
 
   return {
     ...checkedPosition,
@@ -490,7 +497,7 @@ function calculateCheckedPosition({
 }
 
 function validatePosition(pos: Point, pageWidth: number): void {
-  if (Math.abs(pos!.x - pageWidth) < 1 && Math.abs(pos!.y) < 1) {
+  if (Math.abs(pos.x - pageWidth) < 1 && Math.abs(pos.y) < 1) {
     throw new Error("Point is too small");
   }
 }
@@ -517,7 +524,9 @@ function getFrontClipArea({
   }
 
   if (sideIntersectPoint !== null) {
+    // Fix: Add null check for topIntersectPoint
     if (
+      topIntersectPoint &&
       Helper.GetDistanceBetweenTwoPoint(
         sideIntersectPoint,
         topIntersectPoint
@@ -568,6 +577,7 @@ function getFlippingClipArea({
 
   return result;
 }
+
 function getSoftCss({
   direction,
   angle,
@@ -584,23 +594,23 @@ function getSoftCss({
   factorPosition: Point;
   isRtl: boolean;
 }): string {
-  return `polygon(${area
-    .filter((p) => p !== null)
+  // Fix: Filter out null points before mapping
+  const validPoints = area.filter((p): p is Point => p !== null);
+
+  return `polygon(${validPoints
     .map((p) => {
       const g =
         (direction === FlipDirection.BACK) !== isRtl
           ? {
-              x: -p.x + factorPosition!.x,
-              y: p.y - factorPosition!.y,
+              x: -p.x + factorPosition.x,
+              y: p.y - factorPosition.y,
             }
           : {
-              x: p.x - factorPosition!.x,
-              y: p.y - factorPosition!.y,
+              x: p.x - factorPosition.x,
+              y: p.y - factorPosition.y,
             };
 
-      const rotatedPoint = Helper.handleNull(
-        Helper.GetRotatedPoint(g, { x: 0, y: 0 }, angle)
-      );
+      const rotatedPoint = Helper.GetRotatedPoint(g, { x: 0, y: 0 }, angle);
 
       return `${rotatedPoint.x}px ${rotatedPoint.y}px`;
     })
@@ -620,7 +630,7 @@ function getBottomPagePosition(
 }
 
 function convertToGlobal(
-  pos: Point,
+  pos: Point | null,
   direction: FlipDirection,
   width: number,
   isRtl: boolean
