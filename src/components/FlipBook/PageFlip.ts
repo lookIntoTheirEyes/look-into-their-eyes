@@ -8,7 +8,7 @@ import { HTMLUI } from "./UI/HTMLUI";
 import { Helper } from "./Helper";
 import { EventObject } from "./Event/EventObject";
 import { HTMLRender } from "./Render/HTMLRender";
-import { FlipSetting, Settings } from "./Settings";
+import { FlipSetting, Settings } from "./settings";
 import { UI } from "./UI/UI";
 
 import "./Style/stPageFlip.css";
@@ -18,6 +18,7 @@ export class PageFlip extends EventObject {
   private mousePosition!: Point;
   private isUserTouch = false;
   private isUserMove = false;
+  private moveThreshold = 5; // Minimum movement to trigger page flipping
 
   private readonly setting: FlipSetting;
   private readonly block: HTMLElement; // Root HTML Element
@@ -167,34 +168,66 @@ export class PageFlip extends EventObject {
     return this.pages;
   }
 
+  /**
+   * Called when user starts interacting with the book
+   * @param pos - The position where the user touched/clicked
+   */
   public startUserTouch(pos: Point): void {
-    this.mousePosition = pos;
-    this.isUserTouch = true;
-    this.isUserMove = false;
+    // Only start a new touch if we're not already in one
+    if (!this.isUserTouch) {
+      this.mousePosition = pos;
+      this.isUserTouch = true;
+      this.isUserMove = false;
+    }
   }
 
+  /**
+   * Called when user moves while interacting with the book
+   * @param pos - Current position
+   * @param isTouch - Whether this is a touch event (vs mouse)
+   */
   public userMove(pos: Point, isTouch: boolean): void {
+    // If not in a touch interaction and not using touch events, show corner effect
     if (!this.isUserTouch && !isTouch && this.setting.showPageCorners) {
-      this.flipController.showCorner(pos); // fold Page Corner
-    } else if (this.isUserTouch) {
-      if (Helper.GetDistanceBetweenTwoPoint(this.mousePosition, pos) > 5) {
+      this.flipController.showCorner(pos);
+    }
+    // If in a touch interaction, process movement
+    else if (this.isUserTouch) {
+      // Only start folding if we've moved beyond the threshold
+      if (
+        Helper.GetDistanceBetweenTwoPoint(this.mousePosition, pos) >
+        this.moveThreshold
+      ) {
         this.isUserMove = true;
         this.flipController.fold(pos);
       }
     }
   }
 
+  /**
+   * Gets the current flipping progress as a percentage (0-100)
+   */
   public getProgress(): number {
     return this.flipController.getCalculation().getFlippingProgress();
   }
 
+  /**
+   * Called when user stops interacting with the book
+   * @param pos - The position where the interaction ended
+   * @param isSwipe - Whether this was detected as a swipe gesture
+   */
   public userStop(pos: Point, isSwipe = false): void {
+    // Only process if we're in a touch interaction
     if (this.isUserTouch) {
       this.isUserTouch = false;
 
       if (!isSwipe) {
-        if (!this.isUserMove) this.flipController.flip(pos);
-        else this.flipController.stopMove();
+        // If user didn't move much, treat as a flip; otherwise complete the fold
+        if (!this.isUserMove) {
+          this.flipController.flip(pos);
+        } else {
+          this.flipController.stopMove();
+        }
       }
     }
   }

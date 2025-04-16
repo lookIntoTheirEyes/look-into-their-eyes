@@ -8,7 +8,7 @@ import React, {
 import { PageFlip } from "../PageFlip";
 import Image from "next/image";
 import styles from "./index.module.css";
-import { IFlipBookProps, FlipBookRef } from "./settings";
+import { IFlipBookProps, FlipBookRef } from "../settings";
 
 const HTMLFlipBookForward = React.forwardRef<FlipBookRef, IFlipBookProps>(
   function HTMLFlipBookForward(props, ref) {

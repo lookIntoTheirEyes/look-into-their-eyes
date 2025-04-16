@@ -2,7 +2,7 @@ import { PageFlip } from "../PageFlip";
 import { Point, PageRect, RectPoints } from "../BasicTypes";
 import { FlipDirection } from "../Flip/Flip";
 import { PageOrientation } from "../Page/Page";
-import { FlipSetting, SizeType } from "../Settings";
+import { FlipSetting, SizeType } from "../settings";
 import { HTMLPage } from "../Page/HTMLPage";
 
 type FrameAction = () => void;

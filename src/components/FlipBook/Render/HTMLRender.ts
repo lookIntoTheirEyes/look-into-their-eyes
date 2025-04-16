@@ -4,7 +4,7 @@ import { FlipDirection } from "../Flip/Flip";
 import { PageDensity, PageOrientation } from "../Page/Page";
 import { HTMLPage } from "../Page/HTMLPage";
 import { Helper } from "../Helper";
-import { FlipSetting } from "../Settings";
+import { FlipSetting } from "../settings";
 
 export class HTMLRender extends Render {
   private readonly element: HTMLElement;
@@ -169,8 +169,8 @@ export class HTMLRender extends Render {
           rgba(0, 0, 0, 0) 100%);
       transform-origin: ${shadowTranslate}px 100px;
       transform: translate3d(${shadowPos.x - shadowTranslate}px, ${
-      shadowPos.y - 100
-    }px, 0) rotate(${angle}rad);
+        shadowPos.y - 100
+      }px, 0) rotate(${angle}rad);
       clip-path: ${polygon};
     `;
 
@@ -213,12 +213,12 @@ export class HTMLRender extends Render {
       width: ${this.shadow.width}px;
       height: ${rect.height * 2}px;
       background: linear-gradient(${shadowDirection}, rgba(0, 0, 0, ${
-      this.shadow.opacity
-    }), rgba(0, 0, 0, 0));
+        this.shadow.opacity
+      }), rgba(0, 0, 0, 0));
       transform-origin: ${shadowTranslate}px 100px;
       transform: translate3d(${shadowPos.x - shadowTranslate}px, ${
-      shadowPos.y - 100
-    }px, 0) rotate(${angle}rad);
+        shadowPos.y - 100
+      }px, 0) rotate(${angle}rad);
       clip-path: ${polygon};
     `;
 

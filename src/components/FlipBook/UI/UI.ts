@@ -1,6 +1,6 @@
 import { PageFlip } from "../PageFlip";
 import { Point } from "../BasicTypes";
-import { FlipSetting, SizeType } from "../Settings";
+import { FlipSetting, SizeType } from "../settings";
 import { FlipCorner, FlippingState } from "../Flip/Flip";
 import { Orientation } from "../Render/Render";
 
@@ -17,6 +17,16 @@ export abstract class UI {
   private touchPoint: SwipeData | null = null;
   private readonly swipeTimeout = 250;
   private readonly swipeDistance: number;
+  private readonly swipeVerticalTolerance: number;
+  private readonly swipeDirectionThreshold: number;
+
+  // Enhanced touch tracking
+  private isScrolling: boolean = false;
+  private initialTouchPoint: Point | null = null;
+  private touchMoveCount: number = 0;
+  private touchStartTime: number = 0;
+  private primaryDirection: "horizontal" | "vertical" | null = null;
+
   private onResize = (): void => {
     this.update();
   };
@@ -59,6 +69,10 @@ export abstract class UI {
 
     window.addEventListener("resize", this.onResize, false);
     this.swipeDistance = setting.swipeDistance;
+
+    // Set sensible defaults if not provided in settings
+    this.swipeVerticalTolerance = setting.swipeVerticalTolerance || 1.3;
+    this.swipeDirectionThreshold = setting.swipeDirectionThreshold || 10;
   }
 
   public destroy(): void {
@@ -149,6 +163,9 @@ export abstract class UI {
     this.update();
   }
 
+  /**
+   * Checks if the event is within the bounds of the flipbook element
+   */
   public isWithinBounds = (e: TouchEvent | MouseEvent) => {
     const rect = this.distElement.getBoundingClientRect();
     const clientY =
@@ -179,11 +196,28 @@ export abstract class UI {
     return false;
   };
 
-  private checkTarget(targer: EventTarget): boolean {
+  /**
+   * Checks if the target element should be handled for flipping
+   * or if it should use its default behavior (e.g., links, buttons)
+   */
+  private checkTarget(target: EventTarget): boolean {
     if (!this.app.getSettings().clickEventForward) return true;
 
     if (
-      ["a", "button"].includes((targer as HTMLElement).tagName.toLowerCase())
+      ["a", "button", "input", "select", "textarea"].includes(
+        (target as HTMLElement).tagName.toLowerCase()
+      )
+    ) {
+      return false;
+    }
+
+    // Check for common clickable classes
+    const element = target as HTMLElement;
+    if (
+      element.getAttribute("role") === "button" ||
+      element.classList.contains("clickable") ||
+      element.classList.contains("btn") ||
+      element.onclick
     ) {
       return false;
     }
@@ -191,36 +225,72 @@ export abstract class UI {
     return true;
   }
 
-  private onMouseDown = (e: MouseEvent): void => {
-    if (this.checkTarget(e.target!)) {
-      const pos = this.getMousePos(e.clientX, e.clientY);
+  /**
+   * Determines the primary direction of a movement
+   */
+  private getPrimaryDirection(
+    start: Point,
+    current: Point
+  ): "horizontal" | "vertical" | null {
+    const dx = Math.abs(current.x - start.x);
+    const dy = Math.abs(current.y - start.y);
 
-      this.app.startUserTouch(pos);
-
-      e.preventDefault();
+    // If movement is too small, don't determine a direction yet
+    if (
+      dx < this.swipeDirectionThreshold &&
+      dy < this.swipeDirectionThreshold
+    ) {
+      return null;
     }
+
+    // Vertical movement is dominant if it exceeds horizontal movement by the tolerance factor
+    if (dy > dx * this.swipeVerticalTolerance) {
+      return "vertical";
+    }
+
+    // Horizontal movement is dominant if it exceeds vertical movement
+    if (dx > dy) {
+      return "horizontal";
+    }
+
+    // If neither is clearly dominant, default to vertical (safer for scrolling)
+    return "vertical";
+  }
+
+  private onMouseDown = (e: MouseEvent): void => {
+    if (!this.checkTarget(e.target!)) {
+      return;
+    }
+
+    const pos = this.getMousePos(e.clientX, e.clientY);
+
+    this.app.startUserTouch(pos);
+
+    e.preventDefault();
   };
 
   private onTouchStart = (e: TouchEvent): void => {
-    if (this.checkTarget(e.target!)) {
-      if (e.changedTouches.length > 0) {
-        const t = e.changedTouches[0];
-        const pos = this.getMousePos(t.clientX, t.clientY);
+    if (!this.checkTarget(e.target!)) {
+      return;
+    }
 
-        this.touchPoint = {
-          point: pos,
-          time: Date.now(),
-        };
+    // Reset touch tracking state
+    this.isScrolling = false;
+    this.touchMoveCount = 0;
+    this.primaryDirection = null;
+    this.touchStartTime = Date.now();
 
-        // part of swipe detection
-        setTimeout(() => {
-          if (this.touchPoint !== null) {
-            this.app.startUserTouch(pos);
-          }
-        }, this.swipeTimeout);
+    if (e.changedTouches.length > 0) {
+      const t = e.changedTouches[0];
+      const pos = this.getMousePos(t.clientX, t.clientY);
 
-        if (!this.app.getSettings().mobileScrollSupport) e.preventDefault();
-      }
+      // Store initial touch point for direction detection
+      this.initialTouchPoint = pos;
+
+      this.touchPoint = {
+        point: pos,
+        time: this.touchStartTime,
+      };
     }
   };
 
@@ -240,70 +310,123 @@ export abstract class UI {
   };
 
   private onTouchMove = (e: TouchEvent): void => {
-    if (this.isWithinBounds(e)) {
-      e.preventDefault();
-    }
-    if (e.changedTouches.length > 0) {
-      const t = e.changedTouches[0];
-      const pos = this.getMousePos(t.clientX, t.clientY);
+    if (e.changedTouches.length <= 0) return;
 
-      if (this.app.getSettings().mobileScrollSupport) {
-        if (this.touchPoint !== null) {
-          if (
-            Math.abs(this.touchPoint.point.x - pos.x) > 10 ||
-            this.app.getState() !== FlippingState.READ
-          ) {
-            if (e.cancelable) this.app.userMove(pos, true);
-          }
+    const t = e.changedTouches[0];
+    const pos = this.getMousePos(t.clientX, t.clientY);
+    this.touchMoveCount++;
+
+    // If we have an initial touch point, determine/update the primary direction of movement
+    if (this.initialTouchPoint) {
+      // Only determine primary direction once we have enough movement
+      if (this.primaryDirection === null) {
+        this.primaryDirection = this.getPrimaryDirection(
+          this.initialTouchPoint,
+          pos
+        );
+      }
+
+      // Handle based on the primary direction
+      if (this.primaryDirection === "horizontal") {
+        // For horizontal movement, it's likely a page flip
+        if (this.app.getState() === FlippingState.READ) {
+          // If we haven't started flipping yet, do it now
+          this.app.startUserTouch(this.initialTouchPoint);
         }
 
-        if (this.app.getState() !== FlippingState.READ) {
+        // Always prevent default for horizontal swipes to avoid page scrolling
+        if (e.cancelable) {
           e.preventDefault();
         }
-      } else {
+
+        // Update the page flip animation
         this.app.userMove(pos, true);
+
+        // Explicitly mark as not scrolling to ensure correct handling on touchend
+        this.isScrolling = false;
+      } else if (this.primaryDirection === "vertical") {
+        // For vertical movement, it's likely a page scroll
+        this.isScrolling = true;
+
+        // If we're already in a flipping state, clean up the flip
+        if (this.app.getState() !== FlippingState.READ) {
+          this.app.userStop(pos);
+        }
       }
+      // If primaryDirection is still null, movement is too small to determine
     }
   };
 
   private onTouchEnd = (e: TouchEvent): void => {
-    if (e.changedTouches.length > 0) {
-      const t = e.changedTouches[0];
-      const pos = this.getMousePos(t.clientX, t.clientY);
-      let isSwipe = false;
+    if (e.changedTouches.length <= 0) return;
 
-      // swipe detection
-      if (this.touchPoint !== null) {
-        const dx = pos.x - this.touchPoint.point.x;
-        const distY = Math.abs(pos.y - this.touchPoint.point.y);
+    const t = e.changedTouches[0];
+    const pos = this.getMousePos(t.clientX, t.clientY);
+    const timeDiff = Date.now() - this.touchStartTime;
+    let isSwipe = false;
 
-        if (
-          Math.abs(dx) > this.swipeDistance &&
-          distY < this.swipeDistance * 2 &&
-          Date.now() - this.touchPoint.time < this.swipeTimeout
-        ) {
-          if (dx > 0) {
-            this.app.flipPrev(
-              this.touchPoint.point.y <
-                this.app.getRender().getRect().height / 2
-                ? FlipCorner.TOP
-                : FlipCorner.BOTTOM
-            );
-          } else {
-            this.app.flipNext(
-              this.touchPoint.point.y <
-                this.app.getRender().getRect().height / 2
-                ? FlipCorner.TOP
-                : FlipCorner.BOTTOM
-            );
-          }
-          isSwipe = true;
+    // Only process flips/swipes if:
+    // 1. We have a valid touchPoint
+    // 2. We're not in scrolling mode OR primary direction was horizontal
+    // 3. There was some movement
+    if (
+      this.touchPoint !== null &&
+      this.initialTouchPoint !== null &&
+      (!this.isScrolling || this.primaryDirection === "horizontal") &&
+      this.touchMoveCount > 0
+    ) {
+      const dx = pos.x - this.touchPoint.point.x;
+
+      // Detect a valid swipe - good distance and short duration
+      if (Math.abs(dx) > this.swipeDistance && timeDiff < this.swipeTimeout) {
+        if (dx > 0) {
+          this.app.flipPrev(
+            this.touchPoint.point.y < this.app.getRender().getRect().height / 2
+              ? FlipCorner.TOP
+              : FlipCorner.BOTTOM
+          );
+        } else {
+          this.app.flipNext(
+            this.touchPoint.point.y < this.app.getRender().getRect().height / 2
+              ? FlipCorner.TOP
+              : FlipCorner.BOTTOM
+          );
         }
-
-        this.touchPoint = null;
+        isSwipe = true;
       }
 
+      // If it wasn't a swipe but the flipbook is in a flipping state,
+      // complete the flip based on how far it's progressed
+      else if (this.app.getState() !== FlippingState.READ) {
+        this.app.userStop(pos, false);
+      }
+      // Process a tap as a flip when it makes sense
+      else if (
+        this.touchMoveCount < 3 && // Very little movement
+        timeDiff < 300 && // Short duration
+        !this.isScrolling && // Definitely not scrolling
+        Math.abs(pos.x - this.touchPoint.point.x) < 10 && // Almost no horizontal movement
+        Math.abs(pos.y - this.touchPoint.point.y) < 10 // Almost no vertical movement
+      ) {
+        this.app.userStop(pos, false);
+      }
+    }
+    // Always clean up any flip if we're in scrolling mode to avoid stuck pages
+    else if (this.isScrolling && this.app.getState() !== FlippingState.READ) {
+      // Force reset the page flip state
+      this.app.userStop(pos, true);
+    }
+
+    // Important: Pass the isSwipe flag to userStop if we're not already handling a swipe
+    if (!isSwipe && this.app.getState() !== FlippingState.READ) {
       this.app.userStop(pos, isSwipe);
     }
+
+    // Clean up touch tracking state
+    this.touchPoint = null;
+    this.initialTouchPoint = null;
+    this.isScrolling = false;
+    this.touchMoveCount = 0;
+    this.primaryDirection = null;
   };
 }
