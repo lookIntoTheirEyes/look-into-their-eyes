@@ -77,6 +77,10 @@
   position: relative;
   min-height: 30rem;
   width: 20rem;
+
+  @media (max-width: 768px) {
+    width: 25rem;
+  }
 }
 
 .socialIcons {
