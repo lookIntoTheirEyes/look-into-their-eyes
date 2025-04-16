@@ -31,12 +31,13 @@ export function getHeroId(page: number) {
 }
 
 export async function getHero(page: string, lang: Language) {
+  page = page == "2" ? "3" : page;
   const heroId = getHeroId(+page);
   const heroDetails = heroes.find(({ id }) => id === +heroId);
   const hero = heroDetails?.[lang];
 
   if (!hero) {
-    throw new Error("hero not found");
+    throw new Error(`hero not found - page - ${page}, heroId - ${heroId}`);
   }
 
   const { name, description, longDescription } = hero;
