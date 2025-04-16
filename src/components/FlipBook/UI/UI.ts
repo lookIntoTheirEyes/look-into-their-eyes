@@ -1,6 +1,6 @@
 import { PageFlip } from "../PageFlip";
 import { Point } from "../BasicTypes";
-import { FlipSetting, SizeType } from "../settings";
+import { FlipSetting, SizeType } from "../Settings";
 import { FlipCorner, FlippingState } from "../Flip/Flip";
 import { Orientation } from "../Render/Render";
 

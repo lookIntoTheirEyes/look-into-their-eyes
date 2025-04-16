@@ -5,7 +5,7 @@ import { BookActions } from "@/lib/utils/utils";
 import { IPage } from "@/lib/model/book";
 import Controls from "@/components/Book/Controls/Controls";
 import FlipBook from "@/components/FlipBook/ReactFlipBook/index";
-import { SizeType } from "@/components/FlipBook/settings";
+import { SizeType } from "@/components/FlipBook/Settings";
 import { useCallback, useRef, useState } from "react";
 import { WidgetEvent } from "../FlipBook/Event/EventObject";
 import { PageFlip } from "../FlipBook/PageFlip";

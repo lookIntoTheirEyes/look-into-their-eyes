@@ -8,7 +8,7 @@ import { HTMLUI } from "./UI/HTMLUI";
 import { Helper } from "./Helper";
 import { EventObject } from "./Event/EventObject";
 import { HTMLRender } from "./Render/HTMLRender";
-import { FlipSetting, Settings } from "./settings";
+import { FlipSetting, Settings } from "./Settings";
 import { UI } from "./UI/UI";
 
 import "./Style/stPageFlip.css";

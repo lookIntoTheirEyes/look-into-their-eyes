@@ -4,7 +4,7 @@ import { FlipDirection } from "../Flip/Flip";
 import { PageDensity, PageOrientation } from "../Page/Page";
 import { HTMLPage } from "../Page/HTMLPage";
 import { Helper } from "../Helper";
-import { FlipSetting } from "../settings";
+import { FlipSetting } from "../Settings";
 
 export class HTMLRender extends Render {
   private readonly element: HTMLElement;
