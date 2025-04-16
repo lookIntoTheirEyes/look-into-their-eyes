@@ -42,7 +42,7 @@ export default async function BaseLayout({
           <Footer />
 
           <Widgets lang={locale} />
-          {/* <Analytics /> */}
+          <Analytics />
         </NextIntlClientProvider>
       </body>
     </html>
