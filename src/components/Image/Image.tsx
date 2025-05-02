@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, memo } from "react";
 import NextImage from "next/image";
 
 interface LocalImageProps {
@@ -34,24 +34,50 @@ const LocalImage: React.FC<LocalImageProps> = ({
     return { originalUrl, urlStart, urlEnd: cleanUrlEnd };
   }, [imageUrl]);
 
-  // Calculation function that can be reused
   const calculateDimensions = useCallback(() => {
+    const cacheKey = `img-dim-${urlInfo.urlEnd}-${height}-${window.innerWidth}`;
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const cachedHeight = JSON.parse(cached).height;
+        setDisplayHeight(cachedHeight);
+
+        return;
+      }
+    } catch {}
+
     const img = new Image();
+
     img.onload = () => {
       const aspectRatio = img.naturalWidth / img.naturalHeight;
       const maxWidth = window.innerWidth - 24;
 
       // If image would be wider than the window
       if (height * aspectRatio > maxWidth) {
-        // Calculate new height based on max width and aspect ratio
-        setDisplayHeight(Math.floor(maxWidth / aspectRatio));
+        const newHeight = Math.floor(maxWidth / aspectRatio);
+        setDisplayHeight(newHeight);
+
+        try {
+          sessionStorage.setItem(
+            cacheKey,
+            JSON.stringify({ height: newHeight })
+          );
+        } catch {}
       } else {
         setDisplayHeight(height);
+
+        try {
+          sessionStorage.setItem(cacheKey, JSON.stringify({ height }));
+        } catch {}
       }
     };
 
+    img.onerror = () => {
+      console.error(`Failed to load image: ${urlInfo.originalUrl}`);
+    };
+
     img.src = urlInfo.originalUrl;
-  }, [urlInfo.originalUrl, height]);
+  }, [urlInfo.originalUrl, urlInfo.urlEnd, height]);
 
   useEffect(() => {
     // Only run client-side
@@ -106,4 +132,4 @@ const LocalImage: React.FC<LocalImageProps> = ({
   );
 };
 
-export default LocalImage;
+export default memo(LocalImage);
