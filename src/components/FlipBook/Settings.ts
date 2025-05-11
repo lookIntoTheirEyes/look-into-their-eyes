@@ -43,7 +43,7 @@ export interface FlipSetting {
 export interface IFlipBookProps {
   // Basic book configuration
   startPage: number;
-  size: SizeType | number;
+  size: SizeType;
   width: number;
   height: number;
   minWidth: number;

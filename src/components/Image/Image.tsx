@@ -21,13 +21,11 @@ const LocalImage: React.FC<LocalImageProps> = ({
   const [displayHeight, setDisplayHeight] = useState(height);
   const [windowLoaded, setWindowLoaded] = useState(false);
 
-  // Extract URL parts only once using memoization
   const urlInfo = useMemo(() => {
     if (!imageUrl.includes("upload/"))
       return { originalUrl: imageUrl, urlStart: "", urlEnd: "" };
 
     const [urlStart, urlEnd] = imageUrl.split("upload/");
-    // Remove any existing transformations
     const cleanUrlEnd = urlEnd.includes("/") ? urlEnd.split("/").pop() : urlEnd;
     const originalUrl = `${urlStart}upload/${cleanUrlEnd}`;
 
@@ -41,7 +39,6 @@ const LocalImage: React.FC<LocalImageProps> = ({
       if (cached) {
         const cachedHeight = JSON.parse(cached).height;
         setDisplayHeight(cachedHeight);
-
         return;
       }
     } catch {}
@@ -52,7 +49,6 @@ const LocalImage: React.FC<LocalImageProps> = ({
       const aspectRatio = img.naturalWidth / img.naturalHeight;
       const maxWidth = window.innerWidth - 24;
 
-      // If image would be wider than the window
       if (height * aspectRatio > maxWidth) {
         const newHeight = Math.floor(maxWidth / aspectRatio);
         setDisplayHeight(newHeight);
@@ -80,34 +76,26 @@ const LocalImage: React.FC<LocalImageProps> = ({
   }, [urlInfo.originalUrl, urlInfo.urlEnd, height]);
 
   useEffect(() => {
-    // Only run client-side
     setWindowLoaded(true);
 
-    // Initial calculation
     calculateDimensions();
 
-    // Set up ResizeObserver to handle viewport size changes
     if (typeof ResizeObserver !== "undefined") {
-      // We'll observe the document body to detect viewport changes
-      // This is more efficient than listening to window resize events
       const observer = new ResizeObserver(() => {
         calculateDimensions();
       });
 
-      // Observe the document body
       observer.observe(document.body);
 
       return () => {
         observer.disconnect();
       };
     } else {
-      // Fallback for browsers that don't support ResizeObserver
       window.addEventListener("resize", calculateDimensions);
       return () => window.removeEventListener("resize", calculateDimensions);
     }
   }, [calculateDimensions]);
 
-  // Transform URL for optimization
   const optimizedUrl = useMemo(() => {
     if (!windowLoaded || !urlInfo.urlStart || !urlInfo.urlEnd) return imageUrl;
 
