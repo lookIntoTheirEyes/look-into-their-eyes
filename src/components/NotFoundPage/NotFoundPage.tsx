@@ -8,7 +8,7 @@ export default function NotFoundPage() {
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>
-        <strong className={styles.number}>58</strong>{" "}
+        <strong className={styles.number}>55</strong>{" "}
         <span> {t("header")}</span>
       </h1>
       <h2 className={styles.secondary}>{t("secondary-header")}</h2>

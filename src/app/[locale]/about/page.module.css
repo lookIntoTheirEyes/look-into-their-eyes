@@ -37,13 +37,10 @@
 
 .artistContainer {
   @media (min-width: 769px) {
-    &:dir(ltr) {
-      float: left;
-      margin-right: 2rem;
-    }
+    float: left;
+
     &:dir(rtl) {
       float: right;
-      margin-left: 2rem;
     }
   }
   display: flex;
@@ -75,11 +72,13 @@
 
 .imageContainer {
   position: relative;
-  min-height: 30rem;
+  height: 30rem;
   width: 20rem;
 
   @media (max-width: 768px) {
     width: 25rem;
+    min-height: 30rem;
+    height: fit-content;
   }
 }
 
@@ -94,7 +93,7 @@
   margin: 0 1.6rem;
   transition: color 0.3s ease;
   font-size: 3.5rem;
-  line-height: 1;
+  line-height: 0.5;
 }
 
 .socialIcons a:hover {
